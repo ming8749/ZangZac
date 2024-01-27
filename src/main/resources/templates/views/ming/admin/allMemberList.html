@@ -1,0 +1,442 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>회원목록</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link href="css/ming/admin/memberList.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <style>
+  .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        display: none;
+
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal.show {
+        display: block;
+      }
+
+      .modal_body {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 500px;
+        height: 700px;
+        padding: 40px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 10px;
+        box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+        transform: translateX(-50%) translateY(-50%);
+      }
+      .modal_title{
+      	text-align: center;
+      	font-size: 2em;
+      	font-weight: bold;
+      	padding-bottom: 5px;
+      }
+      .modal_body div{
+      	display: flex;
+	    flex-direction: column;
+	    align-items: flex-start;
+      }
+      .selectState{
+      	color: rgb(251, 125, 83);
+      	font-weight: bold;
+      }
+	  .unselectState{background: none;}
+	  
+	  .member-info {
+	    display: flex;
+	    flex-direction: column;
+	    align-items: flex-start;
+	  }
+	 #modalP{
+	 	font-size: 0.8em;
+	 	margin-bottom: -30px;
+	 }
+  </style>
+</head>
+<body>
+	<div th:replace="~{common/admin :: admin}"></div>
+	<div style="height:100px; width:100%;"></div>
+	<div id="orderListWrapped">
+      <h1>회원 관리</h1>
+      <button class="cateBtn active" onclick="toggleTable('allMember', 'refundMember')">회원 목록</button>
+      <div style="float:right;">
+         <form action="adminPage.me" method="get">
+	         <div class="nav-item dropdown" id="search1">
+	         	<select name="searchType" class="dropdown-item">
+	         		<option value="memberId" name="memberId" th:selected="${searchType eq 'memberId'}">아이디</option>
+	         		<option value="memberName" name="memberName" th:selected="${searchType eq 'memberName'}">이름</option>
+	         		<option value="memberNickName" name="memberNickName" th:selected="${searchType eq 'memberNickName'}">닉네임</option>
+	         	</select>
+	            <input type="text" name="keyword">
+	            <button type="submit" id="searchMem">검색</button>
+	         </div>
+         </form>
+      </div>
+      
+      
+      <table id="allMember">
+         <tr>
+            <th class="td1" style="display: none;"><input type="checkbox" id="allSelect" onclick="toggleAllCheckboxes('allOrder', 'allSelect')"></th>
+            <th class="td2">아이디</th>
+            <th class="td3">이름</th>
+            <th class="td4">닉네임</th>
+            <th class="td5">주소</th>
+            <th class="td6">전화번호</th>
+            <th class="td7">탈퇴여부</th>
+            <th class="td8">관리자여부</th>
+         </tr>
+         
+         <tr th:each="m:${list}">
+	            <td class="td1" style="display: none;"><input type="checkbox"></td>
+	            <td class="td2">[[${m.memberId}]]</td>
+	            <td class="td3">[[${m.memberName}]]</td>
+	            <td class="td4">[[${m.memberNickName}]]</td>
+	            <td class="td5">[[${m.memberAddress.replace('@', ' ')}]]</td>
+	            <td class="td6">[[${m.memberPhone}]]</td>
+	            <td class="td7"> 
+					<div th:class="${m.memberStatus == 'Y' ? 'selectState' : 'unselectState'}" style="float: left;">Y</div>
+					<div th:class="${m.memberStatus == 'N' ? 'selectState' : 'unselectState'}" style="float: right;">N</div>
+				</td>
+				<td class="td8"> 
+					<div th:class="${m.memberIsAdmin == 'Y' ? 'selectState' : 'unselectState'}" style="float: left;">Y</div>
+					<div th:class="${m.memberIsAdmin == 'N' ? 'selectState' : 'unselectState'}" style="float: right; ">N</div>
+				</td>
+         </tr>
+         
+      </table>
+      
+      <div class="board_bottom_area">
+         <div id="pagenation" th:with="loc=${loc}" th:if="${!list.isEmpty}">
+            <ul>
+               <!-- 이전 버튼 -->
+               <li th:if="${pi.currentPage > 10}">
+                  <a th:href="@{${loc}(page=${pi.currentPage-10}, searchType=${searchType}, keyword=${keyword})}">&lt; 이전</a>
+               </li>
+                   <!-- 페이지 번호 -->
+                   <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+                      <th:block th:if="${keyword == null}">
+                      <a th:href="@{${loc}(page=${p}, searchType=${searchType}, keyword=${keyword})}" th:id="${p == pi.currentPage} ? 'check_page'">
+                          [[${p}]] 
+                      </a>
+                   </th:block>
+                   <th:block th:if="${keyword != null}">
+                      <a th:href="@{${loc}(page=${p}, searchType=${searchType}, keyword=${keyword})}" th:id="${p == pi.currentPage} ? 'check_page'">
+                         [[${p}]]
+                     </a>
+                   </th:block>
+               </li>
+                   <!-- 다음 버튼 -->
+                   <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+                      <a th:href="@{${loc}(page=${pi.currentPage+10}, searchType=${searchType}, keyword=${keyword})}">다음 &gt;</a>
+                   </li>
+                 </ul>
+   	 		</div>
+   		</div>
+	
+	<div class="modal">
+		<div class="modal_body">
+			<p class="modal_title">회원정보</p>
+			<img id="memberProfilePath" style="width: 80px; height:80px; position: relative; border-radius:50%; left: 170px;" alt="프로필 이미지" />
+				<br><div style="font-size: 1.1em;">아이디<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberId"></p></div><br>
+				<div style="font-size: 1.1em;">이름<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberName"> </p></div><br>
+				<div style="font-size: 1.1em;">닉네임<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberNickName"> </p></div><br>
+				<div style="font-size: 1.1em;">이메일<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberEmail"> </p></div><br>
+				<div style="font-size: 1.1em;">생년월일:<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberBirth"> </p></div><br>
+				<div style="font-size: 1.1em;">핸드폰<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberPhone"> </p></div><br>
+				<div style="font-size: 1.1em;">주소<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberAddress"> </p></div><br>
+				<div style="font-size: 1.1em;">가입일<p style="color:rgb(128, 128, 128); margin-bottom: -16px; margin-left:10px; font-size: 0.9em;" id="memberEnrollDate"> </p></div><br>
+		 </div>
+	</div>
+   <script>
+        //멤버전체내역/ 멤버탈퇴내역
+        function toggleTable(showId, hideId, element) {
+          document.getElementById(showId).classList.remove('hidden');
+          document.getElementById(hideId).classList.add('hidden');
+          
+        }
+        
+        const buttons = document.querySelectorAll('.cateBtn');
+	  	  	buttons.forEach(btn => btn.addEventListener('click', () => {
+	  	    buttons.forEach(otherBtn => {
+	  	        if (otherBtn !== btn) {
+	  	            otherBtn.classList.remove('active');
+	  	        }
+	  	    });
+	  	
+	  	    btn.classList.add('active');
+	  	}));
+  		
+  		
+  		
+  		//드롭다운 변경
+  		function showSearch(searchId, dropdownText) {
+              document.querySelectorAll('.search').forEach(function(searchElement) {
+                  searchElement.style.display = 'none';
+              });
+              document.getElementById(searchId).style.display = 'block';
+              document.getElementById('dropdownMenuButton').innerText = dropdownText;
+          }
+  		
+		let beforeData = null;
+	      //체크박스 전체 선택/해제
+	        function toggleAllCheckboxes(tableId, selectId) {
+	         const checkboxes = document.querySelectorAll(`#${tableId} input[type="checkbox"]:not(#${selectId})`);
+	         const selectAll = document.getElementById(selectId);
+	         const allChecked = selectAll.checked;
+	   
+	         checkboxes.forEach(checkbox => {
+	             checkbox.checked = allChecked;
+	         });
+	     }
+	      
+	      
+	        
+	        
+	        //모달창 열기
+	          const body = document.querySelector('body');
+		      const modal = document.querySelector('.modal');
+		      const tds = document.getElementsByTagName('td');
+			  let changeId;
+		      for(let i = 0; i <tds.length; i++ ){
+		    	  const index = i % 8;
+		    	  if(index != 0 && index != 6 && index != 7){
+				      tds[i].addEventListener('dblclick', function(){
+				    	  //console.log(this.parentNode.children[1].innerText); 아이디로 접근!
+				    	  //ajax 해서 
+				    	  
+				    	  //memberId 보내서 정보가져오기
+				    	  	//모달에 아이디들로 다 가져와서 member 정보 넣기
+				    	  	let m = this.parentNode.children[1].innerText;
+				    	  	changeId = this.parentNode;
+				    	  	console.log(m);
+				    		$.ajax({
+				    			url:'selectMemberList.me',
+				    			data : {memberId:m},
+				    			success : function(data){
+				    				const memberData = data.m;
+				    				
+				    				const memberId = memberData.memberId;
+				    				const memberName = memberData.memberName;
+				    				const memberNickName = memberData.memberNickName;
+				    				const nickNameParts = memberNickName.split('#');
+				    				const memberEmail = memberData.memberEmail;
+				    				const memberBirth = memberData.memberBirth;
+				    				const memberPhone = memberData.memberPhone;
+				    				const memberAddress = memberData.memberAddress;
+				    				const formattedAddress = memberAddress.replace(/@/g, ' ');
+				    				const memberEnrollDate = memberData.memberEnrollDate;
+				    				const memberProfilePath = memberData.memberProfilePath;
+				    				
+				    				document.getElementById('memberId').innerText =  memberId;
+				    				document.getElementById('memberName').innerText =  memberName;
+				    				document.getElementById('memberNickName').innerText = nickNameParts[0];
+				    				document.getElementById('memberEmail').innerText =  memberEmail;
+				    				document.getElementById('memberBirth').innerText = memberBirth;
+				    				document.getElementById('memberPhone').innerText = memberPhone;
+				    				document.getElementById('memberAddress').innerText = formattedAddress;
+				    				document.getElementById('memberEnrollDate').innerText = memberEnrollDate;
+				    				document.getElementById('memberProfilePath').src = memberProfilePath;
+				    				
+				    			},
+				    			error:data => console.log("error:" + data)
+				    			
+				    		})
+				    		  
+				          	modal.classList.toggle('show');
+				    	  
+				    	  
+				
+				        if (modal.classList.contains('show')) {
+				          body.style.overflow = 'hidden';
+				        }
+				        
+				      })
+				      
+				      
+				      
+		    	  };
+		    	  
+		    	  if (index == 6 || index == 7) {
+		    		  const stateButtons = tds[i].querySelectorAll('div');
+		    		  let column;
+	    		    	if(index == 6){
+	    		    		column ='member_status';
+	    		    	}else if(index == 7){
+	    		    		column = 'member_is_admin';
+	    		    	}
+		    		  for(const button of stateButtons){
+		    			  button.addEventListener('click', function() {
+		    				  /* console.log("column: "+column);
+		    				  console.log("id: "+ this.parentElement.parentElement.children[1].innerText);
+		    				  console.log("data: "+this.innerText); */
+		    				  if(this.className == 'unselectState'){
+		    					  $.ajax({
+		    						  url:'updateInfo.me',
+		    						  data:{column:column, data:this.innerText, id:this.parentElement.parentElement.children[1].innerText},
+		    						  success:data=>{
+		    							  console.log(data);
+		    							  if(data == 'success'){
+		    								  this.className = 'selectState';
+		    								  for(const siblings of this.parentElement.children){
+		    									  if(siblings != this){
+		    										  siblings.className = 'unselectState';
+		    									  }
+		    								  }
+		    							  }else{
+		    								  alert('상태 변경에 실패하여 페이지가 새로고침 됩니다.');
+												location.reload();
+		    							  }
+		    						  },
+		    						  error: data => console.log(data)
+		    					  });
+		    				  }
+		    		      });
+		    		  	}
+		    		}
+		      };
+		      
+		       // 모달창 외부를 클릭했을때 창 닫기
+		      modal.addEventListener('click', (event) => {
+		        if (event.target === modal) {
+		          modal.classList.toggle('show');
+		
+		          if (!modal.classList.contains('show')) {
+		            body.style.overflow = 'auto';
+		            isEditing =false;
+		          }
+		        }
+		     })
+	    
+	    
+	        // flag 변수를 사용하여 현재 입력 중인지 여부를 추적
+	        let isEditing = false;
+	
+		    //이름 수정
+	        const memberNameElement = document.getElementById('memberName');
+	        memberNameElement.addEventListener('click', function() {
+	            // 입력 중인 경우는 더 이상 실행하지 않음
+	            if (isEditing) {
+	                return;
+	            }
+	            
+	            // 현재 텍스트 값 가져오기
+	            const currentText = this.innerText.trim();
+	
+	            // input 엘리먼트 생성
+	            const inputElement = document.createElement('input');
+	            inputElement.type = 'text';
+	            inputElement.value = currentText;
+	
+	            // input 엘리먼트에 포커스 설정
+	            inputElement.focus();
+	
+	            // flag 변수 갱신
+	            isEditing = true;
+	
+	            // 클릭 이벤트 설정
+	            inputElement.addEventListener('keyup', function(event) {
+	                // input에서 포커스가 떠나면 변경된 값으로 텍스트 업데이트
+	                 let stopAjax=false;
+	                if(event.key == 'Enter'){
+	                	memberNameElement.innerText = this.value;
+	                	$.ajax({
+	                		url:'adminUpdateName.me',
+	                		data : {memberName:memberNameElement.innerText, memberId:changeId.children[1].innerText},
+	                		success: data=>{
+	                			if(data == 'success'){
+	                				changeId.children[2].innerHTML = '<td class="td3">' + this.value + '</td>';
+	                			}else{
+	                				alert('수정이 실패하여 페이지가 새로고침 됩니다.');
+									location.reload();
+	                			}
+	                		},
+	                		error : data=>console.log("실패"+data)
+	                	})
+	                	isEditing = false;
+	                	
+	                }
+	                //ajax;
+	                	
+	                // flag 변수 갱신
+	            });
+	
+	            // p 엘리먼트 내용을 input 엘리먼트로 대체
+	            this.innerHTML = '';
+	            this.appendChild(inputElement);
+	        });
+	        
+	        //닉네임 수정
+	        const memberNickNameElement = document.getElementById('memberNickName');
+	        memberNickNameElement.addEventListener('click', function() {
+	        	
+	        	//console.log(changeId.children[3]);
+	            // 입력 중인 경우는 더 이상 실행하지 않음
+	            if (isEditing) {
+	                return;
+	            }
+	            
+	            // 현재 텍스트 값 가져오기
+	            const currentText = this.innerText.trim();
+	            // input 엘리먼트 생성
+	            const inputElement = document.createElement('input');
+	            inputElement.type = 'text';
+	            inputElement.value = currentText;
+	
+	            // input 엘리먼트에 포커스 설정
+	            inputElement.focus();
+	
+	            // flag 변수 갱신
+	            isEditing = true;
+	
+	            // 클릭 이벤트 설정
+	            inputElement.addEventListener('keyup', function(event) {
+	                // input에서 포커스가 떠나면 변경된 값으로 텍스트 업데이트
+	                let stopAjax=false;
+	                if(event.key == 'Enter'){
+	                	memberNickNameElement.innerText = this.value;
+	                	$.ajax({
+	                		url:'adminUpdateNickName.me',
+	                		data :{memberNickName:memberNickNameElement.innerText, memberId:changeId.children[1].innerText},
+	                		success : data=>{
+	                			console.log(data)
+	                			if(data == 'success'){
+	                				console.log("성공");
+	                				memberNickNameElement.innerText = this.value;
+	                				changeId.children[3].innerHTML = '<td  class="td4">' + this.value + '</td>';
+									
+								} else {
+									alert('수정이 실패하여 페이지가 새로고침 됩니다.');
+									location.reload();
+								}
+	                		},
+	                		error: data => console.log("실패"+data)
+	                	});
+	                }
+	                	isEditing = false;
+	                //ajax;
+	                // flag 변수 갱신
+	            });
+	
+	            // p 엘리먼트 내용을 input 엘리먼트로 대체
+	            this.innerHTML = '';
+	            this.appendChild(inputElement);
+	        });
+            
+	    
+ 	</script>
+</body>
+</html>

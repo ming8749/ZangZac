@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 레시피</title>
+    <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <link rel="stylesheet" href="css/seongun/recipeDetail.css">
+    <style>
+    	img{
+    		vertical-align: middle;
+    	}
+    </style>
+</head>
+<body>
+	<!-- 이미지 슬라이더 -->
+	<th:block th:if="${pList != null && !pList.isEmpty}">
+		<div class="image-slider">
+			<button class="slide-btn prev-btn"></button>
+			<div class="image-container">
+				<th:block th:each="p : ${pList}">
+					<img th:src="${p.photoPath}" th:alt="${p.photoRename}" style="max-height: 600px;"/>
+				</th:block>
+			</div>
+			<button class="slide-btn next-btn"></button>
+			<div class="slider-pagination"></div>
+		</div>
+	</th:block>
+
+	<!-- 레시피 정보 테이블 -->
+	<table class="recipe-info">
+		<tr>
+			<th>요리이름</th>
+			<th>조리도구</th>
+			<th>맛</th>
+		</tr>
+        <tr>
+			<td>[[${r.recipeName}]]</td>
+			<td>[[${#strings.arrayJoin(r.cookCategoryName, ', ')}]]</td>
+			<td>[[${r.recipeTaste}]]</td>
+		</tr>
+        <!-- 추가 정보 -->
+	</table>
+	<!-- 레시피 설명 -->
+	<div class="recipe-description">
+    	<p style="white-space: pre-line;"><b>메인 재료<br></b>
+        	[[${r.recipeIngredients}]]
+		</p>
+	</div>
+    <br>
+    <div class="recipe-description"><b>조리법<br></b>
+    	<p style="white-space: pre-line;">[[${r.recipeContent}]]</p>
+	</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+	    let sliderImages = document.querySelectorAll('.image-container img');
+	    let currentImageIdx = 0;
+	    let imageContainer = document.querySelector('.image-container');
+	    let paginationContainer = document.querySelector('.slider-pagination');
+
+    	// 페이징 버튼 생성
+		sliderImages.forEach((_, idx) => {
+			let btn = document.createElement('span');
+			btn.classList.add('pagination-btn');
+			btn.addEventListener('click', () => {
+				currentImageIdx = idx;
+				updateSliderPosition();
+				updatePaginationButtons();
+			});
+		        paginationContainer.appendChild(btn);
+		    });
+		
+		    function updateSliderPosition() {
+		        let sliderWidth = document.querySelector('.image-slider').clientWidth;
+		        imageContainer.style.transform = `translateX(${-currentImageIdx * sliderWidth}px)`;
+		    }
+		
+		    function updatePaginationButtons() {
+		        let buttons = document.querySelectorAll('.pagination-btn');
+		        buttons.forEach((btn, idx) => {
+		            btn.classList.toggle('active', idx === currentImageIdx);
+		        });
+		    }
+		
+		    document.querySelector('.prev-btn').addEventListener('click', () => {
+		        currentImageIdx = currentImageIdx > 0 ? currentImageIdx - 1 : sliderImages.length - 1;
+		        updateSliderPosition();
+		        updatePaginationButtons();
+		    });
+		
+		    document.querySelector('.next-btn').addEventListener('click', () => {
+		        currentImageIdx = (currentImageIdx + 1) % sliderImages.length;
+		        updateSliderPosition();
+		        updatePaginationButtons();
+		    });
+		
+		    updateSliderPosition();
+		    updatePaginationButtons(); // 초기 페이징 버튼 설정
+		});
+		
+        
+    </script> 
+</body>
+</html>

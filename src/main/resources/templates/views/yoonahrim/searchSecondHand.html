@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<link rel="stylesheet" href="css/seongun/commonBoard.css">
+<link href="css/yoonahrim/secondHandList.css?after" rel="stylesheet" type="text/css"/>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}" th:each="s : ${spList}"></div>
+	<input type="hidden" id="loginUser" th:value="${loginUser}"/>
+	<!-- 게시판 navbar -->
+	<a id="back-to-top"><img src='image/seongun/topBtn.png' style='width:38px; height:38px;'></a>
+    <div id="content">
+        <div id="space_zone">
+            <p>
+                <img></img>
+            </p>
+        </div>
+        <div id="board_zone">
+            <div id="snb_zone">
+                <ul>
+                    <li>
+                        <a href="campBoard.su">캠핑게시시판</a>
+                    </li>
+                    <li>
+                        <a href="recipe.su">캠핑레시피</a>
+                    </li>
+                    <li>
+                        <a id="check_snb">중고거래</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="board-container"></div>
+		</div>
+	<!-- 지역 설정 -->
+      <div id="articles-navigation">
+          <select name="region" id="" onchange="" class="hot-articles-nav-select">
+            <option>지역을 선택하세요</option>
+            <option value="서울">서울특별시</option>
+            <option value="부산">부산광역시</option>
+            <option value="대구">대구광역시</option>
+            <option value="인천">인천광역시</option>
+            <option value="광주">광주광역시</option>
+            <option value="대전">대전광역시</option>
+            <option value="울산">울산광역시</option>
+            <option value="세종">세종특별자치시</option>
+            <option value="경기">경기도</option>
+            <option value="강원">강원특별자치도</option>
+            <option value="충북">충청북도</option>
+            <option value="충남">충청남도</option>
+            <option value="전북">전라북도</option>
+            <option value="전남">전라남도</option>
+            <option value="경북">경상북도</option>
+            <option value="경남">경상남도</option>
+            <option value="제주">제주특별자치도</option>
+         </select>
+      </div>
+      
+      <div>
+         <select style="height:23px; float: left; position:relative; left: 225px; top: 36px;" name="type">
+            <option>카테고리</option>
+            <option value="11">텐트</option>
+            <option value="12">취침용품</option>
+            <option value="13">조리도구</option>
+            <option value="14">발화용품</option>
+            <option value="15">백팩</option>
+            <option value="16">기타용품</option>
+         </select>   
+       </div>
+      
+      <button type="button" id="searchBtn" class="btn btn-outline-dark" onclick="categorySelect()">GO</button>
+      
+      <div class="pointerBtn">
+         <button id="writeBtn" class="btn-hover color-1" th:onclick="location.href='write.ah'">글쓰기</button>&nbsp;&nbsp;
+      </div>
+      
+      
+      <!-- CARD-->
+      <div class="container text-center">
+         <div class="row g-3">
+               <div class="col-md-3" th:each="s: ${spList}" style="margin-bottom:120px;">
+	               <a class="card-link " th:onclick="|location.href='detail.ah?spNo=${s.spNo}'|">
+	                   <th:block th:each="a : ${aList}" th:if="${a.boardNo eq s.spNo}">
+		                   <div class="card-photo" th:if="${a.photoLevel == 0}">
+			                       <img th:src="${a.photoPath}" alt="캠핑사진" style="cursor: pointer">
+		                   </div>
+	                   </th:block>
+	                   <div class="card-desc">
+	                     <div class="card-title">[[${#strings.length(s.spTitle) > 6 ? #strings.substring(s.spTitle, 0, 6) + '...' : s.spTitle}]]
+	                           <div class="selectCategory">[[${s.categoryName}]]</div>
+	                     </div>
+	                     <div class="card-price">
+	                     	<b>
+	                       		[[${#numbers.formatInteger(s.spPrice, 0, 'COMMA')}]]원
+	                     	</b>
+	                     </div>
+	                     <div class="card-region-name">
+	                       	[[${#strings.length(s.spAddress) > 12 ? #strings.substring(s.spAddress, 0, 12) + '...' : s.spAddress}]]
+	                     </div>
+	                     <div class="card-counts">
+	                         <span>
+	                           댓글[[${s.replyCount}]]
+	                         </span>
+	                     </div>
+	                </div>
+	               </a>
+            	</div>
+         	</div>   
+         </div>
+         
+         <!-- 페이징처리 -->
+         <div class="board_bottom_area" th:with="loc=${loc}">
+	         <div id="pagenation">
+	           	 <ul class="pagination">
+	                   <!-- 이전 버튼 -->
+	                   <li class="page-item">
+	                      <a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous" th:if="${pi.currentPage>1}" style="width:63px;">
+	                      	&lt; 이전
+	                      </a>
+	                   </li>
+	                   <!-- 페이지 번호 -->
+	                   <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}"> 
+	                       <a th:href="@{${loc}(page=${p})}" id="check_page">
+	                       		[[${ p }]]
+	                       	</a>
+	                    </li>
+	                 	<!-- 다음 버튼 -->
+	                   <li class="page-item">
+	                      <a lass="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next" th:if="${pi.currentPage<pi.maxPage}" style="width:63px;">
+	                      	다음 &gt;
+	                      </a>
+	                   </li>
+	            	</ul>
+	            </div>
+            <hr/>
+        </div>
+     </div>
+      <a id="goChatingRoom" class="chat" style="display: inline-block; cursor:pointer;" onclick="redirectToChat()">
+     		<input type="hidden" id="userId" th:if="${session.loginUser != null}" th:value="${session.loginUser.memberId}"/>
+	    	<input type="hidden" id="memberId" th:value="${s.memberId}" th:each="s : ${sList}"/>
+     		<img src="image/yoonahrim/icons8-chat-bubble-100.png" style="width:50px; height:50px; position:fixed; left: 1820px; bottom: 80px;"/>
+     </a>
+   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 스크롤이 끝으로 이동 시 이벤트 발생
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset <= 0) {
+                    document.getElementById('back-to-top').classList.remove('show');
+                } else {
+                    document.getElementById('back-to-top').classList.add('show');
+                }
+            });
+
+            window.addEventListener('touchmove', function() {
+                if (window.pageYOffset <= 0) {
+                    document.getElementById('back-to-top').classList.remove('show');
+                } else {
+                    document.getElementById('back-to-top').classList.add('show');
+                }
+            });
+
+            document.getElementById('back-to-top').addEventListener('click', function() {
+                // 페이지 맨 위로 스크롤하는 애니메이션
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                document.getElementById('back-to-top').classList.remove('show');
+            });
+        });
+        
+        function categorySelect() {
+            var region = document.getElementsByName('region')[0].value;
+            var type = document.getElementsByName('type')[0].value;
+
+            // 지역이나 카테고리 중 하나라도 선택되었는지 확인
+            if (region !== '지역을 선택하세요' || type !== '카테고리') {
+                location.href = 'searchSecondHand.ah?region=' + region + '&type=' + type;
+            }
+        }
+        
+       
+        var loginUser = document.getElementById('loginUser').value; 
+
+        document.getElementById('writeBtn').addEventListener('click', function() {
+            
+            if (!loginUser) {
+                alert('로그인 후 이용해주세요');
+                location.href='signUp.me';
+            }
+        });
+        
+        function redirectToChat() {
+        	var memberId = document.getElementById('memberId').value;
+			var userId = document.getElementById('userId').value;
+			window.location.href='chating.ah?memberId=' + memberId + '&userId=' + userId;
+        }
+</script>
+</body>
+</html>

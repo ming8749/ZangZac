@@ -1,0 +1,378 @@
+@charset "UTF-8";
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'GmarketSansMedium';
+}
+/*사이드바*/
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.2);
+    border-right: 1px solid rgba(255, 255, 255, 0.8);
+    transition: width 0.3s ease;
+    background-color: rgb(225, 230, 234);
+}
+
+.sidebar ul{
+	position: relative;
+	top: -20px;
+	left: -12px;
+}
+
+
+.sidebar:hover {
+    width: 280px;
+}
+
+
+.logo img{
+	width: 250px;
+	position: relative;
+	top: 50px;
+	left: 905px;
+	margin-bottom: -100px;
+}
+
+.sidebar:hover .logo {
+    opacity: 1;
+}
+
+.user{
+	padding-top: 60px;
+}
+.user p {
+    display: block; /* 변경: 초기에는 보이도록 설정 */
+    opacity: 0; /* 변경: 초기에는 투명도를 1로 설정하여 보이도록 설정 */
+    transition: opacity 0.3s ease;
+    position:relative;
+    left: 12px;
+}
+
+.sidebar:hover .user p {
+    opacity: 1; /* 변경: 마우스 호버 시에는 투명도를 0으로 설정하여 사라지도록 설정 */
+}
+
+.sidebar:hover .links h4 {
+    color: black;
+    font-weight: 500;
+    margin-bottom: 10px;
+    display: none;
+}
+
+.sidebar:hover li{
+	left: -65px;
+}
+
+.sidebar .links h4 {
+    display: block;
+}
+
+.links li {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.links li:hover {
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.links hr {
+    margin: 8px 8px;
+}
+
+.sidebar:hover .links hr {
+    border-color: transparent;
+}
+
+.links li img {
+    padding: 12px 10px;
+}
+
+.links li a {
+    color: black;
+    padding: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    z-index: 1;
+}
+
+.sidebar:hover .links li a {
+    display: block;
+}
+
+/*내정보 박스*/
+#border{
+	position: relative;
+    top: 200px;
+    left: 27%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.2),
+    0 10px 10px rgba(0,0,0,0.2);
+    overflow: hidden;
+    max-width:100%;
+    min-width: 480px;
+    margin-bottom: 0%;
+    height: auto;
+}
+
+.editTitle{
+	font-size: 2.5em;
+	font-weight: bold;
+	position: relative;
+	left: 38%;
+	top: 100px;
+	padding-bottom: 90px;
+}
+
+
+.profile-poto{
+	width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.deleteMemberBtn{
+	position: relative;
+	top:100px;
+}
+/*프로필 사진 수정 버튼*/
+.input-file-button{
+  z-index:0;
+  padding: 6px 25px;
+  background-color:white;
+  border-radius: 4px;
+  color: black;
+  border: solid 1px black;
+  cursor: pointer;
+  left: 36%;
+  top: 230px;
+  position: relative;
+  text-align: center;
+}
+input::file-selector-button{
+	text-align: center;
+	display: none;
+}
+
+/* 내정보 수정 박스 */
+
+.updateInput {
+    width: 500px;
+    height: 50px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 3px solid black;
+    position: relative;
+    left: 25%;
+    top: 300px;
+    margin-bottom: 50px;
+    text-align: center;
+    font-size: 1em;
+    
+}
+
+.updateBtn{
+	width: 100px;
+	height: 55px;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-bottom: 3px solid black;
+	background-color: white;
+	position: relative;
+	left: 25%;
+	top: 297px;
+	margin-bottom: 50px;
+	text-align: center;
+	font-size: 1em;
+	cursor: pointer;
+}
+.updateBtn:hover{
+	width: 100px;
+	height: 55px;
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	border-bottom: 3px solid black;
+	background-color: #ffaa28;
+	color:white;
+	position: relative;
+	left: 25%;
+	top: 297px;
+	margin-bottom: 50px;
+	text-align: center;
+	font-size: 1em;
+	cursor: pointer;
+}
+
+
+.mailBtn{
+	border: 1px solid rgb(251, 125, 83);
+	background-color: white;
+	width: 300px;
+	height: 35px;
+	position: relative;
+	top: 230px;
+	left: 340px;
+	cursor: pointer;
+	border-radius: 10px;
+}
+.mailBtn:hover{
+	border: 1px solid rgb(255, 255, 255);
+	background-color: rgb(251, 125, 83);
+	color: white;
+	width: 300px;
+	height: 35px;
+	position: relative;
+	top: 230px;
+	left: 340px;
+	cursor: pointer;
+	border-radius: 10px;
+}
+
+.postBtn{
+	border: 1px solid rgb(251, 125, 83);
+	background-color: white;
+	width: 300px;
+	height: 35px;
+	position: relative;
+	top: 230px;
+	left: 340px;
+	cursor: pointer;
+	border-radius: 10px;
+}
+.postBtn:hover{
+	border: 1px solid rgb(255, 255, 255);
+	background-color: rgb(251, 125, 83);
+	color: white;
+	width: 300px;
+	height: 35px;
+	position: relative;
+	top: 230px;
+	left: 340px;
+	cursor: pointer;
+	border-radius: 10px;
+}
+/* 탈퇴 모달 */
+.profilePoto{
+	border-radius: 50%;
+	width: 120px;
+	height:120px;
+	top: 170px;
+	position: relative;
+	left: 45%;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    margin-left:60%;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    height: auto;
+    max-height: 70%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column; /* 수정된 부분 */
+   	justify-content: center; /* 추가된 부분 */
+   	align-items: center;
+}
+.modal-content Button{
+	background-color: rgb(251, 125, 83);
+	color: white;
+	border-radius: 5px;
+	border-color: rgb(251, 125, 83);
+	height: 50px;
+	width: 100px;
+	margin: 5px;
+}
+.modal-content Button:hover{
+	background-color: #FB8D53;
+	color: white;
+	border-radius: 5px;
+	border-color: rgb(251, 125, 83);
+	height: 50px;
+	width: 100px;
+	cursor: pointer;
+}
+
+/* 등록 수정 버튼 */
+.btn-hover {
+    width: 200px;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgb(0, 0, 0);
+    cursor: pointer;
+    margin: 20px;
+    height: 55px;
+    text-align:center;
+    border: none;
+    background-size: 300% 100%;
+
+    border-radius: 50px;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+    
+    position: absolute;
+    top: 850px;
+}
+
+.btn-hover:hover {
+    background-position: 100% 0;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.btn-hover:focus {
+    outline: none;
+}
+
+.btn-hover.color-1{
+   background-image: linear-gradient(to right, rgb(192, 192, 192), rgb(255, 255, 255), rgb(255, 255, 255), rgb(192, 192, 192));
+    box-shadow: 0 4px 15px 0 rgb(192, 192, 192);
+}
+
+.btn-hover.color-2 {
+    background-image: linear-gradient(to right, #fc6076, #ff9a44, #ef9d43, #e75516);
+    box-shadow: 0 4px 15px 0 rgba(252, 104, 110, 0.75);
+}

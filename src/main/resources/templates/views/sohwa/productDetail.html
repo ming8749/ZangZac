@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="css/sohwa/productDetail.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>판매상품상세 페이지</title>
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+	
+	<br><br>
+	<p id="category">캠핑물품판매 >> [[${(p.getCategoryNo() == 11) ? "텐트" :
+                  (p.getCategoryNo() == 12) ? "취침용품" :
+                  (p.getCategoryNo() == 13) ? "조리도구" :
+                  (p.getCategoryNo() == 14) ? "발화용품" :
+                  (p.getCategoryNo() == 15) ? "백팩" :
+                  (p.getCategoryNo() == 16) ? "기타용품" :
+                  "기타"}]]</p>
+    <br>
+	<div class="gallery">
+		<div class="thumbnails">
+	        <img th:each="l:${list}" th:if="${l.photoLevel==0 && l.boardType == 5}" th:src="${l.photoPath}" alt="Thumbnail 1" class="thumbnail" onmouseover="changeImage(this)" >
+	        <img th:each="l:${list}" th:if="${l.photoLevel==1 && l.boardType == 5}" th:src="${l.photoPath}" alt="Thumbnail 1" class="thumbnail" onmouseover="changeImage(this)" >
+	    </div>
+	    
+	    <div class="main-image">
+	      <img th:each="l:${list}" th:if="${l.photoLevel==0 && l.boardType == 5}" th:src="${l.photoPath}" alt="Main Image">
+	    </div>
+	    
+	    
+	    
+	    <div id="explain">
+			<span style="font-size: 15px; color:gray;">[[${p.productCompany}]]</span>
+			<h1>[[${p.productName}]]</h1>
+			<div class="star-rating">
+				  <span class="fa fa-star" th:classappend="${roundScore >= 1 ? 'checked' : ''}"></span>
+				  <span class="fa fa-star" th:classappend="${roundScore >= 2 ? 'checked' : ''}"></span>
+				  <span class="fa fa-star" th:classappend="${roundScore >= 3 ? 'checked' : ''}"></span>
+				  <span class="fa fa-star" th:classappend="${roundScore >= 4 ? 'checked' : ''}"></span>
+				  <span class="fa fa-star" th:classappend="${roundScore >= 5 ? 'checked' : ''}"></span>
+			</div>
+		    <span>[[${p.productScore}]]</span>
+		    <br>
+			<span id="price">[[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]</span>
+			&nbsp;&nbsp;<div class="deliverySpan" th:if="${p.deliveryPrice==0}">무료배송</div><br><br>
+			<p>배송비</p>
+			<div style="display: inline-block;">
+				<span th:if="${p.deliveryPrice==0}">무료배송</span>
+    			<span th:unless="${p.deliveryPrice==0}" th:text="|${#numbers.formatDecimal(p.deliveryPrice, 0, 'COMMA', 0, 'POINT')}원|"></span>
+    			<br>일반택배<br>☝무료배송 상품&nbsp;✌무료배송 상품 제외 배송비 2,500원</div>
+			<br><br>
+			
+			<select style="border:1px solid gray; width:100%; height:40px; border-radius:3px;" id="colorSelect" onchange="showDiv()">
+				<option>컬러 선택</option>
+				<option th:each="o:${oList}">[[${o.productOptionColor}]]</option>
+			</select>
+			
+			
+			<br><br>
+			
+			
+			
+			<div id="enoDiv" style="display: none;">&nbsp;&nbsp;&nbsp;[[${p.productName}]]
+				<br><br>
+				<div class="quantity-input">&nbsp;&nbsp;&nbsp;
+				    <button class="quantity-btn" id="decrementBtn">-</button>
+		            <input type="text" class="quantity" value="1" min="1">
+		            <button class="quantity-btn" id="incrementBtn">+</button>
+		            <div id="resultPrice"></div>
+				</div>
+			</div>
+			
+			<div class="btns" style="margin-left:80px;">
+				<button class="btn-hover color-1" style="color:gray;" id="cartBtn" onclick="goCart()">장바구니</button>
+				<button class="btn-hover color-2" onclick="goPurchase()">바로구매</button>
+			</div>
+			
+			<input type="hidden" id="productNo" th:value="${p.productNo}">
+		</div>
+	</div>
+	
+	
+	<br><br><br>
+	
+	
+	<a id="back-to-top"><img src="image/sohwa/icons8-scroll-up-64 (1).png"></a>
+	<div id="fixedDiv" >
+		<br>
+		<span>주문금액</span><span id="resultPrice2"></span>
+		<div class="btns">
+			<button onclick="goCart()" class="btn-hover color-1" style="color:gray;">장바구니</button>
+			<button class="btn-hover color-2" onclick="goPurchase()">바로구매</button>
+		</div>
+		
+	</div>
+	
+	<div id="cateDiv">
+        <ul>
+          <li><a href="#detail">상세정보</a></li>
+          <li><a href="#reviews">리뷰</a></li>
+          <li><a href="#questions">문의</a></li>
+          <li><a href="#shipping">배송정보</a></li>
+        </ul>
+    </div>
+    
+    <div id="underDiv">
+		<main>
+			
+	    <!-- 상품 상세 정보 섹션 -->
+	      <section id="detail">
+	        <img th:each="l:${list}" th:if="${l.photoLevel==2 && l.boardType == 5}" th:src="${l.photoPath}">
+	      </section>
+	
+	
+	    <!-- 리뷰 섹션 -->
+	      <section id="reviews">
+	      	   <div id="review">
+					<span style="margin-left:5%;">리뷰 </span><span style="color:#F9612B;"> [[${rList.size()}]]</span><a href="#" id="openReviewModal" onclick="openModal()">리뷰쓰기</a>
+				    <div id="reviewContainer">
+							<div class="star-rating">
+								  <span class="fa fa-star" th:classappend="${roundScore >= 1 ? 'checked' : ''}"></span>
+								  <span class="fa fa-star" th:classappend="${roundScore >= 2 ? 'checked' : ''}"></span>
+								  <span class="fa fa-star" th:classappend="${roundScore >= 3 ? 'checked' : ''}"></span>
+								  <span class="fa fa-star" th:classappend="${roundScore >= 4 ? 'checked' : ''}"></span>
+								  <span class="fa fa-star" th:classappend="${roundScore >= 5 ? 'checked' : ''}"></span>
+							</div>
+						    <span style="font-size:27px;">[[${p.productScore}]]</span>
+						    
+					   </div>
+						<!--모달-->
+						<div class="modal" id="reviewModal">
+					  		<div class="modal-content" style="margin-bottom:30px;">
+					    		<span class="close" onclick="closeModal()">&times;</span>
+					    		<div class="bg-gray-50">
+									<div class="max-w-2xl mx-auto p-6">
+								        <h1 class="text-2xl font-bold mb-4">리뷰 등록</h1>
+								        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-4">
+								            <div class="p-4 flex">
+								                <img class="w-20 h-20 object-cover rounded-full" th:each="l:${list}" th:if="${l.photoLevel==0 && l.boardType == 5}" th:src="${l.photoPath}" alt="Product">
+								                <div class="ml-4">
+								                    <h2 class="text-lg font-semibold">[[${p.productCompany}]]</h2>
+								                    <p class="text-sm text-gray-600">[[${p.productName}]]</p><hr>
+								                    <p>[[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]</p>
+								                </div>
+								            </div>
+								            
+								            <div class="border-t border-gray-200">
+								            	<form id="reviewForm" action="enrollReview.so" method="POST" enctype="multipart/form-data">
+									            	<input type="hidden" th:value="${p.productNo}" name="productNo">
+									            	<input type="file" id="fileUpload" name="file" style="display: none;">
+									            	<input type="hidden" name="reviewScore" value="0">
+									                <div class="p-4">
+									                    <h3 class="text-lg font-semibold mb-2">별점등록</h3>
+									                    <div class="flex items-center mb-4">
+									                        <div id="starRating">
+																  <span class="fa fa-star"></span>
+																  <span class="fa fa-star"></span>
+																  <span class="fa fa-star"></span>
+																  <span class="fa fa-star"></span>
+																  <span class="fa fa-star"></span>
+															</div>
+									                    </div>
+									                    
+									                    <!-- 파일 미리보기 영역 -->
+									                    <div id="imagePreview">
+									                        <img id="preview" src="image/sohwa/icons8-screenshot-64.png">
+									                    </div>
+									                    <br>
+									                    <div id="addPhoto">
+															<img src="image/sohwa/icons8-camera-80.png">사진첨부
+														</div>
+									                    <br>
+									                    
+									                    <div class="mb-4">
+									                        <label for="review" class="text-sm font-semibold">리뷰를 작성해주세요.</label>
+									                        <textarea id="reviewContent" name="reviewContent" rows="3" class="mt-1 p-2 w-full border rounded-md" style="height:250px; overflow: scroll; resize: none;"></textarea>
+									                    </div>
+									                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" style="float:right; margin-bottom:30px;">
+									                        리뷰등록
+									                    </button>
+								                    </form>
+								                </div>
+								                
+								                
+								            </div>
+								        </div>
+								    </div>
+								</div>
+						    </div>
+						</div>
+						
+						<div id="reviewCate">
+							<hr>
+							
+							<div id="onlyPhoto"><img src="image/sohwa/icons8-picture-16.png"><span>&nbsp;사진리뷰</span></div>
+							
+							<hr>
+						</div>
+						
+						
+					   <div class="bg-gray-50"> 
+						   
+						   
+						    <div class="container mx-auto px-4 py-8">
+						        <div class="space-y-6">
+									
+									<div class="reviewItem" th:each="r, status: ${rList}">
+										<div class="bg-white shadow rounded-lg p-4">
+							                <div class="flex items-center space-x-4">
+							                    <div class="w-12 h-12 rounded-full overflow-hidden">
+							                        <img th:each="m:${mList}" th:if="${m.memberId == r.memberId}" th:src="${m.memberProfilePath}"alt="Profile" class="object-cover w-full h-full">
+							                    </div>
+							                    <div class="flex-1">
+							                        <div class="font-bold">[[${r.memberId}]]</div>
+							                        <div class="text-sm text-gray-600">[[${r.reviewUploadDate}]]</div>
+							                    </div>
+							                    <div class="text-sm text-gray-500">별점: 
+							                       <div class="starRating">
+														  <span th:class="${r.reviewScore >= 1} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+														  <span th:class="${r.reviewScore >= 2} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+														  <span th:class="${r.reviewScore >= 3} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+														  <span th:class="${r.reviewScore >= 4} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+														  <span th:class="${r.reviewScore >= 5} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+													</div>
+							                    </div>
+							                </div>
+							                <div class="mt-4 text-gray-700">
+							                    [[${r.reviewContent}]]<br>
+							                    <th:block th:if="${session.loginUser !=null && r.memberId == session.loginUser.memberId}">
+								                    <div style=" float:right;">
+								                    	<a href="#" style ="color:blue; margin-right:0px;" class="updateButton" onclick="toggleUpdateModal(/* status.index */);">수정</a>
+								                    	<a href="#" th:onclick="'return confirmDelete(\'' + @{deleteReview.so(reviewNo=${r.reviewNo}, productNo=${p.productNo})} + '\');'" style="margin-right:15px;">삭제</a>
+								                    </div>
+							                    </th:block>
+							                </div>
+							                <div class="mt-4">
+							                    <img th:each="a:${aList}" th:if="${a.photoLevel==0 && r.reviewNo == a.boardNo && a.boardType==6}" th:src="${a.photoPath}" alt="Product" class="rounded">
+							                </div>
+							            </div>
+							            
+							            <br>
+							            <div style="background-color:white; display:none;" class="updateModal">
+									  		<div class="update-modal-content" style="margin-bottom:30px;">
+									    		<span class="close-update-modal">&times;</span>
+									    		<div class="bg-gray-50">
+													<div class="max-w-2xl mx-auto p-6">
+												        <h1 class="text-2xl font-bold mb-4">리뷰 수정</h1>
+												        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-4">
+												            <div class="p-4 flex">
+												                <img th:each="l:${list}" th:if="${l.photoLevel==0 && l.boardType == 5}" th:src="${l.photoPath}" class="w-20 h-20 object-cover rounded-full" alt="Product">
+												                
+												                <div class="ml-4">
+												                    <h2 class="text-lg font-semibold">[[${p.productCompany}]]</h2>
+												                    <p class="text-sm text-gray-600">[[${p.productName}]]</p><hr>
+												                    <p>[[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]</p>
+												                </div>
+												            </div>
+												            
+												            
+												            <div class="border-t border-gray-200">
+												            	<form action="updateReview.so" method="POST" enctype="multipart/form-data">
+												            		<input type="hidden" th:each="a:${aList}" th:if="${a.boardNo == r.reviewNo && a.boardType==6}" th:value="${a.photoRename}" name="deleteRename">
+												            		<input type="hidden" th:value="${r.reviewNo}" name="reviewNo">
+													            	<input type="hidden" th:value="${p.productNo}" name="productNo">
+													            	<input type="file" class="fileUpload2" name="updateFile" style="display: none;">
+													            	<input type="hidden" name="updateReviewScore" value="0" >
+													                <div class="p-4">
+													                    <h3 class="text-lg font-semibold mb-2">별점수정</h3>
+													                    <div class="flex items-center mb-4">
+													                        <div class="updateRating">
+																				  <span th:class="${r.reviewScore >= 1} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+																				  <span th:class="${r.reviewScore >= 2} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+																				  <span th:class="${r.reviewScore >= 3} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+																				  <span th:class="${r.reviewScore >= 4} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+																				  <span th:class="${r.reviewScore >= 5} ? 'fa fa-star checked' : 'fa fa-star'"></span>
+																			</div>
+													                    </div>
+													                    <!-- 파일 미리보기 영역 -->
+													                    <div class="updatePreviewDiv">
+												                    		<img th:each="a:${aList}" th:if="${a.boardNo == r.reviewNo && a.boardType==6}" style="width:200px; height:200px;" th:src="${a.photoPath}">
+													                    </div>
+													                    <div class="updateReviewDiv" style="text-align:center;">
+													                    </div>
+													                    <br>
+													                    <div class="updatePhoto" onclick="openFileUploadModal()">
+																			<img src="image/sohwa/icons8-camera-80.png">사진첨부
+																			
+																		</div>
+													                    <br>
+													                    
+													                    <div class="mb-4">
+													                        <label for="review" class="text-sm font-semibold">리뷰를 수정해주세요.</label>
+													                        <textarea name="reviewContent" rows="3" class="mt-1 p-2 w-full border rounded-md" style="height:250px; overflow: scroll; resize: none;">[[${r.reviewContent}]]</textarea>
+													                    </div>
+													                    <button class="bg-orange-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" style="float:right; margin-bottom:30px;">
+													                        리뷰수정
+													                    </button>
+												                    </form>
+												                </div>
+												                
+												                
+												            </div>
+												        </div>
+												    </div>
+												</div>
+										    </div>
+										    
+									</div>
+						            
+						            
+						            
+<!-- 						            <div class="reviewItem"> -->
+<!-- 										<div class="bg-white shadow rounded-lg p-4"> -->
+<!-- 							                <div class="flex items-center space-x-4"> -->
+<!-- 							                    <div class="w-12 h-12 rounded-full overflow-hidden"> -->
+<!-- 							                        <img src="https://unsplash.it/100" alt="Profile" class="object-cover w-full h-full"> -->
+<!-- 							                    </div> -->
+<!-- 							                    <div class="flex-1"> -->
+<!-- 							                        <div class="font-bold">User Name</div> -->
+<!-- 							                        <div class="text-sm text-gray-600">2023-01-01 - Review Title</div> -->
+<!-- 							                    </div> -->
+<!-- 							                    <div class="text-sm text-gray-500">별점:  -->
+<!-- 							                       <div class="starRating"> -->
+<!-- 														  <span class="fa fa-star checked"></span> -->
+<!-- 														  <span class="fa fa-star checked"></span> -->
+<!-- 														  <span class="fa fa-star checked"></span> -->
+<!-- 														  <span class="fa fa-star checked"></span> -->
+<!-- 														  <span class="fa fa-star checked"></span> -->
+<!-- 													</div> -->
+<!-- 							                    </div> -->
+<!-- 							                </div> -->
+<!-- 							                <div class="mt-4 text-gray-700"> -->
+<!-- 							                    This is a sample review content. The user can share their experience with the product here. They can also upload a photo of the product. -->
+<!-- 							                </div> -->
+<!-- 							                <div class="mt-4"> -->
+<!-- 							                    <img src="image/sohwa/fire2core1.png" alt="Product" class="rounded"> -->
+<!-- 							                </div> -->
+<!-- 							            </div> -->
+<!-- 									</div> -->
+									
+							
+						            <!-- Pagination -->
+						            
+						        </div>
+						  </div>
+						  
+						  <input type="hidden" id="loginUser" th:value="${loginUser}">
+						  
+					</div>
+			   </div>
+			   
+	      </section>
+	     
+	
+	
+	    <!-- 문의 섹션 -->
+	      <section id="questions">
+			  
+			  <div id="question">
+				  <span style="margin-left:5%;">문의 </span><span style="color:#F9612B;"> [[${qList.size()}]]</span><span style="font-size:15px; color:lightgray;margin-left:10px;">[문의등록은 익명으로 진행됩니다.]</span><a href="#" id="qnaOpenModal">문의등록</a>
+				  
+				  
+					  <div class="modal" id="qnaModal">
+						  		<div class="modal-content" style="margin-bottom:30px;">
+						    		<span class="close" onclick="closeModal2()">&times;</span>
+						    		<div class="bg-gray-50">
+										<div class="max-w-2xl mx-auto p-6">
+									        <h1 class="text-2xl font-bold mb-4">문의 등록</h1>
+									        <div class="bg-white shadow-md rounded-lg overflow-hidden mb-4">
+									            <div class="p-4 flex">
+									                <img th:each="l:${list}" th:if="${l.photoLevel==0 && l.boardType == 5}" th:src="${l.photoPath}" class="w-20 h-20 object-cover rounded-full" alt="Product">
+									                <div class="ml-4">
+									                    <h2 class="text-lg font-semibold">[[${p.productCompany}]]</h2>
+									                    <p class="text-sm text-gray-600">[[${p.productName}]]</p><hr>
+									                    <p>[[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]</p>
+									                </div>
+									            </div>
+									            
+									            <div class="border-t border-gray-200">
+									            	<input type="hidden" th:value="${p.productNo}" name="productNo">
+									                <div class="p-4">
+									                    <div class="mb-4">
+									                        <label for="review" class="text-sm font-semibold">문의를 작성해주세요.</label>
+									                        <textarea name="questionContent" id="questionContent" rows="3" class="mt-1 p-2 w-full border rounded-md" style="height:250px; overflow: scroll; resize: none;"></textarea>
+									                    </div>
+									                    <button id="enrollQna" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" style="float:right; margin-bottom:30px;">
+									                        문의등록
+									                    </button>
+									                </div>
+									            </div>
+									            
+									        </div>
+									    </div>
+									</div>
+							    </div>
+							</div>
+					  <br><br>
+				  
+				  <div id="questionItem" th:each="q:${qList}" th:if="${q.productNo eq p.productNo}">
+					  <div style="display: inline-flex;"><img src="image/sohwa/icons8-q-64.png"></div>
+					  <div style="display: inline-block; margin-top:0px;">
+						  <span style="color:gray; margin-top:0px; height:20px;">[[${p.productCompany}]] / [[${p.productName}]]</span><br>
+					  	  <div style="display:inline-flex;">[[${q.questionContent}]]</div>
+					  </div>
+					  <br><br>
+					  <div style="display: inline-flex;"><img src="image/sohwa/icons8-a-64.png"></div>
+					  <div style="display: inline-block; margin-top:0px;">
+						  <span>관리자 :</span><br>
+						  <th:block th:if="${q.answerContent == null}"><div style="display:inline-flex; margin-bottom:20px;">관리자의 답변을 기다리는 중입니다.</div></th:block>
+						  <th:block th:unless="${q.answerContent == null}"><div style="display:inline-flex; margin-bottom:20px;">배송기간은 보통 2~3일 소요됩니다.</div></th:block>
+					  </div>
+					  <hr>
+				  </div>
+				  
+<!-- 				  <div id="questionItem"> -->
+<!-- 					  <div style="display: inline-flex;"><img src="image/sohwa/icons8-q-64.png"></div> -->
+<!-- 					  <div style="display: inline-block; margin-top:0px;"> -->
+<!-- 						  <span style="color:gray; margin-top:0px; height:20px;">상품명 / 등록일자</span><br> -->
+<!-- 					  	  <div style="display:inline-flex;">배송기간은 보통 얼마나 소요되나요?</div> -->
+<!-- 					  </div> -->
+<!-- 					  <br><br> -->
+<!-- 					  <div style="display: inline-flex;"><img src="image/sohwa/icons8-a-64.png"></div> -->
+<!-- 					  <div style="display: inline-block; margin-top:0px;"> -->
+<!-- 						  <span>관리자 :</span><br> -->
+<!-- 					  	  <div style="display:inline-flex; margin-bottom:20px;">배송기간은 보통 2~3일 소요됩니다.</div> -->
+					  	  
+<!-- 					  </div> -->
+<!-- 					  <hr> -->
+<!-- 				  </div> -->
+				  
+				  <br>
+				  
+				  
+			  </div>
+	           
+	      </section>
+	
+	
+	    <!-- 배송정보 섹션 -->
+	      <section id="shipping">
+			  <div id="shippingItem">
+				  <h1 style="font-size: 25px; font-weight: bold;">배송/환불정보</h1>
+				  <div class="bg-gray-100">
+					<div class="max-w-4xl mx-auto py-10 px-6">
+					  
+					  <div class="bg-white shadow rounded-lg p-6 mb-6">
+					    <h2 class="text-xl font-bold mb-4">반품/교환 사유에 따른 요청 가능 기간</h2>
+					    <p class="mb-4">반품 시 사유를 확실히 적어주시고, 반품신청을 해주시길 바랍니다.</p>
+					    <ol class="list-decimal pl-4 mb-4">
+					      <li>구매자 단순 변심은 상품 수령 후 7일 이내 (구매자 반품배송비 부담)</li>
+					      <li>표시/광고와 상이, 계약내용과 다르게 이행된 경우 상품 수령 후 3개월 이내, 그 사실을 안 날 또는 알 수 있었던 날로부터 30일 이내. 둘 중 하나 경과 시 반품/교환 불가 (판매자 반품배송비 부담)</li>
+					    </ol>
+					  </div>
+					  <div class="bg-white shadow rounded-lg p-6">
+					    <h2 class="text-xl font-bold mb-4">납부/결제 취소 가능 사유</h2>
+					    <p class="mb-4">아래와 같은 경우 납부/결제가 취소될 수 있습니다.</p>
+					    <ol class="list-decimal pl-4">
+					      <li>반품요청기간이 지난 경우</li>
+					      <li>구매자의 책임 있는 사유로 상품 등이 멸실 또는 훼손된 경우 (단, 상품의 내용을 확인하기 위하여 포장 등을 훼손한 경우는 제외)</li>
+					      <li>포장을 개봉하였으나 포장이 훼손되어 상품가치가 현저히 상실된 경우 (예: 식품, 화장품)</li>
+					      <li>구매자의 사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우 (라벨이 떨어진 의류 또는 태그가 떨어진 명품관 상품인 경우)</li>
+					      <li>시간의 경과에 의하여 재판매가 곤란할 정도로 상품 등의 가치가 현저히 감소한 경우 (예: 식품, 화장품)</li>
+					      <li>고객주문 확인 후 상품제작에 들어가는 주문제작상품</li>
+					      <li>복제가 가능한 상품 등의 포장을 훼손한 경우 (CD/DVD/GAME/도서의 경우 포장 개봉 시)</li>
+					    </ol>
+					  </div>
+					  <div class="bg-white shadow rounded-lg p-6 mt-6">
+					    <h2 class="text-xl font-bold mb-4">판매자 정보</h2>
+					    <div class="grid grid-cols-2 gap-4 mb-4">
+					      <div>
+					        <div class="font-semibold">상호</div>
+					        <div>장작</div>
+					      </div>
+					      <div>
+					        <div class="font-semibold">대표자</div>
+					        <div>김윤박</div>
+					      </div>
+					    </div>
+					    <div class="grid grid-cols-2 gap-4 mb-4">
+					      <div>
+					        <div class="font-semibold">주소</div>
+					        <div>서울특별시 중구 청계천로</div>
+					      </div>
+					      <div>
+					        <div class="font-semibold">고객센터 전화번호</div>
+					        <div>010-9145-7175</div>
+					      </div>
+					    </div>
+					    <div class="grid grid-cols-2 gap-4 mb-4">
+					      <div>
+					        <div class="font-semibold">E-mail</div>
+					        <div>thghk0206@naver.com</div>
+					      </div>
+					      <div>
+					        <div class="font-semibold">사업자 등록번호</div>
+					        <div>111-11-111111</div>
+					      </div>
+					    </div>
+					  </div>
+					</div>
+				</div>
+				  
+			  </div>
+	            
+
+	      </section>
+	      
+	  </main>
+		
+	</div>
+    
+	
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	
+
+
+
+
+
+
+	<script>
+		
+	//리뷰수정모달 미리보기
+	 function openFileUploadModal(btn) {
+	        var fileInput = btn.closest('form').querySelector('.fileUpload2');
+	        if (fileInput) {
+	            fileInput.click(); // 파일 업로드 input 클릭
+	        } else {
+	            console.error("File input element not found.", btn);
+	        }
+	    }
+
+	    function previewImage(input) {
+	        var reader = new FileReader();
+	        reader.onload = function (e) {
+	            var previewDiv = input.closest('form').querySelector('.updatePreviewDiv');
+	            if (previewDiv) {
+	                var img = document.createElement('img');
+	                img.src = e.target.result;
+	                img.style.width = "200px";
+	                img.style.height = "200px";
+	                previewDiv.innerHTML = ''; // 기존 내용 지우기
+	                previewDiv.appendChild(img); // 미리보기 영역에 이미지 추가
+	            }
+	        };
+	        reader.readAsDataURL(input.files[0]);
+	    }
+
+	    document.addEventListener('DOMContentLoaded', function () {
+	        var updatePhotoBtns = document.querySelectorAll('.updatePhoto');
+	        updatePhotoBtns.forEach(function (btn) {
+	            btn.addEventListener('click', function () {
+	                openFileUploadModal(this);
+	            });
+	        });
+
+	        var fileInputs = document.querySelectorAll('.fileUpload2');
+	        fileInputs.forEach(function (input) {
+	            input.addEventListener('change', function () {
+	                previewImage(this);
+	            });
+	        });
+	    });
+	
+		
+		
+		
+		
+	
+		
+		// 수정 버튼을 누를 때 모달을 열고 닫는 함수
+	    function toggleUpdateModal(reviewIndex) {
+	        var modals = document.querySelectorAll('.updateModal');
+	        modals.forEach(function(modal, index) {
+	            if (index === reviewIndex) {
+	                modal.style.display = 'block'; // 선택된 reviewItem의 모달을 보이게 설정
+	            } else {
+	                modal.style.display = 'none'; // 다른 reviewItem의 모달을 숨기게 설정
+	            }
+	        });
+	    }
+	
+	    // 수정 버튼에 대한 이벤트 핸들러를 추가합니다.
+	    var updateButtons = document.querySelectorAll('.updateButton');
+	    updateButtons.forEach(function(button, index) {
+	        button.addEventListener('click', function() {
+	            toggleUpdateModal(index); // 수정 버튼을 클릭할 때 모달을 열고 닫습니다.
+	        });
+	    });
+	
+	
+	
+	
+	
+	
+	
+		
+		
+		//모달 별점 등록
+		
+		var stars = document.querySelectorAll('.modal .fa');;
+
+		stars.forEach(function(star, index) {
+			var checkedStarsCount = 0;
+			star.addEventListener('mouseover', function(){
+				for (var i = 0; i <= index; i++) {
+				      stars[i].style.color = 'yellow';
+			    }
+			})
+			
+			star.addEventListener('mouseout', function(){
+				for (var i = 0; i <= index; i++) {
+				      stars[i].style.color = 'gray';
+			    }
+			})
+			
+		  star.addEventListener('click', function() {
+		    // 클릭된 별을 포함하여 그 앞의 별들을 노란색으로 변경하고, 나머지는 회색으로 유지합니다.
+		    
+		    for (var i = 0; i <= index; i++) {
+		      stars[i].classList.add('checked');
+		      if (stars[i].classList.contains('checked')) {
+			        checkedStarsCount++; // checked 클래스가 있으면 checkedStarsCount를 증가시킵니다
+			    }
+		    }
+		    for (var i = index + 1; i < stars.length; i++) {
+		      stars[i].classList.remove('checked');
+		    }
+		    var starCountInput = document.querySelector('input[name="reviewScore"]');
+		    starCountInput.value = checkedStarsCount;
+		  });
+		});
+
+		//모달 별점 등록 갯수 추출
+		for (var i = 0; i < stars.length; i++) {
+		    if (stars[i].classList.contains('checked')) {
+		        checkedStarsCount++; // checked 클래스가 있으면 checkedStarsCount를 증가시킵니다
+		    }
+		}
+		
+		
+		
+		
+		
+		
+		//모달 별점 수정
+		window.onload = () => {
+		    var updateModals = document.querySelectorAll('.updateModal');
+		
+		    updateModals.forEach(function (modal) {
+		        var stars = modal.querySelectorAll('.updateModal .fa');
+		        var checkedStarsCount = 0;
+		
+		        stars.forEach(function (star, index) {
+		            star.addEventListener('mouseover', function () {
+		                for (var i = 0; i <= index; i++) {
+		                    if (!stars[i].classList.contains('checked')) {
+		                        stars[i].style.color = 'yellow';
+		                    }
+		                }
+		            });
+		
+		            star.addEventListener('mouseout', function () {
+		                for (var i = 0; i <= index; i++) {
+		                    if (!stars[i].classList.contains('checked')) {
+		                        stars[i].style.color = 'gray';
+		                    }
+		                }
+		            });
+		
+		            star.addEventListener('click', function () {
+		                checkedStarsCount = index + 1;
+		                for (var i = 0; i < stars.length; i++) {
+		                    if (i <= index) {
+		                        stars[i].classList.add('checked');
+		                        stars[i].style.color = 'yellow';
+		                    } else {
+		                        stars[i].classList.remove('checked');
+		                        stars[i].style.color = 'gray';
+		                    }
+		                }
+		                var starCountInput = modal.querySelector('input[name="updateReviewScore"]');
+		                starCountInput.value = checkedStarsCount;
+		            });
+		        });
+		    });
+		};
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//문의 모달 열기닫기
+		document.getElementById('qnaOpenModal').addEventListener('click',()=>{
+	        var modal = document.getElementById('qnaModal');
+	        modal.style.display = 'block';
+	    });
+	
+	    function closeModal2() {
+	        var modal = document.getElementById('qnaModal');
+	        modal.style.display = 'none';
+	    }
+		
+		
+		
+		
+		
+		
+		
+		//리뷰모달 열기닫기
+		function openModal() {
+	        var modal = document.getElementById('reviewModal');
+	        modal.style.display = 'block';
+	        
+	        // 리뷰쓰기 버튼의 위치를 기준으로 모달 위치 조정
+	        var openBtn = document.getElementById('openReviewModal');
+	        var rect = openBtn.getBoundingClientRect();
+	        modal.style.top = rect.bottom + 'px';
+	        modal.style.left = rect.left + 'px';
+	    }
+	
+	    function closeModal() {
+	        var modal = document.getElementById('reviewModal');
+	        modal.style.display = 'none';
+	    }
+		
+		
+		
+		
+		
+		// 파일 첨부 요소를 클릭하는 함수
+        document.getElementById('addPhoto').addEventListener('click', function() {
+            document.getElementById('fileUpload').click(); // 파일 업로드 클릭 이벤트 발생
+        });
+        
+		// JavaScript
+		document.getElementById('fileUpload').addEventListener('change', function() {
+		    var file = this.files[0]; // 선택된 파일 가져오기
+		    var reader = new FileReader();  // 파일을 읽기 위한 객체 생성
+		
+		    reader.onload = function(event) {
+		        var imageUrl = event.target.result; // 이미지 URL
+		        var preview = document.getElementById('preview');
+		        preview.src = imageUrl; // 미리보기 이미지 URL 설정
+		        preview.style.width = '200px'; // 이미지 가로 크기 설정
+		        preview.style.height = '200px'; // 이미지 세로 크기 설정
+		    };
+		
+		    if (file) {
+		        reader.readAsDataURL(file); // 파일을 읽어서 Data URL로 변환하여 onload 이벤트 실행
+		    }
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//썸네일 hover 이벤트
+		function changeImage(element) {
+		    var mainImage = document.querySelector('.main-image img');
+		    mainImage.src = element.src;
+		 }
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//위로가기 버튼
+		document.addEventListener('DOMContentLoaded', function() {
+			  const backToTop = document.getElementById('back-to-top');
+			
+			  backToTop.addEventListener('click', function(e) {
+			    e.preventDefault();
+			    window.scrollTo({
+			      top: 0,
+			      behavior: 'smooth'
+			    });
+			  });
+			
+			  window.addEventListener('scroll', function() {
+			    if (window.scrollY > 100) {
+			      backToTop.classList.add('show');
+			    } else {
+			      backToTop.classList.remove('show');
+			    }
+			  });
+			});
+		
+		
+		
+		window.addEventListener('scroll', function() {
+		      var fixedDiv = document.getElementById('fixedDiv');
+		      var scrollPosition = window.scrollY || document.documentElement.scrollTop;
+		
+		      // 특정 위치 (예: 500px) 아래로 스크롤할 때 fixedDiv를 화면에 표시
+		      if (scrollPosition > 500) {
+		        fixedDiv.style.display = 'block';
+		      } else {
+		        fixedDiv.style.display = 'none';
+		      }
+		   });
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//수량 가격 연동
+		function decreaseQuantity() {
+		    const quantityInput = document.querySelector('.quantity');
+		    let currentValue = parseInt(quantityInput.value, 10);
+		    if (currentValue > 1) {
+		      currentValue--;
+		      quantityInput.value = currentValue;
+		    }
+		}
+		
+		function increaseQuantity() {
+		    const quantityInput = document.querySelector('.quantity');
+		    let currentValue = parseInt(quantityInput.value, 10);
+		    currentValue++;
+		    quantityInput.value = currentValue;
+		}
+		
+		document.addEventListener('DOMContentLoaded', function () {
+        const quantityInput = document.querySelector('.quantity');
+        const priceElement = document.getElementById('price');
+        const resultPriceElement = document.getElementById('resultPrice');
+        const resultPriceElement2 = document.getElementById('resultPrice2');
+        const decrementButton = document.getElementById('decrementBtn');
+        const incrementButton = document.getElementById('incrementBtn');
+
+        // 초기 로드 시 총 가격 계산
+        updateTotalPrice();
+
+        // 수량 변경 이벤트 리스너 추가
+        if (quantityInput) {
+          quantityInput.addEventListener('input', updateTotalPrice);
+        }
+
+        // - 버튼 클릭 시
+        if (decrementButton) {
+          decrementButton.addEventListener('click', function () {
+            changeQuantity(-1);
+          });
+        }
+
+        // + 버튼 클릭 시
+        if (incrementButton) {
+          incrementButton.addEventListener('click', function () {
+            changeQuantity(1);
+          });
+        }
+
+        function changeQuantity(delta) {
+          let currentValue = parseInt(quantityInput.value, 10);
+          currentValue += delta;
+          if (currentValue < 1) {
+            currentValue = 1;
+          }
+          quantityInput.value = currentValue;
+          updateTotalPrice();
+        }
+
+        function updateTotalPrice() {
+          const quantity = parseInt(quantityInput.value, 10);
+          const price = parseInt(priceElement.textContent.replace(/[^0-9]/g, ''), 10);
+
+          const total = quantity * price;
+          resultPriceElement.textContent = formatCurrency(total) + '원';
+          resultPriceElement2.textContent = formatCurrency(total) + '원';
+        }
+
+        function formatCurrency(value) {
+          return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	        }
+	    });
+		
+		
+		
+		
+		// JavaScript로 클릭 시 해당 섹션으로 스크롤되는 기능 구현 (상세정보, 리뷰, 문의, 배송정보)
+	    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+	      anchor.addEventListener('click', function (e) {
+	        e.preventDefault();
+	
+	        const sectionId = this.getAttribute('href').substring(1);
+	        const section = document.getElementById(sectionId);
+	
+	        section.scrollIntoView({
+	          behavior: 'smooth'
+	        });
+	      });
+	    });
+	    
+		
+	    function showDiv() {
+    	    var selectElement = document.getElementById("colorSelect");
+    	    var enoDiv = document.getElementById("enoDiv");
+ 
+    	   if (selectElement.value !== "컬러 선택") {
+    	      enoDiv.style.display = "block";
+    	   } else {
+    	      enoDiv.style.display = "none";
+    	   } 
+    	}
+	    
+	    
+		
+	    //장바구니
+	    function goCart() {
+	    	var loginUser = document.getElementById('loginUser').value;
+	        var option = document.getElementById('colorSelect').value;
+	        var eno = document.querySelector('.quantity').value;
+			var productNo = document.getElementById('productNo').value;
+			var priceString = document.getElementById('resultPrice2').innerText;
+			var price = parseInt(priceString.replace(/\D/g, ''), 10); // 숫자가 아닌 문자를 모두 제거
+			var selectElement = document.getElementById("colorSelect");
+
+		    if (selectElement.value === "컬러 선택") {
+		        alert('옵션을 선택해주세요!'); // 알림 메시지 출력
+		    }else if(loginUser==""){
+		    	alert('로그인 후 이용하실 수 있습니다.');
+		    }else{
+		    	alert('해당 상품이 장바구니에 추가되었습니다.');
+		        location.href='insertCart.so?productNo='+productNo + '&option=' + option + '&eno=' + eno +"&price=" + price;
+		    }
+	        
+	    }
+	    
+	    
+	    //로그인 안 되어있으면 막기
+	    document.getElementById("reviewForm").addEventListener("submit", function(event) {
+        // 세션에 저장된 loginUser 객체 확인
+	        var loginUser = document.getElementById('loginUser').value;
+			var productNo = document.getElementById('productNo').value;
+	        // 만약 loginUser가 없다면
+	        if (loginUser=="") {
+	            event.preventDefault();
+	            alert("로그인 후 이용해주세요.");
+	        }else {
+	            $.ajax({
+	                url: 'purchaseYN.so',
+	                data: {productNo:productNo},
+	                success: function (data) {
+	                    if (data == "no") {
+	                        alert("이 상품의 구매자만 리뷰를 작성하실 수 있습니다.");
+	                        // Ajax 요청이 완료된 후 form을 제출
+	                    } else {
+	                        document.getElementById("reviewForm").submit();
+	                    }
+	                },
+	                error: function (data) {
+	                    console.log(data);
+	                }
+	            });
+
+	            // Ajax 요청의 결과를 기다리지 않고 바로 다음 코드로 진행되는 것을 방지하기 위해
+	            event.preventDefault();
+	        }
+    	});
+	    
+	    
+	    
+	   //바로 결제
+	   function goPurchase(){
+		   var loginUser = document.getElementById('loginUser').value;
+	        var option = document.getElementById('colorSelect').value;
+	        var eno = document.querySelector('.quantity').value;
+			var productNo = document.getElementById('productNo').value;
+			var priceString = document.getElementById('resultPrice2').innerText;
+			var price = parseInt(priceString.replace(/\D/g, ''), 10); // 숫자가 아닌 문자를 모두 제거
+			var selectElement = document.getElementById("colorSelect");
+			
+			if (selectElement.value === "컬러 선택") {
+		        alert('옵션을 선택해주세요!'); // 알림 메시지 출력
+		    }else if(loginUser==""){
+		    	alert('로그인 후 이용하실 수 있습니다.');
+		    }else{
+		        location.href='orderPage.so?productNo='+productNo + '&option=' + option + '&eno=' + eno +"&price=" + price;
+		    }
+			
+			
+	   }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+// 	    document.getElementById('enrollQna').addEventListener('click', ()=>{
+	    	
+// 	    	const productNo = document.querySelector('input[name="productNo"]').value;
+// 	        const questionContent = document.getElementById('questionContent').value;
+// 	        console.log(productNo);
+// 	        console.log(questionContent);
+// 	        $.ajax({
+// 	            type: "POST",
+// 	            url: "insertQna.so",
+// 	            data: {productNo: productNo, questionContent: questionContent},
+// 	            success: (data)=>{
+// 	                if(data == "success"){
+// 	                	const confirmation = confirm('내가 쓴 문의내역으로 이동하시겠습니까?');
+// 						if(confirmation){
+// 							location.href = 'centerView.so';
+// 						}else{
+// 							location.reload();
+// 						}
+// 	                }else{
+// 	                	alert('문의등록에 실패하였습니다.');
+// 	                }
+// 	            },
+// 	            error: data => console.log(data)
+// 	        });
+// 	    })
+	    document.getElementById('enrollQna').addEventListener('click', () => {
+		    const productNo = document.querySelector('input[name="productNo"]').value;
+		    const questionContent = document.getElementById('questionContent').value;
+		    const forbiddenWords = ['ㅅㅂ', '비속어2', '금지어3']; // 금지어 목록
+		    const loginUser = document.getElementById('loginUser').value;
+		
+		    for (let i = 0; i < forbiddenWords.length; i++) {
+		        if (questionContent.toLowerCase().includes(forbiddenWords[i].toLowerCase())) {
+		            alert('비속어를 사용할 수 없습니다.');
+		            return;
+		        }else if(loginUser == ""){
+		        	alert("로그인 후 이용해주세요.");
+		        	return;
+		        }
+		  }
+
+	    // 여기까지 도달하면 금지어가 없으므로 AJAX 요청을 보냄
+	    $.ajax({
+	        type: "POST",
+	        url: "insertQna.so",
+	        data: { productNo: productNo, questionContent: questionContent },
+	        success: (data) => {
+	            if (data == "success") {
+	                const confirmation = confirm('내가 쓴 문의내역으로 이동하시겠습니까?');
+	                if (confirmation) {
+	                    location.href = 'centerView.so';
+	                } else {
+	                    location.reload();
+	                }
+	            } else {
+	                alert('문의등록에 실패하였습니다.');
+	            }
+	        },
+	        error: (data) => console.log(data)
+	    });
+	});
+
+
+
+	    
+	    var productNo = document.getElementById('productNo').value;
+	    
+	    document.getElementById('onlyPhoto').addEventListener('click', ()=>{
+	    	location.href="productDetail.so?productNo="+productNo+'&reviewStatus=2';
+	    	
+	    })
+	    
+	    //url옮겨졌을 때 review섹션으로 가도록
+	    document.addEventListener('DOMContentLoaded', () => {
+		    const urlParams = new URLSearchParams(window.location.search);
+		    const reviewStatus = urlParams.get('reviewStatus');
+		
+		    if (reviewStatus === '2') {
+		        const reviewsSection = document.getElementById('reviews');
+		        if (reviewsSection) {
+		            setTimeout(() => {
+		                reviewsSection.scrollIntoView({
+		                    behavior: 'smooth'
+		                });
+		            }, 10); // 스크롤을 위해 약간의 지연 추가 (시간은 조절 가능)
+		        }
+		    }
+		});
+	    
+	    
+	    
+	    
+	    //금지어
+	    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('reviewForm');
+
+        form.addEventListener('submit', function(event) {
+            var reviewContent = document.getElementById('reviewContent').value;
+            var forbiddenWords = ['시발', '병신', '좆', '새끼', '섹스', 'tlqkf', '미친', 'ㅅㅂ', 'ㅂㅅ']; // 금지어 목록
+
+            for (var i = 0; i < forbiddenWords.length; i++) {
+                if (reviewContent.includes(forbiddenWords[i])) {
+                    event.preventDefault(); // 폼 제출 막기
+                    alert('비속어 사용 금지'); // 알림창 표시
+                    return;
+                }
+            }
+        });
+    });
+	    
+	    
+	    function confirmDelete(url) {
+	        var result = confirm("정말 삭제하시겠습니까?");
+	        if (result) {
+	            window.location.href = url;
+	        }
+	        return false; // 기본 이벤트 방지
+	    }
+	    
+		
+	</script>
+
+</body>
+</html>

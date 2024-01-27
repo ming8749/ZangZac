@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>추천 캠핑장</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/seongun/b9045bb4-dad6-4ab1-b9fa-4841e6716aed">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css" />
+<style>
+  .foreground{
+     background: url(https://aldo814.github.io/jobcloud/html/images/user/star_bg02.png) no-repeat;
+     width: 121px;
+     height: 20px;
+     position: relative;
+   }
+  .foreground span{
+     position: absolute;
+     background: url(https://aldo814.github.io/jobcloud/html/images/user/star02.png);
+     filter: invert(90%) sepia(10%) saturate(7000%) hue-rotate(570deg) brightness(115%) contrast(120%);
+     height: 20px;
+
+  }
+  
+  #pagenation {
+   text-align: center;
+	}
+	
+	#pagenation ul {
+	   list-style: none;
+	   padding: 0;
+	   display: inline-block; /* 중앙 정렬을 위해 inline-block으로 변경 */
+	   margin: 0; /* 기본 마진 제거 */
+	}
+	
+	#pagenation ul li {
+	   display: inline;
+	   margin: 0 5px;
+	}
+	
+	#pagenation ul li a {
+	   text-decoration: none;
+	    text-align: center;
+	    color: #333;
+	    font-size: 14px;
+	    width: 30px; /* 정사각형의 너비 */
+	    height: 30px; /* 정사각형의 높이 */
+	    line-height: 30px; /* 텍스트를 수직 중앙에 위치시킴 */
+	    padding: 0; /* 패딩을 제거하거나 조정 */
+	    border-radius: 5px; /* 모서리를 둥글게 */
+	    display: inline-block; /* 블록 레벨 요소처럼 너비와 높이를 적용 */
+	    transition: background-color 0.3s, color 0.3s;
+	}
+	
+	#pagenation ul li a:hover {
+	   background-color: #F9612B;
+	   color: #e6e6e6;
+	}
+	
+	#pagenation ul li a#check_page {
+	   background-color: #F9612B;
+	   color: #e6e6e6;
+	}
+</style>
+</head>
+<body>
+   <div th:replace="~{common/navbar :: navbar}"></div>
+   
+   <div class="container">
+      <div class="mb-4 rounded-5 w-80" style="height:80px; margin-top: 100px; background-color: #F3F4F6;">	  
+		 <img src="image/yoonseo/img/icons8-like-64.png" style="float: left;">
+		 <div class="container py-4">
+		    <h1 class="fs-1" style="float: left;" >추천 캠핑장</h1>
+		    <p class="py-3" style="margin-left:22%; ">네이버 별점이 4.5점 이상인 캠핑장만 추천하고 있습니다</p>
+		 </div>
+	  </div>
+		  <div id="detail" class="card mb-3" style="max-width:1200px; height:230px; margin: auto;" th:each="list: ${list}">
+			  <div class="detail row g-0" style="height:100%;">
+			    <div th:each="photo : ${photo}" th:if="${list.cgNo eq photo.boardNo}" class="col-md-4" style="overflow:hidden;width:380px; height:228px;">
+			      <img th:src="${photo.photoPath}" class="img-fluid rounded-start" style=" object-fit: cover;" 
+			           th:if="${#strings.containsIgnoreCase(photo.photoRename, 'jpg') 
+					           or #strings.containsIgnoreCase(photo.photoRename, 'png') 
+					           or #strings.containsIgnoreCase(photo.photoRename, 'jpeg')}">
+				   <input class="no" type="hidden" name="no" th:value="${list.cgNo}">
+				   <input class="page" type="hidden" name="page" th:value="${pi.currentPage}">
+			    </div>
+			    <div class="col-md-8" style="position: relative;">
+			      <div class="card-body" style="width:100%;">
+			        <div>
+			          <h5 class="card-title" style="float: left;" th:text="|[${list.cgRegion}]|"></h5>
+			          <h5 class="card-title" style="float: left; margin-left: 10px;">[[${list.cgName}]]</h5>
+			          <div class="score" style="margin-left: 80%;">  
+			            <div class="foreground" style="float: left;">
+			               <span class="background" th:style="'width: ' + ${list.point} + '%;'"></span><!-- 4.8 x 100 / 5 = 96 퍼센트 계산 식.-->
+			            </div>
+			            <p style="margin-bottom: 0;">[[${list.cgStarPoint}]]</p>
+			            <span style="font-size: 15px; margin-left: 50%;">조회수 [[${list.cgCount}]]</span>
+			          </div>
+			        </div>
+			        <div >
+			          <p class="card-text" >
+			              [[${#strings.arraySplit(list.cgAmenity, '\\.')[0]}]].
+			            <br><img style="width:30px;" src="image/yoonseo/img/icons8-address-24 (1).png">[[${list.cgAddress}]] 
+			                <img src="image/yoonseo/img/icons8-phone-30.png" >[[${list.cgPhone}]]
+			          </p>
+			        </div>  
+			      </div>
+			     
+			       <div style="background-color:#F3F4F6; border-radius: 10px; height:75px; width:100%; position: absolute; bottom: 0px; margin-left: 10px; text-align: center;">
+		               <div style="text-align: center; width:100%;">
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'전기사용')}">
+						   	  <div style="display:inline-block; margin-left: 10px; margin-right: 10px;">	
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%A0%84%EA%B8%B0%EC%82%AC%EC%9A%A9.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="전기사용"></div>
+						      </div>	
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'온수사용')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">	 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%98%A8%EC%88%98%EC%82%AC%EC%9A%A9.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="온수사용"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'와이파이')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;"> 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%99%80%EC%9D%B4%ED%8C%8C%EC%9D%B4.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="와이파이"></div>
+						      </div>	
+						   </th:block>
+						    <th:block th:if="${#strings.contains(list.cgImgInfo,'산책로')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;"> 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%82%B0%EC%B1%85%EB%A1%9C.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="산책로"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'물놀이장')}" >
+						   	  <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">	 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EB%AC%BC%EB%86%80%EC%9D%B4%EC%9E%A5.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="물놀이장"></div>
+						     </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'놀이터')}" >
+						   	  <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EB%86%80%EC%9D%B4%ED%84%B0.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="놀이터"></div>
+						      </div>	
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'마트.편의점')}" >
+						   	  <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">	
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EB%A7%88%ED%8A%B8.%ED%8E%B8%EC%9D%98%EC%A0%90.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="마트.편의점"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'운동시설')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">	
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%9A%B4%EB%8F%99%EC%8B%9C%EC%84%A4.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="운동시설"></div>
+						       </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'운동장')}" >
+						   	   <div style="display: inline-block; margin-left: 10px; margin-right: 10px;">	 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%9A%B4%EB%8F%99%EC%9E%A5.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="운동장"></div>
+						       </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'장작판매')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">	 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%9E%A5%EC%9E%91%ED%8C%90%EB%A7%A4.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="장작판매"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'트렘폴린')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%ED%8A%B8%EB%A0%98%ED%8F%B4%EB%A6%B0.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="트렘폴린"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'공용화장실')}" >
+						   	   <div style="display: inline-block;  margin-left: 10px; margin-right: 10px;">	 
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EA%B3%B5%EC%9A%A9%ED%99%94%EC%9E%A5%EC%8B%A4.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="공용화장실"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'주차장')}" >
+						   	  <div style="display: inline-block;  margin-left: 10px; margin-right:10px;">
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EC%A3%BC%EC%B0%A8%EC%9E%A5.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="주차장"></div>
+						      </div>
+						   </th:block>
+						   <th:block th:if="${#strings.contains(list.cgImgInfo,'바베큐')}" >
+						   	  <div style="display: inline-block;  margin-left: 10px; margin-right:10px;">
+						   	 	 <img src="https://storage.googleapis.com/zangzac/image/yoonseo/%EB%B0%94%EB%B2%A0%ED%81%90.png" style="width:40px; margin-top: 10px;">  
+						    	 <div style="text-align: center;" th:text="바베큐"></div>
+						      </div>
+						   </th:block>
+						 </div>
+				     </div>
+			   </div>
+			</div>
+		  </div>
+	      <div id="pagenation" th:with="loc=${loc}" th:if="${list != null}">
+             <ul>
+               <!-- 이전 버튼 -->
+               <li th:if="${pi.currentPage > 10}">
+                  <a th:href="@{${loc}(page=${pi.currentPage-10})}">&lt; 이전</a>
+               </li>
+                <!-- 페이지 번호 -->
+               <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+                 <th:block th:if="${ list != null}">
+			        <a th:href="@{${loc}(page=${p})}" th:id="${p == pi.currentPage ? 'check_page' : ''}">
+			            [[${p}]] 
+			        </a>
+			     </th:block>		
+               </li>
+                  <!-- 다음 버튼 -->
+                  <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+                     <a th:href="@{${loc}(page=${pi.currentPage+10})}">다음 &gt;</a>
+                  </li>
+              </ul>
+           </div>        
+   </div> 
+   
+  <script th:inline="javascript">
+    window.onload =()=>{
+    	
+    	const divs = document.getElementsByClassName('detail');
+    	for(const div of divs){
+    		div.style.cursor = 'pointer';
+    		div.addEventListener('click', function(){
+    			const no = this.querySelector('.no').value;
+            	const page =document.querySelector('.page').value;
+            	
+            	location.href = 'campDetail.ys?no='+no+'&page='+page;
+    		});
+       	
+    	}
+    }
+  </script>
+	
+	
+		
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>고객센터 페이지</title>
+<link href="css/sohwa/centerPage.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+	
+	<br><br>
+	<div id="centerWrapped">
+		<h1 style="margin-left:10%; margin-bottom:30px;">고객센터</h1>
+		<br>
+		
+		<div id="topLeft">
+			<div class="test_obj">
+		       <span>무</span>
+		       <span>엇</span>
+		       <span>을</span>
+		       <span>&nbsp;</span>
+		       <span>도</span>
+		       <span>와</span>
+		       <span>드</span>
+		       <span>릴</span>
+		       <span>까</span>
+		       <span>요</span>
+		       <span>?</span>
+		    </div>
+			
+			<br>
+			<div><img src="image/sohwa/icons8-q-64.png"><span>배송은 얼마나 걸리나요?</span></div><br>
+			<div><img src="image/sohwa/icons8-q-64.png"><span>신용카드 무이자 할부가 되나요?</span></div><br>
+			<div><img src="image/sohwa/icons8-q-64.png"><span>제품의 자세한 정보를 알고 싶어요.</span></div><br>
+			<div><img src="image/sohwa/icons8-q-64.png"><span>제품이 불량일 때는?</span></div><br>
+			<div><img src="image/sohwa/icons8-q-64.png"><span>주문 내역은 어떻게 확인할 수 있나요?</span></div><br>
+		</div>
+		
+		<div id="topRight">
+			<div><br>
+				<h2>고객센터</h2><span style="color:#F9612B; font-size: 20px; font-weight: bold;">09:00 ~ 18:00</span>
+				<ul>
+					<li>평일: 전체 문의 상담</li>
+					<li>토요일, 공휴일, 일요일 : 휴무</li>
+				</ul>
+				<br>
+				<div><img src="image/sohwa/icons8-phone-64.png"><span>010-9145-7175</span></div>
+				<br>
+			</div>
+			<button id="myOrder">내 주문내역 보러가기</button>
+			<br><br><br>
+			
+		</div>
+		
+		
+		
+		<br><br><hr style="border:3px solid black;"><br><br>
+		
+		
+		
+		
+		<div id="underDiv">
+		
+			<button class="btbt">자주 묻는 질문</button>
+			
+			<!--자주묻는질문-->
+			<div id="freDiv" style="display:block;">
+				<div class="accordion accordion-flush" id="accordionFlushExample">
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+				          <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;주문 취소는 어떻게 하나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseOne" class="accordion-collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">판매처에서 주문을 확인하기 전이라면 언제든 취소하실 수 있으며, [나의 쇼핑 > 주문배송내역 조회 > 주문상세보기]에서 직접 주문취소하실 수 있습니다.<br><br>
+													<span style="color:gray;">※ 이미 판매처에서 상품을 확인해 준비 중이라면, 직접 취소가 어렵습니다.<br>상세 페이지에 확인되는 판매자 연락처 또는 오늘의집 고객센터로 문의 부탁드립니다.</span></div>
+				    </div>
+				  </div>
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;신용카드 무이자 할부가 되나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">각 카드사 별로 상이하며, 카드사를 통해 확인 가능합니다.</div>
+				    </div>
+				  </div>
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;신용카드 결제 후 할부 개월 수 변경이 가능한가요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">결제 후 결제 정보 변경은 불가능 합니다.<br>
+													단, 결제 완료 단계에서는 취소 후 재주문을 통해 변경 가능합니다.</div>
+				    </div>
+				  </div>
+				  
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;제품의 자세한 정보는 어떻게 알 수 있나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">각 제품의 상세 페이지에서 확인 가능하며, 더욱 자세한 정보는 제품상세페이지 내 문의하기를 통해 판매 업체에 문의 가능합니다.</div>
+				    </div>
+				  </div>
+				  
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;상담방법과 상담가능시간, 상담유선번호 알려주세요.</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">상담 시간은 평일 09:00 ~ 18:00 (주말 & 공휴일 제외)이며, 전화번호는 010-9145-7175 입니다.<br><br>
+									[고객센터 >> 문의하기]에서 문의등록을 이용하시면 상담원과 채팅으로 더욱 빠르고 편리하게 문의 가능합니다.</div>
+				    </div>
+				  </div>
+				  
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;회원탈퇴는 어떻게 하나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseSix" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">장작 PC 웹사이트에서 가능합니다.<br><br>
+						PC 웹사이트: 우측 상단 프로필 사진 클릭 후 [마이페이지 > 설정 > 회원정보수정] 하단의 탈퇴하기 버튼 클릭해주세요.<br>
+						잘 모르시겠다면 이메일 thghk0206@naver.com으로 문의해주시면 감사하겠습니다.</div>
+				    </div>
+				  </div>
+				  
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSeven" aria-expanded="false" aria-controls="flush-collapseSeven">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;교환 및 반품 접수는 어떻게 하나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseSeven" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">- 먼저, 환불신청은 [나의 주문내역] 페이지에서 원하는 주문의 상세보기 버튼을 클릭 후 환불신청 접수 후 진행 할수 있습니다.<br><br>
+						- 교환/반품 접수 시 문의 등록이나 고객센터의 전화번호를 통해 접수 가능합니다.<br>
+						원활한 처리를 위해 불량 사진이 필요하오니, 가급적 사진을 첨부하여 주시기 바랍니다.</div>
+				    </div>
+				  </div>
+				  
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseEight" aria-expanded="false" aria-controls="flush-collapseEight">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;주문한 것과 다른 상품이 왔습니다. 어떻게 하나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseEight" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">우측 상단 고객센터를 클릭 후 [고객센터 > 문의등록] 혹은 [고객센터 > 전화상담]을 통해 문의 주시면 확인 도움드리겠습니다.</div>
+				    </div>
+				  </div>
+				  
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseNine" aria-expanded="false" aria-controls="flush-collapseNine">
+				        <div><img src="image/sohwa/icons8-q-64.png">&nbsp;&nbsp;주문내역 확인은 어떻게 하나요?</div>
+				      </button>
+				    </h2>
+				    <div id="flush-collapseNine" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+				      <div class="accordion-body"><img src="image/sohwa/icons8-a-64.png">마이페이지에서 [내 주문내역]을 통해 확인 가능하십니다.</div>
+				    </div>
+				  </div>
+				</div>
+			</div>
+			
+		</div>
+		
+		
+		
+	</div>
+	
+	
+	
+	
+	
+	<br><br><br><br><!--footer--><br><br><br><br>
+	
+	
+	
+
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>체크리스트</title>
+<script src="http://code.jquery.com/jquery-3.7.1.min.js"></script>
+<link rel="stylesheet" href="css/yoonahrim/selectCategory.css?after" type="text/css"/>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<style>
+  .selected {
+    background-color: #E4F7BA;  /* 원하는 색상으로 변경 */
+  }
+</style>
+
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+
+	<div class="wrap">
+		<hr>
+			<div class="content_intro">캠핑 체크리스트</div>
+
+			<!-- category card 1 -->
+			<div class="category_card">
+
+				<div class="main_category">
+					<img src="image/yoonahrim/icon-carCamping.png">
+					<div class="category_info">
+						<div class="cateogy_text">차박</div>
+						<div class="category_detail">매트﹒타프﹒랜턴﹒아이스박스﹒벌레퇴치기﹒접이식테이블</div>
+					</div>
+					<div class="show">
+						<img src="image/yoonahrim/icons8-down-64.png">
+					</div>
+				</div>
+
+				<!-- show hidden unless .show clicked -->
+				<div class="sub_category">
+					<input type="radio" id="r1" value="매트" ><label for="r1">매트</label>
+					<input type="radio" id="r2" value="타프" ><label for="r2">타프</label>
+					<input type="radio" id="r3" value="랜턴" ><label for="r3">랜턴</label>
+					<input type="radio" id="r4" value="아이스박스" ><label for="r4">아이스박스</label>
+					<input type="radio" id="r5" value="벨레퇴치기" ><label for="r5">벨레퇴치기</label>
+					<input type="radio" id="r6" value="접이식테이블" ><label for="r6">접이식 테이블</label>
+					<input type="radio" id="r7" value="낚시의자"><label for="r7">낚시 의자</label>
+					<input type="radio" id="r8" value="담요"><label for="r8">담요</label>
+
+				</div>
+			</div>
+			<!-- category card 2 -->
+			<div class="category_card">
+
+				<div class="main_category">
+					<img src="image/yoonahrim/icon-hiking.png">
+					<div class="category_info">
+						<div class="cateogy_text">백패킹</div>
+						<div class="category_detail">텐트﹒쉘터﹒텐트 풋프린트﹒에어매트﹒테이블﹒의자</div>
+					</div>
+					<div class="show">
+						<img src="image/yoonahrim/icons8-down-64.png">
+					</div>
+				</div>
+
+				<!-- show hidden unless .show clicked -->
+				<div class="sub_category">
+					<input type="radio" id="r9" value="텐트" ><label for="r9">텐트</label>
+					<input type="radio" id="r10" value="쉘터" ><label for="r10">쉘터</label>
+					<input type="radio" id="r11" value="텐트풋프린트" ><label for="r11">텐트 풋프린트</label>
+					<input type="radio" id="r12" value="에어매트" ><label for="r12">에어매트</label>
+					<input type="radio" id="r13" value="전동펌프" ><label for="r13">전동펌프</label>
+					<input type="radio" id="r14" value="야전침대" ><label for="r14">야전침대</label>
+					<input type="radio" id="r15" value="테이블" ><label for="r15">테이블</label>
+					<input type="radio" id="r16" value="의자" ><label for="r16">의자</label>
+					<input type="radio" id="r17" value="랜턴조명" ><label for="r17">랜턴조명</label>
+					<input type="radio" id="r18" value="충전기" ><label for="r18">충전기</label>
+					<input type="radio" id="r19" value="비상약" ><label for="r19">비상약</label>
+					<input type="radio" id="r20" value="스피커" ><label for="r20">스피커</label>
+					<input type="radio" id="r21" value="선크림" ><label for="r21">선크림</label>
+					<input type="radio" id="r22" value="우의" ><label for="r22">우의</label>
+					<input type="radio" id="r23" value="비닐봉투" ><label for="r23">비닐봉투</label>
+					<input type="radio" id="r24" value="속옷" ><label for="r24">속옷</label>
+					<input type="radio" id="r25" value="보온용옷" ><label for="r25">보온용 옷</label>
+					<input type="radio" id="r26" value="침낭" ><label for="r26">침낭</label>
+					<input type="radio" id="r27" value="세면도구" ><label for="r27">세면도구</label>
+					<input type="radio" id="r28" value="슬리퍼" ><label for="r28">슬리퍼</label>
+				</div>
+			</div>
+			<!-- category card 3 -->
+			<div class="category_card">
+				<div class="main_category">
+					<img src="image/yoonahrim/장박.png">
+					<div class="category_info">
+						<div class="cateogy_text">장박</div>
+						<div class="category_detail">침낭﹒이불﹒난로﹒일산화탄소 감지기﹒공기순환기﹒소화기</div>
+					</div>
+					<div class="show">
+						<img src="image/yoonahrim/icons8-down-64.png">
+					</div>
+				</div>
+
+				<!-- show hidden unless .show clicked -->
+				<div class="sub_category">
+					<input type="radio" id="r29" value="침낭"><label for="r29">침낭</label>
+					<input type="radio" id="r30" value="이불"><label for="r30">이불</label>
+					<input type="radio" id="r31" value="난로"><label for="r31">난로</label>
+					<input type="radio" id="r32" value="일산화탄소감지기"><label for="r32">일산화탄소 감지기</label>
+					<input type="radio" id="r33" value="공기순환기"><label for="r33">공기순환기</label>
+					<input type="radio" id="r34" value="소화기"><label for="r34">소화기</label>
+					<input type="radio" id="r35" value="랜턴"><label for="r35">랜턴</label>
+					<input type="radio" id="r36" value="멀티탭"><label for="r36">멀티탭</label>
+					<input type="radio" id="r37" value="버너"><label for="r37">버너</label>
+					<input type="radio" id="r38" value="벨크로"><label for="r38">벨크로</label>
+					<input type="radio" id="r39" value="보온백"><label for="r39">보온백</label>
+					<input type="radio" id="r40" value="아이스박스"><label for="r40">아이스박스</label>
+					<input type="radio" id="r41" value="전기매트"><label for="r41">전기매트</label>
+					<input type="radio" id="r42" value="텐트"><label for="r42">텐트</label>
+				</div>
+			</div>
+			<!-- category card 4 -->
+			<div class="category_card">
+
+				<div class="main_category">
+					<img src="image/yoonahrim/글램핑.png">
+					<div class="category_info">
+						<div class="cateogy_text">글램핑</div>
+						<div class="category_detail">장작﹒오로라불멍﹒랜턴﹒음식﹒선크림﹒물티슈</div>
+					</div>
+					<div class="show">
+						<img src="image/yoonahrim/icons8-down-64.png">
+					</div>
+				</div>
+
+				<!-- show hidden unless .show clicked -->
+				<div class="sub_category">
+					<input type="radio" id="r43" value="장작"><label for="r43">장작</label>
+					<input type="radio" id="r44" value="오로라불멍"><label for="r44">오로라불멍</label>
+					<input type="radio" id="r45" value="랜턴"><label for="r45">랜턴</label>
+					<input type="radio" id="r46" value="음식"><label for="r46">음식</label>
+					<input type="radio" id="r47" value="선크림"><label for="r47">선크림</label>
+					<input type="radio" id="r48" value="물티슈"><label for="r48">물티슈</label>
+					<input type="radio" id="r49" value="두꺼운겉옷"><label for="r49">두꺼운 겉옷</label>
+					<input type="radio" id="r50" value="세면용품"><label for="r50">세면용품</label>
+					<input type="radio" id="r52" value="밀키트"><label for="r52">밀키트</label>
+					<input type="radio" id="r53" value="아이스박스"><label for="r53">아이스박스</label>
+				</div>
+			</div>
+			<!-- category card 5 -->
+			<div class="category_card">
+
+				<div class="main_category">
+					<img src="image/yoonahrim/야영장.png">
+					<div class="category_info">
+						<div class="cateogy_text">야영장</div>
+						<div class="category_detail">침낭﹒벌레퇴치제</div>
+					</div>
+					<div class="show">
+						<img src="image/yoonahrim/icons8-down-64.png">
+					</div>
+				</div>
+
+				<!-- show hidden unless .show clicked -->
+				<div class="sub_category">
+					<input type="radio" id="r59" value="침낭"><label for="r59">침낭</label>
+					<input type="radio" id="r60" value="벌레퇴치제"><label for="r60">벌레퇴치제</label>
+					<input type="radio" id="r61" value="테이블"><label for="r61">테이블</label>
+					<input type="radio" id="r62" value="캠핑의자"><label for="r62">캠핑의자</label>
+					<input type="radio" id="r63" value="랜턴"><label for="r63">랜턴</label>
+					<input type="radio" id="r64" value="텐트"><label for="r64">텐트</label>
+					<input type="radio" id="r65" value="수영복"><label for="r65">수영복</label>
+					<input type="radio" id="r66" value="에어매트"><label for="r66">에어매트</label>
+					<input type="radio" id="r67" value="망치"><label for="r67">망치</label>
+				</div>
+			</div>
+			</div>
+		</form>
+		</div>
+	</div>
+	  
+	<script>
+        window.onload = () => {
+            
+            $(".main_category").click(function() {
+                const categories = $(".category_card");
+                for(const category of categories) {
+                    if (category != $(this).parent()[0]) {
+                        $(category.children[1]).slideUp();
+                    } else {
+                        $(this).next().slideToggle();
+                    }
+                }
+            });
+			
+            /*
+            var beforeChecked = 0;
+
+            $(document).ready(function() {
+                $(document).on("click", "input[type=radio]", function(e) {
+                    // 클릭된 라디오 버튼이 속한 .sub_category 클래스를 가진 부모 요소의 인덱스를 가져옵니다.
+                    var index = $(this).closest('.sub_category').index();
+
+                    if (beforeChecked === index) {
+                        beforeChecked = 0;
+                        e.stopPropagation();
+                        $(this).prop("checked", false);
+                        
+                    } else {
+                        // 다른 라디오 버튼이 클릭되면 현재 클릭된 라디오 버튼이 속한 부모 요소의 인덱스를 beforeChecked에 저장합니다.
+                        beforeChecked = index;
+                    }
+                });
+            });
+            */
+            
+            var beforeChecked = -1;  // 초기 값으로 -1 설정
+
+            $(document).ready(function() {
+              $(document).on("click", "input[type=radio]", function(e) {
+                // 클릭된 라디오 버튼이 속한 .sub_category 클래스를 가진 부모 요소의 인덱스를 가져옵니다.
+                var index = $(this).closest('.sub_category').index();
+
+                if (beforeChecked === index) {
+                  // 한 번 더 클릭하면 색상이 지워지도록 설정
+                  beforeChecked = -1;
+                  $(this).removeClass("selected");
+                } else {
+                  // 다른 라디오 버튼이 클릭되면 현재 클릭된 라디오 버튼이 속한 부모 요소의 인덱스를 beforeChecked에 저장하고 색상을 변경합니다.
+                  beforeChecked = index;
+                  $(this).addClass("selected");
+                }
+              });
+            });
+        }
+		
+        
+        
+    </script>
+
+</body>
+</html>

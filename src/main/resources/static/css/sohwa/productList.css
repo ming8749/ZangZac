@@ -1,0 +1,594 @@
+@charset "UTF-8";
+
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+
+*{
+	font-family: 'GmarketSansMedium';
+}
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.category div{
+	width:80px;
+	border-radius:10px;
+	text-align:center;
+	height:25px;
+}
+.category div:hover{
+	background-color: orange;
+	color:white;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+ #back-to-top {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  border-radius: 4px;
+  position: fixed;
+  bottom: 30px;
+  right: 70px;
+  transition: background-color .3s, 
+    opacity .5s, visibility .5s;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1000;
+}
+#back-to-top::after {
+  content: "\f077";
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 2em;
+  line-height: 50px;
+  color: #fff;
+}
+#back-to-top img:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+#back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+html {
+  box-sizing: border-box;
+
+  --gutter: 2.5rem;
+
+  --color-primary: #252525;
+  --color-secondary: #fff;
+  --color-secondary-rgb: 255, 255, 255;
+}
+html *,
+html *::before,
+html *::after {
+  box-sizing: inherit;
+}
+body {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  color: var(--color-primary);
+  font-family: "Lato", sans-serif;
+}
+button {
+  all: unset;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent ;
+}
+.inner-container {
+  height: 100%;
+  margin: 0 auto;
+  max-width: 85rem;
+  width: calc(100% - var(--gutter));
+}
+
+/* ---General classes--- */
+.flex-row {
+  display: flex;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.justify-between {
+  display: flex;
+  justify-content: space-between;
+}
+/* ---General classes--- */
+
+/*.slider {*/
+/*	position: fixed;  sticky에서 fixed로 변경 */
+/*    top: 0;*/
+/*    z-index: 1;*/
+/*    width: 100%;*/
+/*    height: 400px;*/
+/*    overflow: hidden;*/
+/*    background-color: var(--color-secondary);*/
+/*}*/
+
+
+
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto; /* Enable scrollbar */
+  overflow-y:auto;
+}
+
+.slider-container {
+  flex: 1; /* Fill remaining space */
+  display: flex;
+  flex-direction: column;
+}
+
+.slider {
+  /* Your Slider Styles */
+  /* Add styles for your slider here */
+  overflow-y: auto; /* Enable vertical scrollbar for the slider */
+ height: 400px; /* Set a maximum height for the slider */
+}
+
+.additional-section {
+  /* Your Additional Section Styles */
+  /* Add styles for your additional section here */
+  overflow: auto; /* Enable scrollbar */
+}
+
+.slider__img {
+  width:350px;  /* 이미지가 부모 요소 내에서 최대 너비를 차지하도록 설정합니다. */
+  height: 370px;/* 이미지의 가로세로 비율을 유지하면서 크기가 조정되도록 합니다. */
+}
+
+
+
+
+.search {
+	margin-left: 20%;
+    position: relative;
+    width: 300px;
+    margin-right:36%;
+}
+
+.search input {
+  width: 100%;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.search img {
+  position : absolute;
+  width: 17px;
+  top: 10px;
+  right: 12px;
+  margin: 0;
+}
+
+.category{
+	border: 1px solid rgb(192, 192, 192);
+	border-radius: 20px;
+	margin-top:50px;
+	margin-left: 20%;
+	margin-right: 20%;
+	height:70px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 30px;
+}
+
+.category div{
+	display: inline-block;
+	margin-right:20px;
+}
+
+.search, .dropdown {
+  display: inline-flex; /* Flexbox를 이용하여 인라인 요소로 표시하여 수평 정렬 */
+  align-items: center; /* 요소를 수직 가운데 정렬 */
+}
+
+
+.dropdown .btn-secondary {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  .dropdown-menu .dropdown-item {
+    color: black !important;
+  }
+
+
+
+#carouselExampleRide{
+	width:100%;
+	height:400px;
+	overflow: hidden;
+}
+
+/* 기본 스타일 */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+main {
+	padding-top:0px;
+	margin-left:18%;
+	margin-right:18%;
+    padding: 20px;
+}
+
+main>h1{
+	margin-left:2%;
+	font-weight: bold;
+}
+
+/* 상품 목록 스타일 */
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product {
+  padding: 15px;
+  width: calc(25% - 20px); /* 반응형으로 4개의 열을 만들기 위한 설정 */
+  box-sizing: border-box;
+  line-height: 19px;
+  height:400px;
+  text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+.starImage{
+	font-size:15px;
+}
+
+.starImage img{
+	max-height: 20px;
+    width: auto; /* 너비를 자동으로 조정하여 비율유지. */
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.product img {
+	overflow: hidden;
+    max-width: 100%;
+	border-radius: 10px;
+	height: 70% !important;
+	margin-bottom: 4px;
+}
+
+.product p {
+    font-size: 0.9em;
+    word-spacing: 0;
+    margin-bottom: 2px;
+}
+
+.price {
+	font-size:18px !important;
+    font-weight: bolder;
+    margin-bottom: 2px;
+}
+
+.product>button {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.product>button:hover {
+  background-color: #45a049;
+}
+
+
+
+
+
+
+.product-wrapper {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.product-wrapper>.product {
+  flex: 0 0 25%; /* 각 상품이 25%의 너비를 가짐 */
+}
+
+/* 슬라이드 버튼 스타일 */
+#prevBtn,
+#nextBtn {
+	  cursor: pointer;
+	  margin-top: 20px;
+	  transform: translateY(-50%);
+	  background: none;
+	  border: none;
+	  font-size: 24px;
+}
+
+.pone{
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 수직 가운데 정렬 */
+    position: relative;
+    overflow: hidden;
+}
+
+.products input[type="radio"] {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    appearance: none;
+    background: none;
+    border: 1px solid black;
+    border-radius: 50%;
+    z-index: 1;
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    border: 2px solid #ccc; 
+    border-radius: 50%;
+    outline: none; 
+}
+
+input[type='radio']:checked {
+  background-color: rgb(192, 192, 192); 
+  border: 3px solid white; 
+  box-shadow: 0 0 0 1.6px rgb(192, 192, 192);
+}
+
+#radio-box{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#nextBtn{
+	margin-left:40px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.slider__wrraper {
+  height: 100%;
+  justify-content: flex-end;
+}
+.slider__img {
+  width: 20rem;
+  align-self: center;
+  margin-bottom: 1.7rem;
+}
+.slider__context {
+  font-weight: 900;
+  font-size: 1.55rem;
+  width: fit-content;
+  margin-bottom: 1.5rem;
+  text-transform: capitalize;
+}
+.slider__title {
+  font-size: 1.1em;
+  margin: 0.1rem 0 0.35rem;
+}
+.slider__category {
+  margin: 0;
+  font-size: 1.55rem;
+  letter-spacing: 0.05em;
+  color: var(--color-secondary);
+}
+.slider__price {
+  font-size: 0.5em;
+  font-weight: lighter;
+  font-family: sans-serif;
+}
+.context {
+  display: flex;
+  font-weight: 900;
+  font-size: 1.55rem;
+  width: fit-content;
+  margin-bottom: 3.05em;
+  flex-direction: column;
+  text-transform: capitalize;
+}
+.slider__footer {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.slider__btns {
+  width: 100%;
+  font-size: 1.9em;
+  align-items: center;
+}
+.slider__btn-buy {
+  font-weight: bold;
+  font-size: 0.55rem;
+  letter-spacing: 1px;
+  border-radius: 15px;
+  text-transform: uppercase;
+  padding: 0.65rem 2.2rem 0.5rem;
+  background-color: rgba(var(--color-secondary-rgb), 0.533);
+}
+.slider__btn-switch {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  border-radius: 50%;
+  margin-inline-start: 0.7rem;
+}
+.slider__btn-switch::before {
+  content: "";
+  height: 0.3rem;
+  width: 0.3rem;
+  position: absolute;
+  border: 2px solid;
+  border-top: unset;
+  border-left: unset;
+  margin-inline-end: 0.2rem;
+  transform: rotate(-45deg);
+}
+.slider__btn-switch--dark {
+  background-color: var(--color-primary);
+  transform: rotate(180deg);
+}
+.slider__btn-switch--dark::before {
+  border-color: var(--color-secondary);
+}
+.slider__btn-switch--light {
+  background-color: var(--color-secondary);
+}
+.slider__btn-switch--light::before {
+  border-color: var(--color-primary);
+}
+.slider__index {
+  right: 0;
+  gap: 0 5.7em;
+  display: flex;
+  font-weight: 900;
+  font-weight: 600;
+  font-size: 0.85em;
+  visibility: hidden;
+  position: absolute;
+  font-family: system-ui;
+  justify-content: center;
+  bottom: calc(100% + 0.8em);
+}
+.slider__index :last-child {
+  color: var(--color-secondary);
+}
+.slider__index::before {
+  top: 55%;
+  height: 1%;
+  width: 42%;
+  content: "";
+  position: absolute;
+  transform-origin: center;
+  background-color: var(--color-primary);
+}
+
+@media (min-width: 490px) {
+  .slider__img {
+    width: 29rem;
+    margin-bottom: -1rem;
+  }
+  .slider__context {
+    font-size: 1.8rem;
+  }
+  .slider__index {
+    visibility: visible;
+  }
+  .slider__price {
+    font-size: 0.4em;
+  }
+  .slider__footer {
+    font-size: 0.98rem;
+    margin-bottom: 2.2em;
+  }
+}
+
+@media (min-width: 830px) {
+  .slider__img {
+    width: 37rem;
+    margin-bottom: -11.5rem;
+  }
+  .slider__context {
+    font-size: 2rem;
+    margin-bottom: 1.15em;
+  }
+  .slider__footer {
+    margin-bottom: 2.8em;
+  }
+}
+
+
+
+
+
+/* img:hover { */
+/* 	transform: scale(1.2, 1.2);  */
+/* 	transition-duration: 0.5s; */
+/* } */
+
+
+
+.thumbnails figure {
+  position: relative;
+}
+.thumbnails figure::before {
+  position: absolute;
+  top: 0;
+  left: -35%;
+  z-index: 2;
+  display: block;
+  content: '';
+  width: 20%;
+  height: 100%;
+  background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 100%);
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 100%);
+  -webkit-transform: skewX(-0deg);
+  transform: skewX(-0deg);
+}
+.thumbnails figure:hover::before {
+  -webkit-animation: shine .75s;
+  animation: shine .75s;
+}
+@-webkit-keyframes shine {
+  100% {
+    left: 100%;
+  }
+}
+@keyframes shine {
+  100% {
+    left: 100%;
+  }
+}
+
+
+
+
+

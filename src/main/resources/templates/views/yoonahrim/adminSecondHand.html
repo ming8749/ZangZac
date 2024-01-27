@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>관리자페이지</title>
+<link href="css/yoonahrim/adminSecondHand.css?after" rel="stylesheet" type="text/css"/>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<style>
+  .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        display: none;
+
+        background-color: rgba(0, 0, 0, 0.4);
+        overflow: scroll;
+      }
+
+      .modal.show {
+        display: block;
+      }
+
+      .modal_body {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 500px;
+        height: 800px;
+        padding: 40px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 10px;
+        box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+        transform: translateX(-50%) translateY(-50%);
+        overflow-y: scroll;
+      }
+      .modal_title{
+         text-align: center;
+         font-size: 2em;
+         font-weight: bold;
+         padding-bottom: 5px;
+      }
+      .modal_body p{
+         padding: 7px;
+      }
+      .modal_body input[type="text"]{
+      	 border-radius: 10px;
+      	 width: 400px;
+      	 height: 50px;
+      	 text-align:center;
+      	 background-color: #fff;
+	    box-shadow: 0 14px 28px rgba(0,0,0,0.1),
+	    0 10px 10px rgba(0,0,0,0.1);
+	    overflow: hidden;
+	    max-width:100%;
+	    min-width: 400px;
+	    margin-bottom: 0%;
+      }
+      #spContent{
+      	height:100px;
+      	overflow: scroll;
+      }
+      .selectState{
+         color: rgb(251, 125, 83);
+         font-weight: bold;
+      }
+     .unselectState{background: none;}
+  </style>
+</head>
+<body>
+   <div th:replace="~{common/admin :: admin}"></div>
+   
+   <div id="orderListWrapped">
+      <h1>중고물품 관리</h1>
+      
+      <div style="float:right;">
+         <form action="admin.ah" method="Post">
+	         <div class="nav-item dropdown" id="search1">
+	         	<select name="searchType" class="dropdown-item">
+	         		<option value="spNo" name="spNo" th:selected="${searchType eq 'spNo'}">물품번호</option>
+	         		<option value="spTitle" name="spTitle" th:selected="${searchType eq 'spTitle'}">물품명</option>
+	         		<option value="memberId" name="memberId" th:selected="${searchType eq 'memberId'}">작성자</option>
+	         	</select>
+	            <input type="text" name="keyword">
+	            <button type="submit" id="searchSp">검색</button>
+	         </div>
+         </form>
+      </div>
+      
+      <table id="allOrder" class="allOrder">
+         <tr>
+            <th class="td1">물품번호</th>
+            <th class="td2">아이디</th>
+            <th class="td3">물품명</th>
+            <th class="td4">물품가격</th>
+            <th class="td5">카테고리</th>
+            <th class="td6">예약여부</th>
+            <th class="td7">판매여부</th>
+            <th class="td8">삭제여부</th>
+         </tr>
+         <b><hr id="identify"/></b>
+         <tr th:each="item : ${list != null ? list : slist}">
+	          <td class="td1" th:text="${item.spNo}" name="${s.spNo}"></td>
+	          <td class="td2" th:text="${item.memberId}"></td>
+	          <td class="td3" th:text="${item.spTitle}"></td>
+	          <td class="td4" th:text="${#numbers.formatInteger(item.spPrice, 0, 'COMMA') + '원'}"></td>
+	          <td class="td5" th:text="${item.categoryName}"><</td>
+	          <td class="td6">
+	              <div th:class="${item.spIsSell == 'Y' ? 'selectState' : 'unselectState'}">Y</div>
+	              <div th:class="${item.spIsSell == 'N' ? 'selectState' : 'unselectState'}">N</div>
+	          </td>
+	          <td class="td7">
+	              <div th:class="${item.spIsBook == 'Y' ? 'selectState' : 'unselectState'}">Y</div>
+	              <div th:class="${item.spIsBook == 'N' ? 'selectState' : 'unselectState'}">N</div>
+	          </td>
+	          <td class="td8">
+	              <div th:class="${item.spStatus == 'Y' ? 'selectState' : 'unselectState'}">Y</div>
+	              <div th:class="${item.spStatus == 'N' ? 'selectState' : 'unselectState'}">N</div>
+	          </td>
+        </tr>
+         
+      </table>
+      
+	      <nav class="Page" aria-label="Page navigation example" th:with="loc=${loc}">
+	          <ul class="pagination">
+	             <li class="page-item">
+	               <a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous" th:if="${pi.currentPage>1}">
+	                 <span aria-hidden="true">&laquo;</span>
+	               </a>
+	             </li>
+	             <li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+	                <a class="page-link" th:href="@{${loc}(page=${p})}">[[${ p }]]</a></li>
+	             <li class="page-item">
+	                <a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next" th:if="${pi.currentPage<pi.maxPage}">
+	                 <span aria-hidden="true">&raquo;</span>
+	             </a>
+	             </li>
+	          </ul>
+	      </nav>
+   </div>
+   
+   
+   <th:block th:each="item : ${list != null ? list : slist}">
+    <div class="modal modal-dialog-scrollable" style="display:none; text-align:center;" th:id="'modal_' + ${item.spNo}">
+        <form action="editAdmin.ah" method="post">
+            <div class="modal_body">
+                NO.<input type="text" class="form-control" name="spNo" aria-label="default input example" th:value="${item.spNo}" readonly/><br><br>
+                ID.<input type="text" class="form-control" aria-label="default input example" th:value="${item.memberId}" readonly><br><br>
+                NICKNAME.<input type="text" class="form-control" aria-label="default input example" th:value="${item.memberName}" readonly/><br><br>
+                SPTITLE.<input type="text" class="form-control" name="spTitle" aria-label="default input example" th:value="${item.spTitle}"/><br><br>
+                SPPRICE<input type="text" class="form-control" name="spPrice" aria-label="default input example" th:value="${item.spPrice}"/><br><br>
+                SPCONTENT<input type="text" class="form-control" name="spContent" aria-label="default input example" th:value="${item.spContent}"/><br><br>
+                SPADDRESS<input type="text" class="form-control" name="spAddress" aria-label="default input example" th:value="${item.spAddress}"/><br><br><br>
+                <p>판매여부
+                    <input type="radio" class="form-check-input" name="spIsSell" th:value="Y" th:checked="${item.spIsSell == 'Y'}"/>Y
+                    <input type="radio" class="form-check-input" name="spIsSell" th:value="N" th:checked="${item.spIsSell == 'N'}"/>N
+                </p>
+                <p>예약여부
+                    <input type="radio" class="form-check-input" name="spIsBook" th:value="Y" th:checked="${item.spIsBook == 'Y'}"/>Y
+                    <input type="radio" class="form-check-input" name="spIsBook" th:value="N" th:checked="${item.spIsBook == 'N'}"/>N
+                </p>
+                <p>삭제여부
+                    <input type="radio" class="form-check-input" name="spStatus" th:value="Y" th:checked="${item.spStatus == 'Y'}"/>Y
+                    <input type="radio" class="form-check-input" name="spStatus" th:value="N" th:checked="${item.spStatus == 'N'}"/>N
+                </p>
+
+                <button type="submit">수정</button>
+            </div>
+        </form>
+        </div>
+    </th:block>
+	
+	
+   <script th:inline="javascript">
+      //체크박스 전체 선택/해제
+        function toggleAllCheckboxes(tableId, selectId) {
+         const checkboxes = document.querySelectorAll(`#${tableId} input[type="checkbox"]:not(#${selectId})`);
+         const selectAll = document.getElementById(selectId);
+         const allChecked = selectAll.checked;
+   
+         checkboxes.forEach(checkbox => {
+             checkbox.checked = allChecked;
+         });
+        }
+      
+      //드롭다운 변경
+  		function showSearch(searchId, dropdownText) {
+              document.querySelectorAll('.search').forEach(function(searchElement) {
+                  searchElement.style.display = 'none';
+              });
+              document.getElementById(searchId).style.display = 'block';
+              document.getElementById('dropdownMenuButton').innerText = dropdownText;
+          }
+      
+      //모달창
+		const modals = document.querySelectorAll('.modal');
+		const tds = document.getElementsByTagName('td');
+		
+		for (let i = 0; i < tds.length; i++) {
+		    const index = i % 8;
+		    if (index != 0 && index != 5 && index != 6 && index != 7) {
+		        tds[i].addEventListener('dblclick', function () {
+		            // 클릭한 행에서 spNo를 가져오기
+		            const spNo = this.closest('tr').querySelector('.td1').innerText;
+		
+		            // 해당하는 모달 표시
+		            const modal = document.getElementById('modal_' + spNo);
+		            if (modal) {
+		            	// 모달 열 때 spNo 값을 전송
+		                modal.querySelector('[name=spNo]').value = spNo;
+		                modal.style.display = 'block';
+		            }
+		        });
+		    }
+		}
+		
+		// 모달창 외부를 클릭했을 때 창 닫기
+		modals.forEach(modal => {
+		    modal.addEventListener('click', function (event) {
+		        if (event.target === modal) {
+		            modal.style.display = 'none';
+		        }
+		    });
+		});
+		
+		
+		
+    </script>
+   
+</body>
+</html>

@@ -1,0 +1,581 @@
+@charset "UTF-8";
+
+*{
+	font-family: 'GmarketSansMedium';
+}
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+#category{
+	margin-left:18%;
+	color: gray;
+}
+
+.gallery {
+	margin-left:18%;
+	margin-right: 18%;
+    display: inline-flex;
+}
+
+.main-image img {
+  width: 850px; /* Adjust the size as needed */
+  height: auto;
+  border-radius: 15px;
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  
+}
+
+.thumbnail {
+  width: 120px; /* Adjust the size as needed */
+  height: auto;
+  cursor: pointer;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+
+
+
+#explain{
+	display:inline-block;
+	width:100%;
+	height:500px;
+	margin-left: 5%;
+	margin-top:0;
+}
+
+#explain h1{
+	font-size: 25px;
+}
+
+
+#price{
+	font-size: 30px; 
+	font-weight: bold;
+}
+
+#explain p{
+	float:inline-start;
+	margin-right: 20px;
+	display: inline-flex;
+	color:gray;
+}
+
+#enoDiv{
+	width:100%;
+	height:100px;
+	background-color: rgb(246, 246, 246);
+	padding:10px;
+	color:rgb(95, 95, 95);
+}
+
+
+.star-rating {
+  display: inline-block;
+}
+
+
+
+
+#optionSelect{
+	width:100%;
+	height:80px;
+	background-color: rgb(246, 246, 246);
+	padding:10px;
+	color:rgb(95, 95, 95);
+}
+
+
+
+.quantity-input {
+  display: flex;
+  align-items: center;
+}
+
+.quantity-btn {
+  width: 30px;
+  height: 30px;
+  background-color: rgb(255, 255, 255);
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.quantity {
+  width: 50px;
+  height: 30px;
+  text-align: center;
+}
+
+#enoDiv input[type="text"]{
+	border:none;
+}
+
+#resultPrice{
+	margin-left: 410px;
+}
+
+.btns{
+	-webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.btn-hover {
+    width: 200px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    margin: 20px;
+    height: 55px;
+    text-align:center;
+    border: none;
+    background-size: 300% 100%;
+
+    border-radius: 50px;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.btn-hover:hover {
+    background-position: 100% 0;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.btn-hover:focus {
+    outline: none;
+}
+
+.btn-hover.color-1{
+	background-image: linear-gradient(to right, rgb(192, 192, 192), rgb(255, 255, 255), rgb(255, 255, 255), rgb(192, 192, 192));
+    box-shadow: 0 4px 15px 0 rgb(192, 192, 192);
+}
+
+.btn-hover.color-2 {
+    background-image: linear-gradient(to right, #fc6076, #ff9a44, #ef9d43, #e75516);
+    box-shadow: 0 4px 15px 0 rgba(252, 104, 110, 0.75);
+}
+
+
+#cateDiv ul {
+	background-color: rgb(246, 246, 246);
+	width:100%;
+	height:60px;
+    display: flex;
+    list-style: none;
+    padding: 0;
+    padding-left: 200px;
+    margin: 0;
+    overflow-x: auto; /* 가로 스크롤 추가 */
+}
+
+/* 각 리스트 항목의 스타일링 */
+#cateDiv ul li {
+	line-height: 60px;
+	font-size:18px;
+    margin-right: 200px; /* 각 항목 사이 여백 조정 */
+}
+
+
+
+#cateDiv ul li:first-child {
+    margin-left: 8%; /* 마지막 항목의 오른쪽 여백 제거 */
+}
+
+#cateDiv ul li a {
+    text-decoration: none;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 4px;
+}
+
+
+#fixedDiv{
+	width:350px;
+	height:140px;
+    position: fixed;
+    top: 80%;
+    left: 72%;
+
+}
+
+
+
+
+#underDiv{
+	margin-left:18%;
+}
+
+/*fixed영역*/
+#fixedDiv>span{
+	margin-left:10px;
+	margin-bottom: 100px;
+}
+#fixedDiv>#resultPrice2{
+	margin-left:140px;
+}
+
+
+
+
+
+
+/*리뷰세션*/
+#reviews{
+	margin-top:50px;
+	width:865px;
+}
+
+
+#review a{
+	color:#F9612B;
+	float:right;
+	margin-right:55px;
+	text-decoration: none;
+}
+
+#review a:hover{
+	text-decoration: underline;
+}
+
+
+
+#reviewContainer{
+	background-color: rgb(242, 242, 242);
+	margin-left:5%;
+	width:90%;
+	height:80px;
+}
+
+#reviewContainer .star-rating{
+	margin-top:20px;
+	margin-left: 280px;
+	font-size: 30px;
+}
+
+
+
+
+.point-color {
+    color: #F9612B;
+}
+.pagination-active {
+    background-color: #F9612B;
+    color: white;
+}
+
+
+
+#fixedDiv button{
+	margin-top: 30px;
+	width:150px;
+	height:40px;
+	margin-left:5px;
+	margin-right:10px;
+}
+
+.bg-gray-50{
+	margin-top:30px;
+	margin-left:5%;
+	width:90%;
+	
+}
+
+.mt-4 img{
+	width:250px;
+	height:250px;
+}
+
+.flex{
+	padding:0;
+}
+
+
+  
+  #fixedDiv{
+	  position: fixed; 
+	  display: none;
+  }
+  
+  
+  
+
+
+#question a{
+	color:#F9612B;
+	float:right;
+	margin-right:55px;
+	text-decoration: none;
+}
+
+#question a:hover{
+	text-decoration: underline;
+}
+
+  
+ #questions{
+	 margin-top:50px;
+	 width:865px;
+ }
+ 
+ #questionItem{
+	 width:90%;
+	 margin-left:5%;
+	 margin-bottom:20px;
+ }
+ 
+ #questionItem img{
+	 display: inline-flex;
+	 margin-top:10px;
+	 width:40px;
+	 height:40px;
+ }
+ 
+#shipping{
+	 margin-top:50px;
+	 width:865px;
+	 margin-bottom: 40px;
+ }
+ 
+ #shippingItem{
+	 width:90%;
+	 margin-left:5%;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ #back-to-top {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  border-radius: 4px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  transition: background-color .3s, 
+    opacity .5s, visibility .5s;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1000;
+}
+#back-to-top::after {
+  content: "\f077";
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 2em;
+  line-height: 50px;
+  color: #fff;
+}
+#back-to-top img:hover {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+#back-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+ 
+ 
+ 
+ #reviewCate{
+	 width:90%; 
+	 margin-left:5%; 
+	 margin-top:40px;
+ }
+ 
+ #reviewCate img{
+	 height:30px;
+	 display: inline-block;
+ }
+ 
+ #reviewCate hr{
+	 margin-top:10px;
+	 margin-bottom:10px;
+ }
+ 
+ #onlyPhoto{
+	 display: inline-block;
+ }
+ #onlyPhoto:hover{
+	 opacity: 0.6;
+ }
+ 
+ .dropdown{
+	 display: inline-flex;
+	 margin-left:600px;
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ #addPhoto{
+	width:100%;
+	height:50px;
+	border:1px solid #F9612B;
+	border-radius: 10px;
+	text-align: center;
+	line-height: 45px;
+	color:#F9612B;
+	font-weight: bold;
+}
+
+#addPhoto:hover{
+	opacity: 0.6;
+}
+
+#addPhoto>img{
+	width:40px;
+	height:40px;
+	display: inline-block;
+}
+
+
+
+
+
+ .updatePhoto{
+	width:100%;
+	height:50px;
+	border:1px solid #F9612B;
+	border-radius: 10px;
+	text-align: center;
+	line-height: 45px;
+	color:#F9612B;
+	font-weight: bold;
+}
+
+.updatePhoto:hover{
+	opacity: 0.6;
+}
+
+.updatePhoto>img{
+	width:40px;
+	height:40px;
+	display: inline-block;
+}
+
+
+
+
+
+/*모달*/
+#reviewModal{
+	margin-left:3%;
+	display:none;
+	width:800px;
+	height:1000px;
+}
+
+
+.bt-blue-500{
+	margin-left:200px;
+}
+
+#imagePreview{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.updatePreviewDiv{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+
+.modal-content {
+	height:900px;
+}
+
+.close {
+    font-size: 40px; /* 원하는 크기로 조절하세요 */
+    cursor: pointer;
+    float: right; /* 오른쪽으로 띄우기 */
+    margin-right: 60px;
+    margin-bottom: 10px;
+}
+
+.close:hover {
+    color: red; /* 원하는 색상으로 변경 */
+}
+
+
+
+
+
+#qnaModal{
+	display: none;
+	margin-left:3%;
+	width:800px;
+	height:650px;
+}
+
+
+
+
+/*
+ 	리뷰별점
+
+*/
+.fa {
+	color:gray;
+}
+.checked {
+  color: rgb(247, 223, 9) !important; /* 별점 색상 */
+}
+
+#reviewModal .fa{
+  cursor: pointer;
+}
+
+/* 마우스를 호버하면 노란색으로 채우기 */
+#reviewModal .fa:hover {
+  color: #ffcc00;
+}
+
+
+
+
+
+
+.deliverySpan{
+	text-align:center;
+	width:100px;
+	height:20px;
+	display:inline-block;
+	background-color:gray;
+	color:white;
+	border-radius:2px;
+}

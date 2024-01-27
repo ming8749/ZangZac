@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link href="css/sohwa/productList.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>판매상품 목록페이지</title>
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+	
+	<div id="wrapper">
+		<div class="slider-container">
+		<div class="slider">
+	      <div class="inner-container">
+	        <div class="slider__wrraper flex-column">
+	          <div class="flex-column slider__content"></div>
+	          <div class="slider__footer">
+	            <div class="slider__btns justify-between">
+	              <button class="slider__btn-buy">buy</button>
+	              <div class="flex-center">
+	                <button data-type="prev" class="slider__btn-switch slider__btn-switch--dark flex-center"></button>
+	                <button data-type="next" class="slider__btn-switch slider__btn-switch--light flex-center"></button>
+	              </div>
+	            </div>
+	            <div class="slider__index"></div>
+	          </div>
+	        </div>
+	      </div>
+	    </div>
+	  	
+	    
+	     <div class="additional-section">
+			 <div class="category">
+			 	 <div onclick="sendCategoryNo(0)">전체</div>&nbsp;&nbsp;&nbsp;
+			     <div onclick="sendCategoryNo(11)">텐트</div>&nbsp;&nbsp;&nbsp;
+			     <div onclick="sendCategoryNo(12)">취침용품</div>&nbsp;&nbsp;&nbsp;
+			     <div onclick="sendCategoryNo(13)">조리도구</div>&nbsp;&nbsp;&nbsp;
+			     <div onclick="sendCategoryNo(14)">발화용품</div>&nbsp;&nbsp;&nbsp;
+			     <div onclick="sendCategoryNo(15)">백팩</div>&nbsp;&nbsp;&nbsp;
+			     <div onclick="sendCategoryNo(16)">기타용품</div>&nbsp;&nbsp;
+			 </div>
+			<input type="hidden" th:value="${categoryNo}" id="categoryNo">
+			
+			<form id="categoryForm" action="productListView.so">
+			    <input type="hidden" name="categoryNo" id="categoryNoInput" value="0">
+			</form>
+	
+	
+			<div class="search">			
+		  		<input onkeydown="handleEnterKey(event)" id="searchInput" type="text" placeholder="상품명 검색" th:value="${keyword}">
+		  		<img id="searchImg" onclick="handleSearchClick()" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png">
+			</div>
+			
+			<div class="dropdown" style="background-color: white !important; color:black;">
+		  		<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+		    		등록일자 순
+		  		</button>
+		  		<ul class="dropdown-menu">
+		  			<li><a class="dropdown-item" th:href="'productListView.so?categoryNo=' +${categoryNo} + '&keyword=' + ${keyword} + '&standard=1'">등록 일자 순</a></li>
+		    		<li><a class="dropdown-item" th:href="'productListView.so?categoryNo=' +${categoryNo} + '&keyword=' + ${keyword} + '&standard=2'">낮은 가격 순</a></li>
+		    		<li><a class="dropdown-item" th:href="'productListView.so?categoryNo=' +${categoryNo} + '&keyword=' + ${keyword} + '&standard=3'">높은 가격 순</a></li>
+		    		<li><a class="dropdown-item" th:href="'productListView.so?categoryNo=' +${categoryNo} + '&keyword=' + ${keyword} + '&standard=4'">평점 높은 순</a></li>
+		  		</ul>
+			</div>
+			
+		  
+		   <input type="hidden" th:value="${standard}" id="standard">
+		   <main>
+			  <h1>PRODUCT ></h1>
+		  	  <section id="products" class="products">
+			  	  
+	  	  		
+		      	
+			      
+		    </section>
+		  </main>
+		</div>
+	</div>
+	
+	<br><br><br><br><br><br><br><br><br><br><br><br>
+	
+	<a id="back-to-top"><img src="image/sohwa/icons8-scroll-up-64 (1).png"></a>
+	
+	
+	
+	</div>
+	
+	
+    
+    
+    <script th:inline="javascript">
+    
+    
+    
+    
+    // 무한 스크롤 부분
+    // 현재 페이지와 한 번에 로드되는 아이템 수
+       let currentPage = 1;
+       const itemsPerPage = 3; 
+       let scrollflag=true;
+       /*<![CDATA[*/
+        let maxPages = /*[[${pi.maxPage}]]*/2;
+        /*]]>*/
+   		const wrapper = document.getElementById('wrapper');
+       // 스크롤 이벤트 리스너 등록
+		
+    	// 스크롤 이벤트를 추가
+	    wrapper.addEventListener('scroll', function() {
+	        // 현재 스크롤 위치
+	        var scrollPosition = wrapper.scrollTop;
+		if(scrollflag){
+			// 스크롤이 80% 이상인 경우
+	        if (scrollPosition >= 0.8 * (wrapper.scrollHeight - wrapper.clientHeight)) {
+	            loadMoreItems();
+	            scrollflag = false;
+	            console.log(currentPage, maxPages);
+	        }
+		}
+	        
+	    });
+   
+       // 추가 데이터 로드 함수
+       function loadMoreItems() {
+    	  const keyword = document.getElementById('searchInput').value;
+    	  const categoryNo = document.getElementById("categoryNo").value;
+    	  const standard = document.getElementById('standard').value;
+    	  console.log("standard : "+standard);
+          if(currentPage <= maxPages){
+             //ajax 부분 추가 예정
+              $.ajax({
+                    url: 'infiniteScroll.so', // 서버의 댓글 목록 불러오기 URL   -------------------------------------------------------------------------------
+                    method: 'GET',
+                    data: { 
+                       page : currentPage,  //----------------------------------------------------------------------------------------
+                       keyword: keyword,
+                       categoryNo: categoryNo,
+                       standard : standard
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        // 리스트 가져와서 만들기
+                        const newItems = createItems(data);
+                        document.getElementById("categoryNo").value = data.categoryNo;
+                        document.getElementById("standard").value = data.standard;
+                        
+                        // 뿌리기
+                        appendItemsToDOM(newItems);  
+                        
+                        currentPage=1+currentPage;  
+                        scrollflag = true;
+                    },
+                    error: function(data) {
+                        console.log(data);
+                    }
+                });
+   
+             }
+          }
+   
+       // 가상의 데이터 생성 함수
+       function createItems(data) {
+             const newItems = [];
+             /*<![CDATA[*/
+              let User = /*[[${session.loginUser}]]*/null;
+              /*]]>*/
+             
+              const rList = /*[[rList]]*/null;
+              
+              
+              
+              
+          for (let p of data.pList) {
+           		  let imgHTML ='';
+           		  imgHTML = `<figure><img src="${p.photoPath}"></figure>`;
+           		  const productPrice = `${p.productPrice.toLocaleString()}원`;
+          		      
+           		  
+           		  let starImageDiv='';
+           		  if (rList && rList.length > 0) {
+           			  starImageDiv = `
+           				  <span class="starImage">
+	      			            <img src="image/sohwa/icons8-star.gif" style="height: 10px;">
+	      			            ${p.productScore}
+	      			            <span style="color: gray;">평점</span>
+	      			            <input type="hidden" class="productScore">
+	      			      </span><br>`
+           		  }
+           		  
+           		  
+           		  let noEno ='';
+           		  if (p.eno === 0) {
+           			  noEno = `<span class="badge rounded-pill text-bg-dark">일시품절</span>`
+           		  }
+           		  
+           		  let noDeliveryPrice = '';
+           		  if(p.deliveryPrice == 0){
+           			  noDeliveryPrice = `<span class="badge text-bg-secondary">무료배송</span>`
+           		  }
+           		  
+           		  const newItemHTML = `
+                   	  <article class="product" onclick="redirectToProductDetail(this)">
+       			        <input type="hidden" value="${p.productNo}">
+       			        <div class="thumbnails">
+       			            <a href="#">${imgHTML}</a>
+       			        </div>
+       			        <p>${p.productName}</p>
+       			        <p class="price">${productPrice}</p>
+       			        
+       			        
+       			        ${starImageDiv}
+       			        ${noEno}
+       			        ${noDeliveryPrice}
+       			    </article>
+                     `;
+                     newItems.push(newItemHTML);
+                 }
+              
+          return newItems;
+      }
+   
+       // DOM에 아이템 추가 함수
+       function appendItemsToDOM(newItems) {
+           const container = document.getElementById('products'); // 실제로 사용하는 컨테이너의 ID로 변경
+           container.innerHTML += newItems.join('');
+       }
+
+    
+    
+       
+    
+    
+       function changeImages() {
+           const thumbnails = document.querySelectorAll('.thumbnails');
+           
+           thumbnails.forEach(thumbnail => {
+             const images = thumbnail.querySelectorAll('img');
+             let currentIndex = 0;
+
+             // 이미지 숨기는 함수
+             const hideImages = () => {
+               images.forEach(image => {
+                 image.style.display = 'none';
+               });
+             };
+
+             // 초기에 모든 이미지를 숨기고 첫 번째 이미지만 보이도록 설정
+             hideImages();
+             images[0].style.display = 'block';
+
+             // setInterval 내부 함수에서 hideImages와 currentIndex를 사용하도록 수정
+             const changeImage = () => {
+               hideImages();
+               currentIndex = (currentIndex + 1) % images.length;
+               images[currentIndex].style.display = 'block';
+             };
+
+             // 초기 이미지 변경 후 2초마다 이미지 변경 함수 실행
+             setInterval(changeImage, 2000);
+           });
+         }
+
+         window.onload = function() {
+           changeImages();
+         };
+
+    
+         document.addEventListener('DOMContentLoaded', function() {
+        	  const backToTop = document.getElementById('back-to-top');
+			  const wrapper = document.getElementById("wrapper");
+        	  // 페이지가 로드됐을 때 스크롤 위치에 상관없이 항상 버튼을 보이게 설정
+        	  backToTop.classList.add('show');
+
+        	  backToTop.addEventListener('click', function(e) {
+        	    e.preventDefault();
+        	    wrapper.scrollTo({
+        	      top: 0,
+        	      behavior: 'smooth'
+        	    });
+        	  });
+        	});
+    
+    
+    
+    
+    
+		
+		let intervalId; // 전역 변수로 setInterval을 담기 위한 변수
+
+		function startSlideShow(intervalTime) {
+		  intervalId = setInterval(() => {
+		    // 'next' 버튼을 눌렀을 때와 동일한 효과를 내는 코드
+		    slider.handleClick('next'); // slider는 현재 슬라이드를 관리하는 객체일 것입니다.
+		  }, intervalTime);
+		}
+		
+		function stopSlideShow() {
+		  clearInterval(intervalId); // setInterval을 멈추는 함수
+		}
+		
+		
+		startSlideShow(5000);
+			  
+	  
+	  
+	  
+	  
+	  
+
+		
+		const items = [
+		{
+		    img: "image/sohwa/cook3core1-removebg-preview.png",
+		    category: "cooking utensils",
+		    title: "cold pack",
+		    price: "\\16,910",
+		    bgColor: "#dedede",
+		  },
+		  {
+		    img: "image/sohwa/대표1-removebg-preview (2).png",
+		    category: "Other products",
+		    title: "dear shaped lights",
+		    price: "\\ 17,000",
+		    bgColor: "#ffe474",
+		  },
+		  {
+		    img: "image/sohwa/대표2-removebg-preview.png",
+		    category: "Other products",
+		    title: "camping chair",
+		    price: "\\20,100",
+		    bgColor: "#d2e2d7",
+		  },
+		  {
+		    img: "image/sohwa/cook2Detail2-removebg-preview.png",
+		    category: "cooking utensils",
+		    title: "mini brazier",
+		    price: "\\19,800",
+		    bgColor: "#f3c3be",
+		  },
+		  
+		];
+		
+		const timeLine = gsap.timeline();
+		
+		class Slider {
+		  constructor(items) {
+		    this.active = 0;
+		    this.items = items;
+		    document
+		      .querySelectorAll(".slider__btn-switch[data-type]")
+		      .forEach((btn) => {
+		        btn.onclick = () => this.handleClick(btn.dataset.type);
+		      });
+		  }
+		
+		  renderItem() {
+		    const { img, category, title, price } = this.items[this.active];
+		
+		    const sliderContent = `
+		      <img class="slider__img" src="${img}" alt="${title}" />
+		      <div class="slider__context flex-column">
+		        <h3 class="slider__category">${category}</h3>
+		        <strong class="slider__title">${title}</strong>
+		        <small class="slider__price">${price}</small>
+		      </div>
+		    `;
+		    const sliderIndex = `
+		      <span>${
+		        this.active < 10 ? "0" + (this.active + 1) : this.active + 1
+		      }</span>
+		      <span>${
+		        this.items.length < 10 ? "0" + this.items.length : this.items.length
+		      }</span>
+		    `;
+		
+		    document.querySelector(".slider__content").innerHTML = sliderContent;
+		    document.querySelector(".slider__index").innerHTML = sliderIndex;
+		  }
+		
+		  basicAimation(dir, delay) {
+		    timeLine.to(".slider", {
+		      delay,
+		      duration: 0.2,
+		      backgroundColor: `${items[this.active].bgColor}`,
+		    });
+		    timeLine.fromTo(
+		      ".slider__img",
+		      {
+		        x: 150 * dir,
+		        opacity: 0,
+		        duration: 1,
+		        ease: "power2.out",
+		      },
+		      {
+		        x: 0,
+		        opacity: 1,
+		        duration: 1,
+		        ease: "power2.out",
+		      }
+		    );
+		    timeLine.fromTo(
+		      ".slider__context *",
+		      {
+		        x: 50 * dir,
+		        opacity: 0,
+		        duration: 0.7,
+		        stagger: 0.15,
+		        ease: "power2.out",
+		      },
+		      {
+		        x: 0,
+		        opacity: 1,
+		        duration: 0.7,
+		        stagger: 0.15,
+		        ease: "power2.out",
+		      },
+		      "<"
+		    );
+		  }
+		
+		  handleClick(type) {
+		    const dir = type === "next" ? 1 : -1;
+		    timeLine.to(".slider__img", {
+		      x: -250 * dir,
+		      opacity: 0,
+		      duration: 1,
+		      ease: "power2.inOut",
+		
+		      onComplete: () => {
+		        if (type === "next") {
+		          this.active = this.active === items.length - 1 ? 0 : this.active + 1;
+		        } else {
+		          this.active = this.active <= 0 ? items.length - 1 : this.active - 1;
+		        }
+		
+		        this.renderItem();
+		        this.basicAimation(dir);
+		      },
+		    });
+		    timeLine.to(
+		      " .slider__context *",
+		      {
+		        x: -100 * dir,
+		        opacity: 0,
+		        duration: 0.7,
+		        stagger: 0.15,
+		        ease: "power2.inOut",
+		      },
+		      "<"
+		    );
+		  }
+		}
+		
+		const slider = new Slider(items);
+		slider.renderItem();
+		slider.basicAimation(1, 1);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		function sendCategoryNo(categoryNo){
+			location.href='productListView.so?categoryNo='+ categoryNo +'&keyword=' + '&standard=1';
+		}
+		
+		
+		//검색
+// 		document.getElementById('searchImg').addEventListener('click', ()=>{
+// 			var categoryNo = document.getElementById('categoryNo').value;
+// 			var searchInputValue = document.getElementById('searchInput').value;
+// 			console.log(123);
+// 		    var url = 'productListView.so?categoryNo=' + categoryNo + '&keyword=' + searchInputValue + '&standard=1' ;
+// 		    window.location.href = url;
+// 		})
+		
+		
+		function handleEnterKey(event) {
+		    if (event.key === "Enter") {
+		      handleSearchClick();
+		    }
+		  }
+		
+		  function handleSearchClick() {
+		    // 여기에 검색 기능을 구현하거나 클릭 이벤트에 대한 동작을 추가하세요.
+		    var keyword = document.getElementById("searchInput").value;
+		    // 예시: 검색 함수 호출 또는 원하는 동작 수행
+		    searchFunction(keyword);
+		 }
+		
+		  // 예시: 검색 함수 정의
+		  function searchFunction(keyword) {
+			  var categoryNo = document.getElementById('categoryNo').value;
+			  var searchInputValue = document.getElementById('searchInput').value;
+			  console.log(123);
+		      var url = 'productListView.so?categoryNo=' + categoryNo + '&keyword=' + keyword + '&standard=1' ;
+		      window.location.href = url;
+		  }
+
+
+		
+		
+		//상세보기
+		function redirectToProductDetail(element) {
+	        var hiddenInput = element.querySelector('input[type="hidden"]');
+	        var productNo = hiddenInput.value;
+	
+	        // productNo를 query parameter로 사용하여 productDetail.so 엔드포인트로 이동
+	        window.location.href = 'productDetail.so?productNo=' + productNo;
+	    }
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</script>
+
+</body>
+</html>

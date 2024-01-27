@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 레시피</title>
+    <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <link href="css/seongun/writeboard.css" rel="stylesheet">
+    <style>
+    	img{
+    		vertical-align: middle;
+    	}
+    </style>
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+    <div class="head-container">
+        <h1>레시피 작성</h1>
+    </div>
+    <div class="write-container">
+        <form method="post" action="insertRecipe.su" enctype="multipart/form-data">
+            <!-- 제목 입력 -->
+            <div class="write-row">
+                <input type="text" id="title" name="recipeName" placeholder="요리 이름" />
+            </div>
+            <!-- 카테고리 선택 -->
+            <div class="write-row">
+            	<h4>조리도구를 선택해 주세요</h4>
+            	<div id="category">
+                    <label><input type="checkbox" name="cookCategoryNo" value="1"> 후라이팬</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="2"> 가위</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="3"> 칼</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="4"> 버너</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="5"> 에어프라이어</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="6"> 그릴</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="7"> 찜기</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="8"> 토치</label>
+				    
+				</div>
+            </div>
+            <input type="text" name="recipeTaste" placeholder="메인 맛!"/>
+            <!-- 내용 입력 -->
+            <div class="write-row">
+                <textarea id="content" name="recipeIngredients" placeholder="요리 재료를 입력하세요."></textarea>
+            </div>
+            <div class="write-row">
+                <textarea id="content" name="recipeContent" placeholder="조리 법을 입력하세요."></textarea>
+            </div>
+            <!-- 파일 첨부 -->
+            <div class="upload-container">
+                <div class="upload-top-area">
+                    <label class="upload-label">등록한 사진</label>
+                    <button type="button" id="add-upload-container">파일 추가</button>
+                </div>
+                <label class="upload-box">
+                    <input type="file" name="file" class="file-input" accept="image/*" onchange="sumviewImage(event)" />
+                    <div class="upload-area">
+                        <div class="upload-content" id="uploadContent">
+                            <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <p class="upload-text">대표사진</p>
+                        </div>
+                        <!-- Image Preview -->
+                        <img id="imagePreview" class="image-preview" />
+                    </div>
+                </label>
+            </div>
+            <div class="write-row">
+                <button type="submit" class="submit-btn">등록</button>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+    	/*<![CDATA[*/
+    	let memeber = /*[[${session.loginUser}]]*/null;
+        document.addEventListener('DOMContentLoaded', function() {
+            var addUploadButton = document.getElementById('add-upload-container');
+            var originalUploadContainer = document.querySelector('.upload-container');
+
+            addUploadButton.addEventListener('click', function() {
+                var newUploadContainerHTML = `
+                    <div class="upload-container">
+                        <div class="upload-top-area">
+                            <label class="upload-label">등록한 사진</label>
+                            <button type="button" class="delete-upload-container">파일 삭제</button>
+                        </div>
+                        <label class="upload-box">
+                            <input type="file" name="file" class="file-input" accept="image/*" onchange="sumviewImage(event)" />
+                            <div class="upload-area">
+                                <div class="upload-content">
+                                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    <p class="upload-text">추가 사진</p>
+                                </div>
+                                <!-- Image Preview -->
+                                <img class="image-preview" style="display: none;" />
+                            </div>
+                        </label>
+                    </div>`;
+
+                var newUploadContainer = document.createElement('div');
+                newUploadContainer.innerHTML = newUploadContainerHTML;
+                originalUploadContainer.parentNode.insertBefore(newUploadContainer, originalUploadContainer.nextSibling);
+
+                // 파일 삭제 버튼에 이벤트 리스너 추가
+                var deleteButtons = document.querySelectorAll('.delete-upload-container');
+                deleteButtons.forEach(function(button) {
+                    button.onclick = function() {
+                        this.parentElement.parentElement.remove();
+                    };
+                });
+            });
+        });
+
+        function sumviewImage(event) {
+            var imagePreview = event.target.parentNode.querySelector('.image-preview');
+            var uploadContent = event.target.parentNode.querySelector('.upload-content');
+            imagePreview.src = URL.createObjectURL(event.target.files[0]);
+            imagePreview.onload = function() {
+                URL.revokeObjectURL(imagePreview.src); // 메모리 해제
+            }
+            imagePreview.style.display = 'block'; // 이미지 미리보기 표시
+            uploadContent.style.display = 'none'; // 기존 콘텐츠 숨김
+		}
+        
+        window.onload = function() {
+            // 서버로부터 전달받은 오류 메시지 확인
+            
+            var msg = /*[[${msg}]]*/'';
+            
+            
+            // errorMessage가 비어있지 않은 경우에만 알림 표시
+            if(msg && msg.trim().length > 0) {
+                alert(msg);
+            }
+            
+            if(memeber == null){
+        		alert("로그인 후 이용 해주세요.");
+        		history.back();
+        	}
+        };
+        /*]]>*/
+    </script>
+</body>
+</html>

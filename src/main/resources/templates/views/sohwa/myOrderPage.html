@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>내 주문내역 목록페이지</title>
+<link href="css/sohwa/myOrderPage.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+<body>
+   <div th:replace="~{common/navbar :: navbar}"></div>
+   <br><br><br>
+   <div id="myOrderWrapped">
+      <h1>주문목록</h1>
+      
+      <br><br>
+      <div id="btns">
+         <button onclick="handleButtonClick(this)" class="selected">최근 6개월</button>
+         <button onclick="handleButtonClick(this)">2023</button>
+         <button onclick="handleButtonClick(this)">2022</button>
+         <button onclick="handleButtonClick(this)">2021</button>
+      </div>
+      <br><br>
+      
+      <div class="productWrapped">
+         
+         
+         
+         <!--다른 날짜일때 반복-->
+         <br><br>
+         <div>
+	         <div class="productss" th:each="on:${orderNos}">
+		         <div class="dayAndDetail">
+		         	<span class="detailOrder">
+		         		주문상세보기>>
+		         		<input class="orderNo" type="hidden" th:value="${on}">
+		         	</span>
+		         	<h5 style="margin-left:60px; display:inline-block;">주문번호 : [[${on}]]</h5> <th:block><a th:href="@{'refundOrder.so?orderNo=' + ${on}}" onclick="return refundOrder(this)"><button class="refundBtn">환불신청</button></a></th:block>
+		         </div>
+		         <!--같은 날짜 일때 반복-->
+		            <div class="products" th:each="pa:${paList}" th:if="${pa.orderNo == on and session.loginUser.memberId == pa.memberId}">
+		            	<input type="hidden" th:value="${pa.orderDate}" class="orderDate">
+		            	<th:block th:unless="${pa.deliveryStatus=='환불요청'}"><span style="margin-left:10px; font-size:13px;color:darkolivegreen; width:110px;">[[${pa.orderDate}]]<br>[[${pa.deliveryStatus}]]</span><br></th:block>
+		            	<th:block th:if="${pa.deliveryStatus=='환불요청'}"><span style="margin-left:10px; font-size:13px;color:red; width:110px;">[[${pa.orderDate}]]<br>[[${pa.deliveryStatus}]]</span></th:block>
+		            	
+		                <div class="left" th:each="p:${pList}" th:if="${pa.productNo == p.productNo}">
+		                
+		                <!-- 왼쪽 컨테이너 내용 -->
+			                <table>
+			                  <tr class="cart-row">
+			                      <td class="td1" style="width:400px;">
+			                         <img th:each="a:${aList}" th:if="${a.photoLevel==0 &&a.boardType==5 && a.boardNo == p.productNo}" th:src="${a.photoPath}">
+			                         <div>
+			                           <div>[[${p.productCompany}]]</div>
+			                           [[${p.productName}]]<br>
+			                           [[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]
+			                         </div>
+			                      </td>
+		                          <td class="td2" style="margin-right:0px !important;">
+		                              <div class="quantity-input" style="margin-right:0px !important;">&nbsp;&nbsp;&nbsp;
+		                              	  <input type="hidden" class="productPrice" th:value="${p.productPrice}">
+		                                  <input type="text" class="quantity" th:value="${pa.orderProductEno}" min="1" readonly>개
+		                              </div>
+		                          </td>
+		                          <td style="width:200px; margin-right:20px !important;">[[${pa.productOption}]]</td>
+		                          <td class="td3" style="width:150px;">
+		                          
+		                          </td>
+			                   </tr>   
+			               </table>
+		                </div>
+		                
+		                <div class="line"></div>
+		                
+		                <div class="right">
+		                <!-- 오른쪽 컨테이너 내용 -->
+		                   <input type="hidden" th:value="${pa.orderDate}" class="orderDate">
+		                   <a th:href="@{'productDetail.so?productNo=' + ${pa.productNo}}" ><button>상품페이지로 이동</button></a>
+		                </div>
+		            </div>
+	            </div>
+            </div>
+<!--             <div class="products"> -->
+<!--                 <div class="left"> -->
+<!--                 왼쪽 컨테이너 내용 -->
+<!-- 	                <table> -->
+<!-- 	                  <tr class="cart-row"> -->
+<!-- 	                          <td class="td1"> -->
+<!-- 	                        <img src="image/sohwa/tent1core1.png"> -->
+<!-- 	                        <div> -->
+<!-- 	                           <div>모비가든</div> -->
+<!-- 	                           캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용<br> -->
+<!-- 	                           410,000원 -->
+<!-- 	                        </div> -->
+<!-- 	                          </td> -->
+<!-- 	                          <td class="td2"> -->
+<!-- 	                              <div class="quantity-input">&nbsp;&nbsp;&nbsp; -->
+<!-- 	                                  <input type="text" class="quantity" value="1" min="1" readonly>개 -->
+<!-- 	                              </div> -->
+<!-- 	                          </td> -->
+<!-- 	                          <td class="td3"> -->
+<!-- 	                              410,000원 -->
+<!-- 	                          </td> -->
+<!-- 	                      </tr>    -->
+<!-- 	               </table> -->
+<!--                 </div> -->
+                
+<!--                 <div class="line"></div> -->
+                
+<!--                 <div class="right"> -->
+<!--                 오른쪽 컨테이너 내용 -->
+<!--                    <button>환불신청</button><br> -->
+<!--                    <button>리뷰작성</button><br> -->
+<!--                    <button class="openModalButton">문의작성</button> -->
+<!--                 </div> -->
+<!--             </div> -->
+            
+            
+            
+            
+            
+<!--             다른 날짜일때 반복 -->
+<!--             <br><br> -->
+<!--             <div class="dayAndDetail"><h2>2023.12.18 주문</h2> <span>주문상세보기>></span></div> -->
+<!--             <h4 style="margin-left:5%; color:darkolivegreen;">2023.12.21 배송예정</h4> -->
+<!--             같은 날짜 일때 반복 -->
+<!--                <div class="products"> -->
+<!--                    <div class="left"> -->
+<!--                    왼쪽 컨테이너 내용 -->
+<!--                    <table> -->
+<!--                      <tr class="cart-row"> -->
+<!--                              <td class="td1"> -->
+<!--                            <img src="image/sohwa/tent1core1.png"> -->
+<!--                            <div> -->
+<!--                               <div>모비가든</div> -->
+<!--                               캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용<br> -->
+<!--                               410,000원 -->
+<!--                            </div> -->
+<!--                              </td> -->
+<!--                              <td class="td2"> -->
+<!--                                  <div class="quantity-input">&nbsp;&nbsp;&nbsp; -->
+<!--                                      <input type="text" class="quantity" value="1" min="1" readonly>개 -->
+<!--                                  </div> -->
+<!--                              </td> -->
+<!--                              <td class="td3"> -->
+<!--                                  410,000원 -->
+<!--                              </td> -->
+<!--                          </tr>    -->
+<!--                   </table> -->
+<!--                    </div> -->
+                   
+<!--                    <div class="line"></div> -->
+                   
+<!--                    <div class="right"> -->
+<!--                    오른쪽 컨테이너 내용 -->
+<!--                       <button>환불신청</button><br> -->
+<!--                       <button>리뷰작성</button><br> -->
+<!--                       <button class="openModalButton">문의작성</button> -->
+<!--                    </div> -->
+<!--                </div> -->
+               
+<!--                <div class="products"> -->
+<!--                    <div class="left"> -->
+<!--                    왼쪽 컨테이너 내용 -->
+<!--                    <table> -->
+<!--                      <tr class="cart-row"> -->
+<!--                              <td class="td1"> -->
+<!--                            <img src="image/sohwa/tent1core1.png"> -->
+<!--                            <div> -->
+<!--                               <div>모비가든</div> -->
+<!--                               캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용<br> -->
+<!--                               410,000원 -->
+<!--                            </div> -->
+<!--                              </td> -->
+<!--                              <td class="td2"> -->
+<!--                                  <div class="quantity-input">&nbsp;&nbsp;&nbsp; -->
+<!--                                      <input type="text" class="quantity" value="1" min="1" readonly>개 -->
+<!--                                  </div> -->
+<!--                              </td> -->
+<!--                              <td class="td3"> -->
+<!--                                  410,000원 -->
+<!--                              </td> -->
+<!--                          </tr>    -->
+<!--                   </table> -->
+<!--                    </div> -->
+                   
+<!--                    <div class="line"></div> -->
+                   
+<!--                    <div class="right"> -->
+<!--                    오른쪽 컨테이너 내용 -->
+<!--                       <button>환불신청</button><br> -->
+<!--                       <button>리뷰작성</button><br> -->
+<!--                       <button class="openModalButton">문의작성</button> -->
+<!--                    </div> -->
+<!--                </div> -->
+               
+<!--                <div class="products"> -->
+<!--                    <div class="left"> -->
+<!--                    왼쪽 컨테이너 내용 -->
+<!--                    <table> -->
+<!--                      <tr class="cart-row"> -->
+<!--                              <td class="td1"> -->
+<!--                            <img src="image/sohwa/tent1core1.png"> -->
+<!--                            <div> -->
+<!--                               <div>모비가든</div> -->
+<!--                               캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용<br> -->
+<!--                               410,000원 -->
+<!--                            </div> -->
+<!--                              </td> -->
+<!--                              <td class="td2"> -->
+<!--                                  <div class="quantity-input">&nbsp;&nbsp;&nbsp; -->
+<!--                                      <input type="text" class="quantity" value="1" min="1" readonly>개 -->
+<!--                                  </div> -->
+<!--                              </td> -->
+<!--                              <td class="td3"> -->
+<!--                                  410,000원 -->
+<!--                              </td> -->
+<!--                          </tr>    -->
+<!--                   </table> -->
+<!--                    </div> -->
+                   
+<!--                    <div class="line"></div> -->
+                   
+<!--                    <div class="right"> -->
+<!--                    오른쪽 컨테이너 내용 -->
+<!--                       <button>환불신청</button><br> -->
+<!--                       <button>리뷰작성</button><br> -->
+<!--                       <button class="openModalButton">문의작성</button> -->
+<!--                    </div> -->
+<!--                </div> -->
+               
+               
+         </div>
+         
+         <br><br>
+         
+         
+      
+      
+      
+      </div>
+   
+      
+   
+   
+   
+   
+   
+   <br><br><br><br><!--footer--><br><br><br><br>
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   <script th:inline="javascript">
+	   window.onload=()=>{
+		   const inputs = document.querySelectorAll('.quantity-input');
+		   
+		   for (let i = 0; i < inputs.length; i++) {
+			   const price = inputs[i].querySelector('.productPrice').value;
+			   const eno = inputs[i].querySelector('.quantity').value;
+			   inputs[i].parentNode.nextElementSibling.nextElementSibling.innerText=(price * eno).toLocaleString() + '원';
+			   console.log(inputs[i].parentNode.nextElementSibling);
+		   }
+	   }
+	   
+	   const detailOrder = document.querySelectorAll('.detailOrder');
+	   for (let i=0; i<detailOrder.length; i++){
+		   
+		   detailOrder[i].addEventListener('click',()=>{
+			   const orderNo = detailOrder[i].querySelector('.orderNo').value;
+			   location.href='detailOrderView.so?orderNo=' + orderNo;
+		   })
+	   }
+	   
+	   
+	   
+	   //드롭다운
+	    function toggleDropdown() {
+	     document.getElementById("options").classList.toggle("show");
+	   }
+	   
+	   function selectOption(element) {
+	     var selectedOption = element.textContent;
+	     document.querySelector(".dropdown-select").textContent = selectedOption;
+	     document.getElementById("options").classList.remove("show");
+	   }
+	   
+	   
+	   
+	   //버튼
+	   function handleButtonClick(button) {
+	    const buttons = document.querySelectorAll("button");
+	    buttons.forEach(btn => {
+	      // 클릭된 버튼이면 'selected' 클래스 추가
+	      if (btn === button) {
+	        btn.classList.add("selected");
+	      } else {
+	        // 클릭되지 않은 다른 버튼은 'selected' 클래스 제거
+	        btn.classList.remove("selected");
+	      }
+	    });
+	  }
+	  
+	  
+	     // 모달 열기 버튼 클릭 시 모달을 보이게 하는 함수
+	    document.addEventListener('DOMContentLoaded', function () {
+	        // 모달 열기 버튼 클릭 시 이벤트 핸들러
+	        const openModalButtons = document.querySelectorAll('.openModalButton');
+	        openModalButtons.forEach(btn => {
+	            btn.addEventListener('click', function () {
+	                // 모달 요소를 보이도록 스타일 변경
+	                document.getElementById('customModal').style.display = 'block';
+	            });
+	        });
+	
+	        // 모달 닫기 버튼 클릭 시 이벤트 핸들러
+	        document.getElementById('closeModalButton').addEventListener('click', function () {
+	            // 모달 요소를 감추도록 스타일 변경
+	            document.getElementById('customModal').style.display = 'none';
+	        });
+	    });
+	   
+   
+   		
+	    function refundOrder(link) {
+	        var currentDate = new Date();
+	        
+	        // 일주일 전 날짜 계산
+	        var oneWeekAgo = new Date(currentDate);
+	        oneWeekAgo.setDate(currentDate.getDate() - 7);
+			
+	        
+	        // 이전 동위 요소 찾기
+	        var previousSibling = link.parentElement.nextElementSibling.firstElementChild;
+
+	        // 이전 동위 요소가 input 요소이고, 값이 날짜 형식이라 가정
+	        var previousDate = new Date(previousSibling.value);
+
+	        // 일주일 이내인지 확인
+	        if (previousDate < oneWeekAgo) {
+	            alert("환불은 일주일 이내에만 가능합니다.");
+	            return false;
+	        } else {
+	            // 확인 버튼이 눌렸을 때
+	            var isConfirmed = confirm("환불 신청을 하시겠습니까?");
+	            if (isConfirmed) {
+	                // URL로 이동
+	                window.location.href = link.getAttribute("href");
+	            }
+
+	            // 취소 버튼이 눌렸을 때
+	            return false;
+	        }
+	    }
+   
+   
+   
+   
+  </script>
+
+</body>
+</html>

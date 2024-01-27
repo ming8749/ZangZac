@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.jaeyoung.campingReview.model.dao.CampingReviewDAO">
+	
+	
+	<insert id="insertCampingReview">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="crNo">
+         	select CR_SEQ.nextval 
+         	from dual
+     	 </selectKey>
+		insert into camping_reviews
+		values (#{crNo}, #{crTitle}, #{crContent}, default, default,default,default,#{memberId}, #{categoryNo}, #{crStar}) 
+	</insert>
+	
+	<select id="selectList">
+		SELECT *
+		FROM camping_reviews CR
+		LEFT JOIN camping_category CC ON CR.CATEGORY_NO = CC.CATEGORY_NO
+		LEFT JOIN photo P ON CR.CR_NO = P.BOARD_NO AND P.BOARD_TYPE = 8
+		left join member m on cr.member_id = m.member_id
+		where cr_status='N'
+		ORDER BY CR.CR_NO DESC
+	</select>
+	
+	<select id="getListCount">
+	    SELECT COUNT(*)
+	    FROM camping_reviews CR
+	    LEFT JOIN member M ON CR.MEMBER_ID = M.MEMBER_ID
+	    WHERE CR_STATUS='N'
+	    <if test="searchText != null and searchText != ''">
+	        AND (CR.CR_TITLE LIKE '%' || #{searchText} || '%' OR CR.CR_CONTENT LIKE '%' || #{searchText} || '%' OR M.MEMBER_NICKNAME LIKE '%' || #{searchText} || '%')
+	    </if>
+	</select>
+	
+	<select id="selectBoardList" >
+	    SELECT *
+	    FROM camping_reviews CR
+	    LEFT JOIN camping_category CC ON CR.CATEGORY_NO = CC.CATEGORY_NO
+	    LEFT JOIN member M ON CR.MEMBER_ID = M.MEMBER_ID
+	    WHERE CR.CR_STATUS='N'
+	    <if test="searchText != null and searchText != ''">
+	        AND (CR.CR_TITLE LIKE '%' || #{searchText} || '%' OR CR.CR_CONTENT LIKE '%' || #{searchText} || '%' OR M.MEMBER_NICKNAME LIKE '%' || #{searchText} || '%')
+	    </if>
+	    ORDER BY CR.CR_NO DESC
+	</select>
+	
+	<select id="selectDetailCr">
+		SELECT *
+	    FROM camping_reviews CR
+	    LEFT JOIN camping_category CC ON CR.CATEGORY_NO = CC.CATEGORY_NO
+	    LEFT JOIN member M ON CR.MEMBER_ID = M.MEMBER_ID
+	    WHERE CR_NO = #{crNo}
+	</select>
+	
+	<update id="updateCampingReview">
+		update camping_reviews
+		set cr_title =#{crTitle},cr_content=#{crContent},category_no=#{categoryNo},cr_star=#{crStar}
+		where cr_no = #{crNo}
+	</update>
+	
+	<update id="campingReviewDelete">
+		update camping_reviews
+		set cr_status ='Y'
+		where cr_no = #{crNo}
+	</update>
+	
+	<update id="updateCount">
+		update camping_reviews
+		set cr_count = cr_count+1
+		where cr_no = #{crNo}
+	</update>
+	
+
+	
+
+
+</mapper>

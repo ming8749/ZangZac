@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" >
+<head>
+<meta charset="UTF-8">
+<meta>
+<title>캠핑장 정보 수정</title>
+<title>게시글 상세보기</title>
+   <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/seongun/b9045bb4-dad6-4ab1-b9fa-4841e6716aed">
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<style>
+ body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container2 {
+    width: 50%;
+    margin-top:100px;
+    margin:0 auto;
+    margin-top:100px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-group input[type="number"] {
+     width: 90%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width:100px;
+}
+
+.form-group input[type="file"] {
+    border: none;
+}
+
+button {
+    width: 100px;
+    padding: 10px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+</style>
+
+</head>
+<body>
+   <div th:replace="~{common/admin :: admin}"></div>  
+	  <div class="container2">
+	    <form class="needs-validation" action="campEdit.ys"
+				 method="POST" enctype="multipart/form-data" id="attmForm">
+		  <input type="hidden" name="page" th:value="${ page }">
+		  <input type="hidden" name="cgNo" th:value="${ campList.cgNo }">
+	     <div>
+	       <h1 style="text-align: center;">캠핑장 수정/삭제</h1>
+	       <br>
+	       <div class="form-group">
+	         <label for="campsiteName">캠핑장 지역:</label>
+	         <select name="cgRegion" th:value="${campList.cgRegion}"  style=" margin-right: 10px; height:30px;">
+	              <option>시/도 선택</option>
+	              <option th:selected="${campList.cgRegion} == '강원도'"  value="강원도">강원도</option>
+	              <option th:selected="${campList.cgRegion} == '경기도'" value="경기도">경기도</option>
+	              <option th:selected="${campList.cgRegion} == '경상남도'" value="경상남도">경상남도</option>
+	              <option th:selected="${campList.cgRegion} == '경상북도'" value="경상북도">경상북도</option>
+	              <option th:selected="${campList.cgRegion} == '광주'" value="광주">광주</option>
+	              <option th:selected="${campList.cgRegion} == '대구'" value="대구">대구</option>
+	              <option th:selected="${campList.cgRegion} == '대전'" value="대전">대전</option>
+	              <option th:selected="${campList.cgRegion} == '부산'" value="부산">부산</option>
+	              <option th:selected="${campList.cgRegion} == '서울'" value="서울">서울</option>
+	              <option th:selected="${campList.cgRegion} == '울산'" value="울산">울산</option>
+	              <option th:selected="${campList.cgRegion} == '인천'" value="인천">인천</option>
+	              <option th:selected="${campList.cgRegion} == '전라남도'" value="전라남도">전라남도</option>
+	              <option th:selected="${campList.cgRegion} == '전라북도'" value="전라북도">전라북도</option>
+	              <option th:selected="${campList.cgRegion} == '제주도'" value="제주도">제주도</option>
+	              <option th:selected="${campList.cgRegion} == '충청남도'" value="충청남도">충청남도</option>
+	              <option th:selected="${campList.cgRegion} == '충청북도'" value="충청북도">충청북도</option>
+	           </select>
+	       </div><br>
+	       <div class="form-group">
+	            <label for="campsiteName">캠핑장 이름:</label>
+	            <input type="text" id="campsiteName" name="cgName" th:value="${campList.cgName}" required>
+	        </div><br>
+	        <div class="form-group">
+	            <label for="rating">별점 :</label>
+	            <input type="number" step="0.1" min="0" max="5"  name="cgStarPoint" th:value="${campList.cgStarPoint}" required >
+	        </div><br>
+		       <div class="form-group">
+		         <th:block th:each="photo:${photoList}">
+				    <label for="facilities">캠핑장 이미지:</label>
+				    <button type="button" class="btn btn-outline-dark btn-sm deleteFile"
+				     th:id="|delete~${photo.photoRename}/${ photo.photoLevel }|">삭제off</button>
+				    <input type="hidden" name ="deleteFile" value="none">
+					           <!-- 삭제할 파일을 담으려고 만듦  -->
+				    <div>
+				      <div class="mb-3">
+				        <input th:value="${photo.photoPath}"  name="campImg">
+				        <div class="infoImgs" style="display:inline-block">
+				          <th:block th:if="${#strings.containsIgnoreCase(photo.photoRename, 'jpg') 
+					                       or #strings.containsIgnoreCase(photo.photoRename, 'png') 
+					                        or #strings.containsIgnoreCase(photo.photoRename, 'jpeg')}">
+				            <img th:src="${photo.photoPath}" style="width:150px;">
+				          </th:block>
+				        </div> 
+				      </div>
+					</div>
+				  </th:block>		
+			    </div>
+		        <button type="button" class="w-25 btn btn-outline-success" id="addfile">
+				+파일추가</button>
+		        <div id="fileArea">
+		          <div class="mb-3">
+		            <input type="file" id="campImg" class="form-control form control" name ="file" accept="image/*" style="width:300px;" onchange="previewImage3()" required>
+		            <div class="infoImgs" style="display:inline-block"></div>
+		            <button type="button" class="deleteInput" onclick="deleteBtn()">삭제</button>
+		          </div>
+		        </div>
+		    <br>
+			<div class="form-group" style="width:750px; margin-left: 10px;">
+		         <table class="table" >
+				   <tr>
+				     <td>주소</td>
+				     <td><input th:value="${campList.cgAddress}" style="width:500px;" name="cgAddress"></td>
+				   </tr>
+				   <tr>
+				     <td>문의처</td>
+				     <td><input th:value="${campList.cgPhone}" style="width:500px;" name="cgPhone"></td>
+				   </tr>
+				   <tr>
+				     <td>캠핑장 유형</td>
+				     <td><input th:value="${campList.cgType}" style="width:500px;" name="cgType"></td>
+				   </tr>
+				   <tr>
+				     <td>캠핑장 환경</td>
+				     <td><input th:value="${campList.cgArea}" style="width:500px;" name="cgArea"></td>
+				   </tr>
+				   <tr>
+				     <td>운영기간</td>
+				     <td><input th:value="${campList.cgSeason}" style="width:500px;" name="cgSeason"></td>
+				   </tr>
+				   <tr>
+				     <td>운영일</td>
+				     <td><input th:value="${campList.cgManageDate}" style="width:500px;" name="cgManageDate"></td>
+				   </tr>
+				   <tr>
+				     <td>홈페이지</td>
+				     <td><input th:value="${campList.cgPage}" style="width:500px;" name="cgPage"></td>
+				   </tr>
+				   <tr>
+				     <td>예약방법</td>
+				     <td><input th:value="${campList.cgBooking}" style="width:500px;" name="cgBooking"></td>
+				   </tr>
+				   <tr>
+				     <td>주변이용가능시설</td>
+				     <td><input th:value="${campList.cgInfo}" style="width:500px;" name="cgInfo"></td>
+				   </tr>
+				  <tr>
+				     <td>캠핑장 소개</td>
+				     <td><textarea style="width:500px;height:200px;" name="cgAmenity">[[${campList.cgAmenity}]]</textarea></td>
+				  </tr> 
+				  <tr>
+				     <td>시설안내</td>
+					 <td> 
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="전기사용" th:checked="${#strings.contains(info, '전기사용')}">전기사용
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="온수사용" th:checked="${#strings.contains(info, '온수사용')}">온수사용
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="와이파이" th:checked="${#strings.contains(info, '와이파이')}">와이파이
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="산책로" th:checked="${#strings.contains(info, '산책로')}">산책로
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="물놀이장" th:checked="${#strings.contains(info, '물놀이장')}">물놀이장
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="놀이터" th:checked="${#strings.contains(info, '놀이터')}">놀이터
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="마트.편의점" th:checked="${#strings.contains(info, '마트.편의점')}">마트.편의점
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="운동시설" th:checked="${#strings.contains(info, '운동시설')}">운동시설
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="운동장" th:checked="${#strings.contains(info, '운동장')}">운동장
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="장작판매" th:checked="${#strings.contains(info, '장작판매')}">장작판매
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="트렘폴린" th:checked="${#strings.contains(info, '트렘폴린')}">트렘폴린
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="공용화장실" th:checked="${#strings.contains(info, '공용화장실')}">공용화장실
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="주차장" th:checked="${#strings.contains(info, '주차장')}">주차장
+				       </label>
+				       <label>
+				         <input class="info" type="checkbox" name="cgImgInfo" value="바베큐" th:checked="${#strings.contains(info, '바베큐')}">바베큐
+				       </label>
+				     </td>
+				  </tr> 
+				  <tr>
+				     <td>추천여부</td>
+				     <td>
+				       <input type="radio" style="margin-left: 10px;" name="cgRecomendation" value="Y" th:checked="${#strings.contains(recomendation, 'Y')}">Y
+					   <input type="radio" style="margin-left: 10px;" name="cgRecomendation" value="N" th:checked="${#strings.contains(recomendation, 'N')}">N
+					 </td>
+				  </tr>    
+			  </table>	  
+	       </div>
+	       <button id="submitAttm" type="button">등록</button>
+	       <button style="background-color: red; margin-left: 10px;">취소</button>  
+	     </div>
+	   </form>
+	 
+	 </div>
+	 
+<script th:lnline="javascript">
+   window.onload = () => {
+	   
+	   const delBtns = document.getElementsByClassName('deleteFile');
+	   for(const btn of delBtns){
+		   btn.addEventListener('click', function(){
+			   const nextHidden = this.nextElementSibling;
+			    console.log(btn);
+			   if(this.innerText == '삭제off'){
+				 this.style.background = 'black';
+  				 this.style.color = 'white';
+  				 this.innerText = '삭제on';
+  				 nextHidden.value = this.id.split('~')[1];
+  				 console.log(nextHidden.value);
+  			 }else{
+  				 this.style.background = 'none';
+  				 this.style.color = 'black';
+  				 this.innerText = '삭제off';
+  				 nextHidden.value = 'none';
+  			 }
+			   
+		   });
+	   }
+	   const fileArea = document.querySelector('#fileArea');
+  	   document.getElementById('addfile').addEventListener('click', ()=>{
+  		 const newDiv = document.createElement('div');
+  		 newDiv.classList.add('mb-3');
+  		 newDiv.innerHTML = '<input type="file" class="form-control form-control" name ="file" style="width:300px;" onchange="previewImage()"><div class="infoImgs" style="display:inline-block"></div><button type="button" class="deleteInput">삭제</button>';
+  		 
+  		 fileArea.append(newDiv);
+  		 
+  		const deleteButton = newDiv.querySelector('.deleteInput');
+        deleteButton.addEventListener('click', () => {
+            newDiv.remove(); // 해당 div를 삭제
+        });
+  	 });
+  	   
+  	 const form = document.getElementById('attmForm');
+	 document.getElementById('submitAttm').addEventListener('click', ()=> {
+		 const files = document.getElementsByName('file');
+		 console.log(files);
+		 let isEmpty = true;
+		 for(const f of files){
+			 if(f.value != ''){
+				 isEmpty = false;
+			 }
+		 }
+		 
+		 let isAllRemove = true;
+	     for(const btn of delBtns){
+		   if(btn.innerText == '삭제off'){
+			   isAllRemove = false;
+		   }
+	     }
+	     form.submit();
+	 });
+	 
+   }
+   
+   function previewImage() {
+		const input = event.target;
+       const infoImgs = input.parentElement.querySelector('.infoImgs');
+
+       while (infoImgs.firstChild) {
+           infoImgs.removeChild(infoImgs.firstChild);
+       }
+
+       const files = input.files;
+       for (const file of files) {
+           const reader = new FileReader();
+           reader.onload = function (e) {
+               const img = document.createElement('img');
+               img.src = e.target.result;
+               img.style.width = '150px'; // 미리보기 이미지의 너비를 조절할 수 있습니다.
+               infoImgs.appendChild(img);
+           };
+           reader.readAsDataURL(file);
+       }
+	}
+   
+   
+   function previewImage3() {
+		const input = document.getElementById('campImg');
+		console.log(input);
+       const infoImgs = input.parentElement.querySelector('.infoImgs');
+        
+       while (infoImgs.firstChild) {
+           infoImgs.removeChild(infoImgs.firstChild);
+       }
+
+       const files = input.files;
+       console.log(files);
+       for(const file of files){
+           const reader = new FileReader();
+           reader.onload = function (e) {
+               const img = document.createElement('img');
+               img.src = e.target.result;
+               img.style.width = '150px'; // 미리보기 이미지의 너비를 조절할 수 있습니다.
+               infoImgs.appendChild(img);
+           };
+           reader.readAsDataURL(file);
+       }
+   }
+   
+   function deleteBtn() {
+	   const input = document.getElementById('campImg');
+	   
+	   input.value='';
+	   previewImage3();
+	 
+   }
+
+</script>
+	
+  
+</body>
+</html>

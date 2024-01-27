@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" >
+<head>
+<meta charset="UTF-8">
+<meta>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<title>캠핑장 정보 등록</title>
+<title>게시글 상세보기</title>
+   <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/seongun/b9045bb4-dad6-4ab1-b9fa-4841e6716aed">
+<style>
+ body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container2 {
+    width: 50%;
+    margin-top:100px;
+    margin:0 auto;
+    margin-top:100px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-group input[type="number"] {
+     width: 90%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width:100px;
+}
+
+
+button{
+  background:#1AAB8A;
+  color:#fff;
+  border:none;
+  position:relative;
+  height:40px;
+  font-size:1.6em;
+  padding:0 2em;
+  cursor:pointer;
+  outline:none;
+}
+button:hover{
+  background:#fff;
+  color:#1AAB8A;
+}
+button:before,button:after{
+  content:'';
+  position:absolute;
+  top:0;
+  right:0;
+  height:2px;
+  width:0;
+  background: #1AAB8A;
+  transition:400ms ease all;
+}
+button:after{
+  right:inherit;
+  top:inherit;
+  left:0;
+  bottom:0;
+}
+button:hover:before,button:hover:after{
+  width:100%;
+  transition:800ms ease all;
+}
+
+.info{
+  margin-left: 10px;
+}
+
+</style>
+
+</head>
+<body>
+   <div th:replace="~{common/admin :: admin}"></div>
+	<form action="campInsert.ys" method="POST"  enctype="multipart/form-data">  
+	   <div class="container2">
+	     <div>
+	       <h1 style="text-align: center;">캠핑장 등록</h1>
+	       <br>
+	       <div class="form-group">
+	          <h6 style="color:red;">*입력값이 없을 경우 - 로 입력해주세요</h6>
+	         <label for="campsiteName">캠핑장 지역:</label>
+	         <select name="cgRegion" style=" margin-right: 10px; height:30px;">
+	              <option value=''>시/도 선택</option>
+	              <option value="강원도">강원도</option>
+	              <option value="경기도">경기도</option>
+	              <option value="경상남도">경상남도</option>
+	              <option value="경상북도">경상북도</option>
+	              <option value="광주">광주</option>
+	              <option value="대구">대구</option>
+	              <option value="대전">대전</option>
+	              <option value="부산">부산</option>
+	              <option value="서울">서울</option>
+	              <option value="울산">울산</option>
+	              <option value="인천">인천</option>
+	              <option value="전라남도">전라남도</option>
+	              <option value="전라북도">전라북도</option>
+	              <option value="제주도">제주도</option>
+	              <option value="충청남도">충청남도</option>
+	              <option value="충청북도">충청북도</option>
+	           </select>
+	       </div><br>
+	       <div class="form-group">
+	            <label for="campsiteName">캠핑장 이름:</label>
+	            <input type="text" id="campsiteName" name="cgName" required>
+	        </div><br>
+	        <div class="form-group">
+	            <label for="rating">별점 :</label>
+	            <input type="number" step="0.1" min="0" max="5"  name="cgStarPoint" required >
+	        </div><br>
+	        <div class="form-group" id="fileInputs">
+			    <label for="facilities">캠핑장 이미지:</label>
+			    <button type="button" id="addfile" style="margin-bottom: 20px;">추가버튼</button>
+			    <div id="fileArea">
+			      <div class="mb-3">
+			        <input type="file" class="form-control form control" id="campImg" name="campImg" accept="image/*" style=" width:300px;" onchange="previewImage3()" required>
+			        <div class="infoImgs" style="display:inline-block; margin-top: 10px;"></div> 
+			      </div>
+				</div>		
+		    </div>
+		    <br>
+			<div class="form-group" style="width:750px; margin-left: 10px;">
+			         <table class="table">
+					   <tr>
+					     <td>주소</td>
+					     <td>
+					       <input style="float: left; width:400px;" type="text" name="cgAddress" id="address-1" class="updateInput" placeholder="주소" readonly>
+					       &nbsp;<input style="height:42px;" type="button" id="sample6" onclick="execDaumPostcode()" value="주소검색" class="updateBtn">
+					     </td>
+					   </tr>
+					   <tr>
+					     <td>문의처</td>
+					     <td><input type="text" style="width:400px;" name="cgPhone" required></td>
+					   </tr>
+					   <tr>
+					     <td>캠핑장 유형</td>
+					     <td><input type="text" style="width:400px;" name="cgType" required></td>
+					   </tr>
+					   <tr>
+					     <td>캠핑장 환경</td>
+					     <td><input type="text" style="width:400px;" name="cgArea" required></td>
+					   </tr>
+					   <tr>
+					     <td>운영기간</td>
+					     <td><input type="text" style="width:400px;" name="cgSeason" required></td>
+					   </tr>
+					   <tr>
+					     <td>운영일</td>
+					     <td><input type="text" style="width:400px;" name="cgManageDate" required></td>
+					   </tr>
+					   <tr>
+					     <td>홈페이지</td>
+					     <td><input type="text" style="width:400px;" name="cgPage" required></td>
+					   </tr>
+					   <tr>
+					     <td>예약방법</td>
+					     <td><input type="text" style="width:400px;" name="cgBooking" required></td>
+					   </tr>
+					   <tr>
+					     <td>주변이용가능시설</td>
+					     <td><input type="text" style="width:400px;" name="cgInfo" required></td>
+					   </tr>
+					  <tr>
+					     <td>캠핑장 소개</td>
+					     <td><textarea style="width:400px;height:200px;" name="cgAmenity" required></textarea></td>
+					  </tr> 
+					  <tr>
+					     <td>시설안내</td>
+					     <td>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="전기사용">전기사용
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="온수사용">온수사용
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="와이파이">와이파이
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="산책로">산책로
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="물놀이장">물놀이장
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="놀이터">놀이터
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="마트.편의점">마트.편의점
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="운동시설">운동시설
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="운동장">운동장
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="장작판매">장작판매
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="장작판매">트렘폴린
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="공용화장실">공용화장실
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="주차장">주차장
+					       </label>
+					       <label>
+					         <input class="info" type="checkbox" name="cgImgInfo" value="바베큐">바베큐
+					       </label>
+					     </td>
+					  </tr> 
+					  <tr>
+					     <td>추천여부</td>
+					     <td>
+					       <input type="radio" style="margin-left: 10px;" name="cgRecomendation" value="Y">Y
+					       <input type="radio" style="margin-left: 10px;" name="cgRecomendation" value="N">N
+					     </td>
+					  </tr>    
+				  </table>	  
+	          </div>
+	        
+		      <button type="submit">등록</button>
+		      <button style="background-color: red; margin-left: 10px;">취소</button>  
+	     </div>
+	   </div>
+	   <input type="hidden" name="nowURL">
+	   <input type="hidden" id="msg" th:value="${msg}">
+	</form> 
+   <script th:lnline="javascript">
+		
+			const fileArea = document.querySelector('#fileArea');
+			document.getElementById('addfile').addEventListener('click', ()=> {
+				const newDiv = document.createElement('div');
+				newDiv.classList.add('mb-3');
+				newDiv.innerHTML = '<input type="file" class="form-control form-control" name="campImg" accept="image/*" style=" width:300px; float:left;" onchange="previewImage4()"><button style="margin-left:10px; " type="button" class="deleteInput">삭제</button><br><div class="infoImgs" style="display:inline-block; width:300px;"></div>';
+				
+				fileArea.append(newDiv);
+				
+				 // 삭제 버튼에 클릭 이벤트 추가
+		        const deleteButton = newDiv.querySelector('.deleteInput');
+		        deleteButton.addEventListener('click', () => {
+		            newDiv.remove(); // 해당 div를 삭제
+		        });
+			});	
+	
+		function previewImage3() {
+			const input = document.getElementById('campImg');
+	        const infoImgs = input.parentElement.querySelector('.infoImgs');
+	
+	        while (infoImgs.firstChild) {
+	            infoImgs.removeChild(infoImgs.firstChild);
+	        }
+	
+	        const files = input.files;
+	        for (const file of files) {
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                const img = document.createElement('img');
+	                img.src = e.target.result;
+	                img.style.width = '250px'; // 미리보기 이미지의 너비를 조절할 수 있습니다.
+	                infoImgs.appendChild(img);
+	            };
+	            reader.readAsDataURL(file);
+	        }
+	    }
+		
+		function previewImage4() {
+			const input = event.target;
+	        const infoImgs = input.parentElement.querySelector('.infoImgs');
+	
+	        while (infoImgs.firstChild) {
+	            infoImgs.removeChild(infoImgs.firstChild);
+	        }
+	
+	        const files = input.files;
+	        for (const file of files) {
+	            const reader = new FileReader();
+	            reader.onload = function (e) {
+	                const img = document.createElement('img');
+	                img.src = e.target.result;
+	                img.style.width = '250px'; // 미리보기 이미지의 너비를 조절할 수 있습니다.
+	                img.style.marginTop = '20px';
+	                infoImgs.appendChild(img);
+	            };
+	            reader.readAsDataURL(file);
+	        }
+		}
+   </script>
+
+	
+
+	<script th:inline="javascript">
+		function execDaumPostcode() {
+		    new daum.Postcode( {
+		      oncomplete: function( data ) {
+		        document.getElementById( 'address-1' ).value = data.address;
+		      }
+		    } ).open();
+		  }
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.yoonseo.camp.model.dao.CampDAO">
+   <insert id="insertCamp">
+      <selectKey order="BEFORE" resultType="_int" keyProperty="cgNo">
+        select cg_seq.nextval from dual
+      </selectKey>
+      insert into camping_ground
+      values(#{cgNo},#{cgName}, #{cgRegion},#{cgAddress},#{cgPhone},#{cgType},
+            default, sysdate, #{cgArea}, #{cgSeason},#{cgManageDate},
+            #{cgBooking}, #{cgPage},#{cgStarPoint},#{cgAmenity},#{cgInfo},
+            #{cgRecomendation},default,3,#{cgImgInfo})
+   
+   </insert>
+
+   <insert id="insertCampImg">
+     insert all
+     <foreach collection="list" item="item">
+       into photo
+       values (new_aid, #{item.photoRename},
+               #{item.photoPath}, #{item.photoLevel}, 3, #{item.boardNo},
+               default)
+     
+     </foreach>
+      select * from dual
+   </insert>
+   
+   
+   <select id="getListCount" resultType="_int">
+     select count(*)
+     from camping_ground
+     where cg_status = 'N' 
+   </select>
+   
+   <select id="selectCampList" resultType="CampingGround">
+     select *
+     from camping_ground
+     where cg_status = 'N' 
+     order by cg_no desc
+   </select>
+   
+   <select id="selectMapList" resultType="CampingGround">
+     select *
+     from camping_ground
+     where cg_status = 'N'
+   </select>
+   
+   <select id="selectCampingDetail" resultType="CampingGround">
+     select *
+     from camping_ground
+     where cg_status = 'N' and cg_no = #{no}
+   </select>
+   
+   <select id="selectPhoto" resultType="Photo">
+     select *
+     from photo
+     where photo_status = 'N' 
+            and board_no = #{no} and board_type = 3 
+     order by photo_no
+   </select>
+   
+   <select id="getRecomendationCount" resultType="_int">
+     select count(*)
+     from camping_ground
+     where cg_status = 'N'and cg_recomendation = #{recomendation}
+   </select>
+   
+   <select id="selectRecomendationList" resultType="CampingGround">
+     select *
+     from camping_ground
+     where cg_status = 'N' and cg_recomendation = #{recomendation}
+     order by cg_no desc
+   </select>
+   
+   <select id="selectOnePhoto" resultType="Photo">
+     select *
+     from photo
+     where photo_status = 'N' and photo_level = #{i} and board_type=3
+     order by photo_no
+   </select>
+   
+   <select id="getAllCount" resultType="_int">
+     select count(*)
+     from camping_ground
+   </select>
+   
+   <select id="selectAllList" resultType="CampingGround">
+     select *
+     from camping_ground
+     order by cg_no desc
+   </select>
+   
+   <update id="stateUpdate">
+     update camping_ground
+     set ${column} = #{state}
+     where cg_no = #{no}
+   </update>
+   
+   <delete id="deleteFile">
+     delete from photo
+     where photo_rename in
+     <foreach collection="list" item="item" open="(" close=")" separator=",">
+       #{item}
+     </foreach>
+   </delete>
+   
+   <select id="selectAllCamping" resultType="CampingGround">
+     select *
+     from camping_ground
+     where cg_no = #{no}
+   </select>
+   
+   <update id="updateCamp">
+     update camping_ground
+     set cg_name = #{cgName}, cg_region = #{cgRegion}, cg_address = #{cgAddress},
+         cg_phone = #{cgPhone}, cg_type = #{cgType}, cg_date = sysdate,
+         cg_area = #{cgArea}, cg_season = #{cgSeason}, cg_manage_date = #{cgManageDate},
+         cg_booking = #{cgBooking}, cg_page = #{cgPage}, cg_star_point = #{cgStarPoint},
+         cg_amenity = #{cgAmenity}, cg_info = #{cgInfo}, cg_recomendation = #{cgRecomendation},
+         cg_imginfo = #{cgImgInfo}
+     where cg_no = #{cgNo}
+   </update>
+   
+   <update id="updatePhotoLevel">
+     update Photo
+     set photo_level = 0
+     where photo_no = (select min(photo_no)
+                       from photo
+                       where board_no = #{cgNo} and board_type = 3) 
+   </update>
+   
+   <select id="searchCampCount" parameterType="hashMap" resultType="_int">
+    SELECT count(*)
+    FROM camping_ground
+    WHERE cg_status = 'N'
+	    <if test="keyword != null and keyword !=''">
+	        AND (cg_region LIKE '%' || #{keyword} || '%' OR
+	             cg_address LIKE '%' || #{keyword} || '%' OR
+	             cg_name LIKE '%' || #{keyword} || '%' OR
+	             cg_type LIKE '%' || #{keyword} || '%' OR
+	             cg_area LIKE '%' || #{keyword} || '%')
+	    </if>
+	    <if test="city != null and city != ''">
+	        AND cg_region LIKE '%' || #{city} || '%'
+	    </if>
+	    <if test="type != null and type != ''">
+	        AND cg_type LIKE '%' || #{type} || '%'
+	    </if>
+   </select>
+   
+   <select id="searchCampList" parameterType="hashMap" resultType="CampingGround">
+     SELECT *
+    FROM camping_ground
+    WHERE cg_status = 'N'
+	    <if test="keyword != null and keyword !=''">
+	        AND (cg_region LIKE '%' || #{keyword} || '%' OR
+	             cg_address LIKE '%' || #{keyword} || '%' OR
+	             cg_name LIKE '%' || #{keyword} || '%' OR
+	             cg_type LIKE '%' || #{keyword} || '%' OR
+	             cg_area LIKE '%' || #{keyword} || '%')
+	    </if>
+	    <if test="city != null and city != ''">
+	        AND cg_region LIKE '%' || #{city} || '%'
+	    </if>
+	    <if test="type != null and type != ''">
+	        AND cg_type LIKE '%' || #{type} || '%'
+	    </if>
+   </select>
+   
+   <select id="getMainList" resultType="CampingGround">
+       <![CDATA[ 
+       SELECT *
+		FROM (
+		    SELECT *
+		    FROM camping_ground
+		    WHERE cg_status = 'N' AND CG_RECOMENDATION = #{recomendation} AND CG_STAR_POINT >= 4.5
+		    ORDER BY CG_STAR_POINT DESC
+		    )
+		
+		WHERE ROWNUM <= 3
+		]]> 
+   </select>
+   
+   <select id="selectMainPhoto" resultType="CampingGround" >
+     <![CDATA[
+     select cg_region, cg_name, photo_path, photo_rename
+     from camping_ground join photo on (cg_no = board_no) 
+     where  photo_status ='N'AND BOARD_TYPE=3 AND PHOTO_LEVEL = 0
+            and cg_recomendation = 'Y' and rownum <= 3  AND CG_STAR_POINT >= 4.5
+     order by cg_star_point desc
+     ]]>
+   </select>
+   
+   <update id="updateCount">
+    update camping_ground
+    set cg_count = cg_count + 1
+    where cg_no = #{no}
+   </update>
+   
+</mapper>

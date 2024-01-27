@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.common.photo.model.dao.PhotoDAO">
+	<select id="selectBoardPhoto" resultType="Photo">
+		select *
+		from photo
+		where photo_status = 'N' and board_type = #{boardType} and board_no = #{boardNo}
+		order by photo_no asc
+	</select>
+	
+	<insert id="insertPhotoCampBoard">
+      insert all<!-- insert all 안에서는 nextval이라고 적어놓고 여러번 들어간다하더라도 딱 1번 nextval이 되고 나머지는 같은 값이 들어간다 -->
+      <foreach collection="list" item="item">
+         into photo
+         values (new_aid, #{item.photoRename}, #{item.photoPath}, #{item.photoLevel}, #{item.boardType}, #{item.boardNo}, default)
+      </foreach>
+      select * from dual
+   </insert>
+   
+   <delete id="deletePhoto">
+  		 DELETE FROM photo
+         WHERE board_no = #{boardNo}
+         AND board_type = #{boardType}
+   </delete>
+   
+   <delete id="deletePhotoName">
+  		 DELETE FROM photo
+         WHERE photo_rename = #{photoName}
+   </delete>
+   
+   <update id="updatePhoto">
+   		update photo
+   		set photo_level = '0'
+   		where photo_no = #{photoNo} 
+   </update>
+</mapper>

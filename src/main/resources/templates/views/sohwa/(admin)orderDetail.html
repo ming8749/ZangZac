@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>관리자 결제관리 상세페이지</title>
+<link href="css/sohwa/(admin)orderDetail.css" rel="stylesheet">
+</head>
+<body>
+
+	<div th:replace="~{common/admin :: admin}"></div>
+	<br><br><br><br><br>
+    
+    
+    <div id="orderDetailWrapped">
+        <h1>결제상세</h1>
+        <span style="font-weight: bold;">[[${pa.orderDate}]] 주문</span> <span style="color:gray; margin-left:20px;">주문번호 [[${pa.orderNo}]]</span>
+        
+        
+        <!--같은 날짜 일때 반복-->
+            <div class="products">
+                <div class="left">
+                <!-- 왼쪽 컨테이너 내용 -->
+                <table>
+                    <tr class="cart-row">
+						
+                        <td class="td1">
+                       	 	<img src="image/sohwa/tent1core1.png">
+                            <div th:each="p:${pList}" th:if="${pa.productNo == p.productNo}">
+                                <div>[[${p.productCompany}]]</div>
+                                [[${p.productName}]]<br>
+                                [[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]
+                                <div style="margin-top:0px;">상품번호 : [[${p.productNo}]]</div>
+                            </div>
+                        </td>
+                        <td class="td2">
+                            <div class="quantity-input">&nbsp;&nbsp;&nbsp;
+                            	<input type="hidden" class="productPrice" th:each="p:${pList}" th:if="${pa.productNo == p.productNo}" th:value="${p.productPrice}">
+                                <input type="text" class="quantity" th:value="${pa.orderProductEno}" min="1" readonly>개
+                            </div>
+                        </td>
+                        <td style="width:150px; text-align:center;">[[${pa.productOption}]]</td>
+                        <td class="td3">
+                            
+                        </td>
+                    </tr>   
+                </table>
+                </div>
+                
+                <div class="line"></div>
+                
+                <div class="right">
+                <!-- 오른쪽 컨테이너 내용 -->
+                    <div class="enoDiv">
+                        <div class="quantity-input2">&nbsp;&nbsp;&nbsp;
+                            <button class="quantity-btn decrementBtn">-</button>
+                            
+                            <input type="text" class="quantity2" value="0" min="0">
+                            <button class="quantity-btn incrementBtn">+</button>
+                        </div>
+                    </div>
+                    <div class="resultDiv" style="margin-right:130px; text-align:center;"></div>
+                    <button>환불처리</button><br>
+                </div>
+            </div>
+            
+            
+            <br><br>
+            
+            <h3>받는 사람 정보</h3>
+            <hr style="border:2px solid black;">
+            <div>
+                <span class="infoName">받는 사람</span>
+                <span class="info">[[${pa.orderName}]]</span>
+            </div>
+            <div>
+                <span class="infoName">연락처</span>
+                <span class="info">[[${pa.orderPhone.substring(0, 3) + '-' + pa.orderPhone.substring(3, 7) + '-' + pa.orderPhone.substring(7)}]]</span>
+            </div>
+            <div>
+                <span class="infoName">배송주소</span>
+                <span class="info">[[${pa.orderAddress.split('@')[1]}]] [[${pa.orderAddress.split('@')[2]}]]</span>
+            </div>
+            <div>
+                <span class="infoName">배송 요청사항</span>
+                <span class="info">[[${pa.orderContent}]]</span>
+            </div>
+            <div>
+                <span class="infoName">배송 상태</span>
+                <span class="info">
+					<div class="dropdown" style="display: inline-block;">
+		                <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+		                    [[${pa.deliveryStatus}]]
+		                </button>
+		                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		                    <li><a class="dropdown-item" th:href="'updateDeliveryStatus.so?orderKeyNo=' + ${pa.orderKeyNo} +'&orderNo=' + ${pa.orderNo} +'&deliveryStatus=결제완료'" onclick="showSearch('결제완료')">결제완료</a></li>
+		                    <li><a class="dropdown-item" th:href="'updateDeliveryStatus.so?orderKeyNo=' + ${pa.orderKeyNo} +'&orderNo=' + ${pa.orderNo} +'&deliveryStatus=배송중'" onclick="showSearch('배송중')">배송중</a></li>
+		                    <li><a class="dropdown-item" th:href="'updateDeliveryStatus.so?orderKeyNo=' + ${pa.orderKeyNo} +'&orderNo=' + ${pa.orderNo} +'&deliveryStatus=배송완료'" onclick="showSearch('배송완료')">배송완료</a></li>
+		                </ul>
+		            </div>
+				</span>
+            </div>
+            <br><br>
+            
+            <h3>결제 정보</h3>
+            <table id="payInfo">
+                <tr>
+                    <td style="background-color: rgb(235, 235, 235); border-bottom:1px dotted gray;">
+                        <div>총 상품 가격 <span class="totalProductPrice">[[|${#numbers.formatDecimal(pa.orderPrice, 0, 'COMMA', 0, 'POINT')}원|]]</span></div> 
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background-color: rgb(236, 236, 236);">
+                        <div style="color:#F9612B">총 결제 금액 <span class="totalPayment">[[|${#numbers.formatDecimal(pa.orderPrice, 0, 'COMMA', 0, 'POINT')}원|]]</span></div>
+                    </td>
+                </tr>
+            </table>
+            
+            <br><br>
+            
+            <div id="underBtns">
+                <button>< 결제목록 돌아가기</button> 
+                <button style="float:right;">결제내역 삭제</button>
+            </div>
+            
+    </div>
+    
+    
+    <br><br><br><br><!--footer--><br><br><br><br>
+    
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const decrementButtons = document.querySelectorAll('.decrementBtn');
+        const incrementButtons = document.querySelectorAll('.incrementBtn');
+        const totalProductPrice = document.querySelector('.totalProductPrice');
+        const totalPayment = document.querySelector('.totalPayment');
+
+        decrementButtons.forEach(function (decrementButton, index) {
+            decrementButton.addEventListener('click', function () {
+                changeQuantity(this, -1);
+            });
+        });
+
+        incrementButtons.forEach(function (incrementButton, index) {
+            incrementButton.addEventListener('click', function () {
+                changeQuantity(this, 1);
+            });
+        });
+
+        function changeQuantity(button, delta) {
+            const container = button.closest('.products');
+            const quantityInput = container.querySelector('.quantity2');
+            let currentValue = parseInt(quantityInput.value, 10);
+            currentValue += delta;
+            if (currentValue < 0) {
+                currentValue = 0;
+            }
+            quantityInput.value = currentValue;
+            calculateTotalPrice(container);
+        }
+
+        function calculateTotalPrice(container) {
+            const prices = container.querySelectorAll('.td3');
+            const quantities = container.querySelectorAll('.quantity2');
+            let totalPrice = 0;
+
+            for (let i = 0; i < prices.length; i++) {
+                const price = parseInt(prices[i].textContent.replace('원', '').replace(/,/g, ''), 10);
+                const quantity = parseInt(quantities[i].value, 10);
+                const individualPrice = price * quantity;
+                totalPrice += individualPrice;
+
+                // .resultDiv 엘리먼트에 각 행의 총 가격 표시
+                const resultDiv = container.querySelectorAll('.resultDiv')[i];
+                resultDiv.textContent = `${individualPrice.toLocaleString()}원`;
+            }
+
+            // 총 상품 가격 및 총 결제 금액 업데이트
+            const totalProductPrice = container.querySelector('.totalProductPrice');
+            const totalPayment = container.querySelector('.totalPayment');
+            totalProductPrice.textContent = `${totalPrice.toLocaleString()}원`;
+            totalPayment.textContent = `${totalPrice.toLocaleString()}원`;
+        }
+    });
+    
+    
+    
+    
+    	//드롭다운 변경
+		function showSearch(dropdownText) {
+            document.getElementById('dropdownMenuButton').innerText = dropdownText;
+        }
+    	
+    	
+    	
+		window.onload=()=>{
+		   const inputs = document.querySelectorAll('.quantity-input');
+		   
+		   for (let i = 0; i < inputs.length; i++) {
+			   const price = inputs[i].querySelector('.productPrice').value;
+			   const eno = inputs[i].querySelector('.quantity').value;
+			   inputs[i].parentNode.nextElementSibling.nextElementSibling.innerText=(price * eno).toLocaleString() + '원';
+			   console.log(inputs[i].parentNode.nextElementSibling);
+		   }
+		 }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.jaeyoung.chat.model.dao.ChatDAO">
+	
+	<select id="checkCount" resultType="_int">
+		select count(*)
+		from chatter
+		where member_id = #{memberId} and cl_no =${clNo}
+	</select>
+	
+	<insert id="insertChatRoom">
+		insert into chatter
+		values (ch_seq.nextval,#{clNo},#{memberId})
+	</insert>
+	
+	<select id="selectChatterList" resultType="Chatter">
+		select *
+		from chatter
+		where cl_no = ${i}
+	</select>
+	
+	<update id="updateChatRoomCount">
+	    update chat_list
+	    set cl_nowperson = cl_nowperson + 1
+	    where cl_no = ${clNo}
+	</update>
+	
+	<select id="chatRoomList">
+		select *
+		from chat_list
+		left join camping_category using(category_no)
+		where cl_status = 'N'
+	</select>
+	
+	<select id="chatterList">
+	 	select *
+	 	from chatter
+	 	left join member using(member_id)
+	 	where cl_no = ${roomName}
+	</select>
+	<insert id="insertChat">
+		insert into chat_list
+		values (cl_seq.nextval,#{clLimitPerson},#{clName},default,#{categoryNo},default)
+	</insert>
+	
+	<update id="deleteChat">
+		update chat_list
+	    set cl_status = 'Y'
+	    where cl_no = ${no}
+	</update>
+	
+</mapper>

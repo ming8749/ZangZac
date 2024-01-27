@@ -1,0 +1,206 @@
+@charset "UTF-8";
+
+/* chating list */
+.container{
+	margin: 70px;
+}
+.search{
+	align-items: center;
+	position: relative;
+	left: 100px;
+}
+.chatList{
+	border: 1px solid gray;
+	width: 500px;
+	height: 700px;
+	border-radius: 10px;
+	
+	position: relative;
+	left: 400px;
+}
+
+.scrollBar{
+	height: 570px;
+	overflow-y: auto;
+}
+
+.scrollBar::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+.scrollBar::-webkit-scrollbar {
+    width: 8px;  /* 스크롤바의 너비 */
+}
+
+.scrollBar::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: lightgrey; /* 스크롤바의 색상 */
+    
+    border-radius: 10px;
+}
+
+.scrollBar::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+
+
+.chatList>input{
+	position: relative;
+	margin: 40px;
+	border-radius: 10px;
+}
+.chat-content{
+	width: 400px;
+	height: 65px;
+	border: 1px solid black;
+	border-radius: 30px;
+	display:inline-block;
+	position: relative;
+	left: 50px;
+	margin-top: 20px;
+	background-color: white;
+}
+
+.chat-content-image>img{
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	border: 1px solid lightgray;
+	
+	position: relative;
+	right: 5px;
+	bottom: 12px;
+	display:inline-block;
+}
+
+.p-line{
+	text-align: center;
+	margin: 20px;
+	
+	position: relative;
+	bottom: 10px;
+}
+
+.p-line p {
+    line-height: 1;
+    margin: 15px;
+}
+
+.chating{
+	border: 1px solid gray;
+	width: 500px;
+	height: 700px;
+	border-radius: 10px;
+	
+	position: relative;
+	left: 400px;
+}
+
+/* chating */
+
+.chating-content-image>img{
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	border: 1px solid lightgray;
+	
+	position: relative;
+	left: 30px;
+	bottom: 0px;
+}
+.chating-content-image>p{
+	text-align: left;
+	margin: 50px;
+	display:inline-block;
+}
+
+.recieve-chat{
+	margin: 30px;
+	width: 200px;
+	height: auto;
+	background-color: lightgray;
+	border-radius: 5px;
+	margin-left: auto;
+	text-align: right;
+}
+
+.send-chat{
+	margin: 30px;
+	width: 200px;
+	height: auto;
+	border-radius: 5px;
+	background-color: #E4F7BA;
+}
+
+.btn_reply {
+    width: 60px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff; 
+    cursor: pointer;
+    margin: 20px;
+    height: 45px;
+    text-align:center;
+    border: none;
+    background-size: 300% 100%;
+	position: relative;
+	top: -55px;
+	left: 400px;
+    border-radius: 50px;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out; 
+}
+
+.btn_reply:hover {
+    background-position: 100% 0;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.btn_reply:focus {
+    outline: none;
+}
+
+.btn_reply{
+   background-image: linear-gradient(to right, #fc6076, #ff9a44, #ef9d43, #e75516);
+   box-shadow: 0 4px 15px 0 rgba(252, 104, 110, 0.75);
+}
+
+.form-control{
+	position:relative;
+	top: 7px;
+	left: 10px;
+}
+
+#button-addon2{
+	position:absolute;
+	top: 50px;
+	left: 800px;
+	height: 35px;
+}
+
+.chat-gpt{
+	overflow-y: auto;
+	height: 520px;
+}
+
+.chat-gpt::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+.chat-gpt::-webkit-scrollbar {
+    width: 8px;  /* 스크롤바의 너비 */
+}
+
+.chat-gpt::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: lightgrey; /* 스크롤바의 색상 */
+    
+    border-radius: 10px;
+}
+
+.chat-gpt::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}

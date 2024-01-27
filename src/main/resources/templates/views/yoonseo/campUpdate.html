@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta>
+<title>캠핑장 관리자 리스트</title>
+ <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/seongun/b9045bb4-dad6-4ab1-b9fa-4841e6716aed">
+</head>
+<style>
+ body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 50%;
+    margin-top:100px;
+    margin:0 auto;
+    margin-top:100px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.selectState{
+  background :yellow;
+  border-radius: 5px;
+ }
+.unselectState{
+  background: none;
+  border-radius: 5px;
+ }
+
+.table td>div{
+   border: 1px solid black; 
+   height: 80%; width:25%; 
+   display: inline-block; 
+   padding-top: 3%; 
+   cursor: pointer;
+   text-align: center;
+ }
+ 
+ .table{
+   margin-top: 100px;
+ }
+ 
+  #pagenation {
+   text-align: center;
+	}
+	
+	#pagenation ul {
+	   list-style: none;
+	   padding: 0;
+	   display: inline-block; /* 중앙 정렬을 위해 inline-block으로 변경 */
+	   margin: 0; /* 기본 마진 제거 */
+	}
+	
+	#pagenation ul li {
+	   display: inline;
+	   margin: 0 5px;
+	}
+	
+	#pagenation ul li a {
+	   text-decoration: none;
+	    text-align: center;
+	    color: #333;
+	    font-size: 14px;
+	    width: 30px; /* 정사각형의 너비 */
+	    height: 30px; /* 정사각형의 높이 */
+	    line-height: 30px; /* 텍스트를 수직 중앙에 위치시킴 */
+	    padding: 0; /* 패딩을 제거하거나 조정 */
+	    border-radius: 5px; /* 모서리를 둥글게 */
+	    display: inline-block; /* 블록 레벨 요소처럼 너비와 높이를 적용 */
+	    transition: background-color 0.3s, color 0.3s;
+	}
+	
+	#pagenation ul li a:hover {
+	   background-color:#F9612B;
+	   color: #e6e6e6;
+	}
+	
+	#pagenation ul li a#check_page {
+	   background-color:#F9612B;
+	   color: #e6e6e6;
+	}
+
+</style>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<body>
+<div th:replace="~{common/admin :: admin}"></div>
+
+		<div class="container">
+		   <h1 style="margin-top: 30px;">캠핑장 List</h1>
+	       <table class="table table-hover">
+              <thead>
+                 <tr>
+                   <th>번호</th>
+                   <th>캠핑장</th>
+                   <th>등록날짜</th>
+                   <th>추천여부</th>
+                   <th>삭제여부</th>
+                 </tr>
+              </thead>
+              <tbody>
+                <tr th:each="list : ${list}">
+                  <td th:text="${list.cgNo}"></td>
+                  <td>[ [[${list.cgRegion}]] ] [[${list.cgName}]]</td>
+                  <td>[[${list.cgDate}]]</td>
+                  <td>
+                    <div th:class="${list.cgRecomendation == 'Y' ? 'selectState' : 'unselectState'}">Y</div>
+                    <div th:class="${list.cgRecomendation == 'N' ? 'selectState' : 'unselectState'}">N</div>
+                  </td>
+                  <td>
+                    <div th:class="${list.cgStatus == 'Y' ? 'selectState' : 'unselectState'}">Y</div>
+                    <div th:class="${list.cgStatus == 'N' ? 'selectState' : 'unselectState'}">N</div>
+                  </td>
+                </tr>
+              </tbody>
+           </table>
+           <div id="pagenation" th:with="loc=${loc}" th:if="${list != null}">
+             <ul>
+               <!-- 이전 버튼 -->
+               <li th:if="${pi.currentPage > 10}">
+                  <a th:href="@{${loc}(page=${pi.currentPage-10})}">&lt; 이전</a>
+               </li>
+                <!-- 페이지 번호 -->
+               <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+                 <th:block th:if="${ list != null}">
+			        <a th:href="@{${loc}(page=${p})}" th:id="${p == pi.currentPage ? 'check_page' : ''}">
+			            [[${p}]] 
+			        </a>
+			     </th:block>		
+               </li>
+                  <!-- 다음 버튼 -->
+                  <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+                     <a th:href="@{${loc}(page=${pi.currentPage+10})}">다음 &gt;</a>
+                  </li>
+              </ul>
+           </div>     
+		</div>
+   <script th:inline="javascript">
+     window.onload = () =>{
+    	 const tds = document.getElementsByTagName('td');
+    	 let columnName = "";
+    	 for(let i = 0; i < tds.length; i++){
+    		 const index = i%5;
+	    		 const nyButtons = tds[i].querySelectorAll('div');
+	    		 for(const button of nyButtons){
+	    			 button.addEventListener('click', function(){
+	    				 if(index==3){
+	    					 columnName ="cg_recomendation";
+	    					 if(this.className == 'unselectState'){
+		    					 $.ajax({
+		        					 url:'stateUpdate.ys',
+		        					 data:{no:this.parentElement.parentElement.children[0].innerText,
+		        						   state:this.innerText,
+		        						   column:columnName
+		        						   },
+		        				     success: data => {
+		        				    	 if(data == 'success'){
+		        				    		 this.className = 'selectState';
+		        				    		 for(const siblings of this.parentElement.children){
+		        				    			 if(siblings != this){
+		        				    				 siblings.className = 'unselectState';
+		        				    			 }
+		        				    		 }
+		        				    	 }else{
+		        				    		 alert('상태 변경에 실패하여 새로고침 됩니다.');
+		        				    		 location.reload();
+		        				    	 }	 
+		        				     },
+		        				     error: data => console.log(data)
+		        				 });
+		    				 }
+	    				 }else if(index==4){
+	    					 columnName ="cg_status";
+	    					 if(this.className == 'unselectState'){
+		    					 $.ajax({
+		        					 url:'stateUpdate.ys',
+		        					 data:{no:this.parentElement.parentElement.children[0].innerText,
+		        						   state:this.innerText,
+		        						   column:columnName
+		        						   },
+		        				     success: data => {
+		        				    	 if(data == 'success'){
+		        				    		 this.className = 'selectState';
+		        				    		 for(const siblings of this.parentElement.children){
+		        				    			 if(siblings != this){
+		        				    				 siblings.className = 'unselectState';
+		        				    			 }
+		        				    		 }
+		        				    	 }else{
+		        				    		 alert('상태 변경에 실패하여 새로고침 됩니다.');
+		        				    		 location.reload();
+		        				    	 }	 
+		        				     },
+		        				     error: data => console.log(data)
+		        				 });
+		    				 }
+	    				 }	 
+	    			 });
+	    		 } 
+    	 }
+    	 const tbody = document.querySelector('tbody');
+    	 const tTd = tbody.querySelectorAll('td');
+    	 for(let i = 0 ; i < tTd.length; i++){
+    		 const index = i%5;
+    		 if(index != 3 && index != 4){
+    		    const td = tTd[i];
+	    		td.addEventListener('click', function(){
+	    		   const trTds = this.parentElement.querySelectorAll('td');
+	    		   const campNo = trTds[0].innerText;
+	    			/*<![CDATA[*/
+	    		    location.href = 'selectUpdate.ys?no='+campNo+'&page='+/*[[${pi.currentPage}]]*/1;
+	    		    /*]]>*/
+	    			 
+	    		 }); 
+    	     }
+         }
+      } 
+   </script>
+
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  	<meta charset="UTF-8">
+  	<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <title>장작</title>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/common/popularBoard.css"/>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+   	<style>
+        /* 기본 스타일 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+           margin-top:50px;
+            margin-left: 20%;
+            margin-right: 30%;
+        }
+
+        .section-header {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* 섹션 스타일링 */
+        .section {
+           margin-top:50px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .news-section, .review-section {
+            width: 48%; /* 섹션을 좌우로 나누기 */
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 뉴스 아이템 스타일 */
+        .news-item {
+            margin-bottom: 10px;
+        }
+
+        .news-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .news-item h3 {
+            margin-bottom: 5px;
+        }
+
+        /* 리뷰 아이템 스타일 */
+        .review-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .review-item h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .review-item p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 푸터 스타일 */
+        .site-footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        
+        
+        <!--슬라이드-->
+        #campingSlider{
+           height:400px;
+        }
+        
+        .carousel-item {
+            height: 400px;
+        }
+
+        .carousel-item img {
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .carousel-indicators li {
+            width: 100px;
+            height: 5px;
+            background-color: #fff;
+            border: none;
+        }
+
+
+        @keyframes progress-animation {
+            0% { width: 0; }
+            100% { width: 100px; }
+        }
+
+        .paging a {
+            padding: 5px 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .paging a:hover {
+            background-color: #eee;
+        }
+        
+        .foreground{
+		     background: url(https://aldo814.github.io/jobcloud/html/images/user/star_bg02.png) no-repeat;
+		     width: 121px;
+		     height: 20px;
+		     position: relative;
+		   }
+		  .foreground span{
+		     position: absolute;
+		     background: url(https://aldo814.github.io/jobcloud/html/images/user/star02.png);
+		     filter: invert(90%) sepia(10%) saturate(7000%) hue-rotate(570deg) brightness(115%) contrast(120%);
+		     height: 20px;
+		
+		  }
+    </style>
+</head>
+<body class="index-body">
+	<div th:replace="~{common/navbar :: navbar}"></div>
+   	<div id="campingSlider" class="carousel slide" data-ride="carousel">
+		<ol class="carousel-indicators">
+			<li data-target="#campingSlider" data-slide-to="0" class="active"></li>
+			<li data-target="#campingSlider" data-slide-to="1"></li>
+			<li data-target="#campingSlider" data-slide-to="2"></li>
+			<li data-target="#campingSlider" data-slide-to="3"></li>
+			<li data-target="#campingSlider" data-slide-to="4"></li>
+			<li data-target="#campingSlider" data-slide-to="5"></li>
+            <li data-target="#campingSlider" data-slide-to="6"></li>
+            <li data-target="#campingSlider" data-slide-to="7"></li>
+            <li data-target="#campingSlider" data-slide-to="8"></li>
+       	</ol>
+       	<div class="carousel-inner">
+           	<div class="carousel-item active">
+               	<img src="image/main/slider/1.png" class="d-block w-100" alt="Slide 1">
+           	</div>
+           	<div class="carousel-item">
+                <img src="image/main/slider/2.svg" class="d-block w-100" alt="Slide 2">
+           	</div>
+           	<div class="carousel-item">
+                <img src="image/main/slider/3.png" class="d-block w-100" alt="Slide 3">
+           	</div>
+           	<div class="carousel-item">
+                <img src="image/main/slider/4.svg" class="d-block w-100" alt="Slide 4">
+           	</div>
+           	<div class="carousel-item">
+                <img src="image/main/slider/5.svg" class="d-block w-100" alt="Slide 5">
+           	</div>
+           	<div class="carousel-item">
+                <img src="image/main/slider/6.png" class="d-block w-100" alt="Slide 6">
+           	</div>
+           	<div class="carousel-item">
+                <img src="image/main/slider/7.svg" class="d-block w-100" alt="Slide 7">
+            </div>
+            <div class="carousel-item">
+                <img src="image/main/slider/8.png" class="d-block w-100" alt="Slide 8">
+            </div>
+            <div class="carousel-item">
+                <img src="image/main/slider/9.svg" class="d-block w-100" alt="Slide 9">
+            </div>
+        </div>
+		<a class="carousel-control-prev" href="#campingSlider" style="z-index: unset;" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">이전</span>
+        </a>
+        <a class="carousel-control-next" style="z-index: unset;" href="#campingSlider" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">다음</span>
+		</a>
+	</div>
+	<div class="container">
+    	<div class="section">
+        	<div class="news-section">
+				<div class="section-header">이달의 행사</div>
+				<!-- 뉴스 아이템들 -->
+				<div class="news-item" th:each="eb:${ebList}">
+						<img th:src="${eb.photo.photoPath}" alt="뉴스 이미지" style="width: 100px;height: 140px;display: inline-block;">
+					<div style="display: inline-block; padding-top:10px;" >
+						<h3 style="display: inline-block;">[[${eb.ebName}]]</h3><br>
+						<p style="display: inline-block; margin-bottom: 0px;">[[${eb.ebLocation}]]</p><br>
+		                <p style="display: inline-block; font-size: 10px; margin-bottom: 0px;">[[${eb.ebDate}]]</p>
+					</div>
+				</div>
+        	</div>
+        	<div class="review-section">
+	            <div class="section-header"><b>인기 게시판</b></div>
+	            <!-- 리뷰 아이템들 -->
+	            <div id="popularBoard">
+		            <table th:if="${!cbList.isEmpty}">
+		            	<thead>
+							<tr>
+								<th>추천수</th>
+								<th class="board_title" style="text-align: center">제목</th>
+								<th>조회수</th>
+								<th>날짜</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="b : ${cbList}">
+								<input type="hidden" name="cbNo" th:value="${b.cbNo}"/>
+								<td>[[${b.heartCount}]]</td>
+								<td class="board_title" style="text-align: center">[[${b.cbTitle}]]</td>
+								<td>[[${b.cbCount}]]</td>
+								<td th:inline="text">[[${#temporals.format(b.cbCreateDate, 'MM-dd')}]]</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+        	</div>
+    	</div>
+	    <img style="width:100%; height:300px;" src="image/main/center/MBTI.png">
+		<div class="section">
+			<div class="news-section" style="height:350px;width:500px;padding: 0;">
+				<div class="section-header" style="margin-bottom: 0; margin-left: 10px;">추천 캠핑장</div>
+         		<div id="carouselExampleFade" class="carousel slide carousel-fade carousel-dark" data-bs-ride="carousel" style="overflow: hidden; width: 100%;">
+             		<div class="carousel-inner" style="width: 400px; height:250px; text-align: center;">
+                 		<div th:each="photo, iterStat : ${photoList}" th:class="${iterStat.index == 0} ? 'carousel-item active' : 'carousel-item'" style="height: 300px;">
+                     		<img th:src="${photo.photoPath}" class="d-block2" style="overflow: hidden; height: 200px; width: 350px; border-radius: 5px;">
+                     		<div class="card-body" style="padding-bottom: 10px;">
+                         		<h5 class="card-title" style="margin-bottom: 0;">[ [[${photo.cgRegion}]] ] [[${photo.cgName}]]</h5> 
+                     		</div>
+                 		</div>
+             		</div>
+            	</div>
+            	<a href="campList.ys" class="btn btn-primary" style="margin-top: 10px; cursor: pointer; margin-left: 120px;">추천 캠핑장으로 이동</a>
+      		</div>
+	      	<!-- 소화 -->
+	      	<div class="slideshow-container" style="max-width: 1000px; position: relative; margin: auto;">
+				<div class="mySlides" style="display: none;">
+					<a href="productDetail.so?productNo=263"><img style="width: 100%;" src="image/sohwa/main3 (2).png"></a>
+	          	</div>
+	          	<div class="mySlides" style="display: none;">
+	              	<a href="productDetail.so?productNo=262"><img style="width: 100%;"src="image/sohwa/제목 없는 디자인.gif"></a>
+	          	</div>
+				<div class="mySlides" style="display: none;">
+					<a href="productDetail.so?productNo=261"><img style="width: 100%;"src="image/sohwa/main5.png"></a>
+	          	</div>
+			</div>
+		</div>
+    	<img style="width:100%; height:300px;" src="image/main/center/checkList.png">
+		<br><br><br><br>
+    </div>
+	<footer class="site-footer">
+		<p>저작권 © 2024 ZangZac. 모든 권리 보유.</p>
+	</footer>
+
+ 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        $('#campingSlider').carousel({
+            interval: 3000,  // 3초 간격으로 자동 전환
+            wrap: true       // 마지막 슬라이드에서 첫 번째 슬라이드로 자동 전환
+        });
+
+        document.querySelectorAll('.paging a').forEach(pageLink => {
+            pageLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                // 여기에 페이지 이동 로직을 추가합니다.
+                console.log('이동할 페이지:', this.textContent);
+            });
+        });
+        
+        
+        
+        window.onload=()=>{
+           var slideIndex = 0;
+            showSlides();
+
+            function showSlides() {
+                var i;
+                var slides = document.getElementsByClassName("mySlides");
+
+                for (i = 0; i < slides.length; i++) {
+                    slides[i].style.display = "none";
+                }
+
+                slideIndex++;
+
+                if (slideIndex > slides.length) {
+                    slideIndex = 1;
+                }
+
+                slides[slideIndex - 1].style.display = "block";
+                setTimeout(showSlides, 2000); // 2초마다 변경
+            }
+            
+            popularListClick();
+        }
+        
+        
+        //인기 게시판
+        function popularListClick() {
+	        const tbody = document.querySelector('tbody');
+	        if (tbody) {
+	            tbody.addEventListener('click', selectCampBoard);
+	            console.log(123);
+	        }
+	    }
+	
+	    // 게시글로 이동하는 함수
+	    function selectCampBoard(event) {
+	        
+		    let target = event.target;
+		
+		    if (target.tagName !== 'TD') {
+		        target = target.closest('td');
+		    }
+		
+		    if (!target) return;
+		
+		    const hiddenInput = target.closest('tr').querySelector('input[type="hidden"][name="cbNo"]');
+		    if (hiddenInput) {
+		        const boardId = hiddenInput.value;
+		        location.href = "selectBoard.su?cbNo=" + boardId + "&page=1";
+		    }
+		}
+
+    </script>
+   
+   
+</body>
+</html>

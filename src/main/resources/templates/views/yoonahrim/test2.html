@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link href="css/yoonahrim/SecondHandDetail.css?after" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+   <div th:replace="~{common/navbar :: navbar}"></div>
+   <br><br>
+   <h1 style="text-align:center; font-size: 30px; margin: 50px">중고 거래 매물 상세페이지</h1>
+   <th:block th:each="s : ${slist}" th:if="${true}">
+   <form id="showDetail" name="showDetail" method="POST">
+   
+      <input type="hidden" th:value="${s.spNo}" name="spNo" id="spNo"/>
+      <div class="d-grid gap-2 d-md-block">
+          <div class="container text-end mt-n2">
+              <button type="button" class="btn btn-outline-success" th:onclick="|location.href='edit.ah?spNo=' + ${s.spNo}|" th:if="${session.loginUser != null && session.loginUser.memberId == s.memberId}">수정하기</button>&nbsp;&nbsp;
+              <!-- 예약 여부 -->
+                  <button type="button" id="bookButton" th:value="${s.spNo}" class="btn btn-outline-success" th:onclick="booking();" th:if="${s.spIsBook == 'N' && session.loginUser != null && session.loginUser.memberId == s.memberId}">예약 중</button>&nbsp;&nbsp;
+                  <button type="button" id="bookButton" th:value="${s.spNo}" class="btn btn-outline-success" th:onclick="bookingUndo();" th:if="${s.spIsBook == 'Y' && session.loginUser != null && session.loginUser.memberId == s.memberId}">예약 취소</button>&nbsp;&nbsp;
+              <!-- 판매 및 삭제 여부 -->
+                  <button type="button" id="soldoutButton" th:value="${s.spNo}" class="btn btn-outline-success" th:onclick="markSold();" th:if="${s.spIsSell == 'N' && session.loginUser != null && session.loginUser.memberId == s.memberId}">판매완료</button>
+                  <button type="button" id="soldoutButton" th:value="${s.spNo}" class="btn btn-outline-success" th:onclick="markDelete();" th:if="${s.spIsSell == 'Y' && session.loginUser != null && session.loginUser.memberId == s.memberId}">삭제</button>
+          </div>
+          <th:block th:if="${s.spIsBook == 'Y'}">
+              <h2 class="reservation" style="text-align:center; margin: 50px;">현재 이 페이지는 예약 중입니다.</h2>
+          </th:block>
+      </div>
+      
+      <div class="detail">
+         <div class="slide">
+            <!-- 아래 버튼 -->
+            <div id="carouselExampleCaptions" class="carousel slide" style="width:800px; height:680px; border-radius: 20%">
+              <div class="carousel-indicators">
+                 <th:block th:each="a, iterStat : ${aList}">
+                   <button type="button" th:data-bs-target="'#carouselExampleCaptions'" th:data-bs-slide-to="${iterStat.index}" th:classappend="${iterStat.index == 0} ? 'active' : ''" aria-current="true" th:aria-label="'Slide ' + ${iterStat.index + 1}"></button>
+                 </th:block>
+              </div>
+              
+              <!-- 이미지 -->
+              <div class="carousel-inner mb-2">
+                <th:block th:each="a : ${aList}">
+                    <div th:classappend="${a.photoLevel == 0} ? 'carousel-item active' : 'carousel-item'">
+                        <img th:src="${a.photoPath}" class="d-block w-100" alt="img" style="border-radius: 3%">
+                        <div class="carousel-caption d-none d-md-block"></div>
+                    </div>
+                </th:block>
+              </div>
+             
+            
+              <!-- < > 버튼 -->
+              <button class="carousel-control-prev" type="button" th:data-bs-target="'#carouselExampleCaptions'" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" th:data-bs-target="'#carouselExampleCaptions'" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+         </div>
+      </div>
+         <!-- 내용 창 -->
+         <div class="container_content" style="position:absolute; top: 1050px; left: 660px;">
+                   
+                   <!-- 프로필 창 -->
+                  <span class="container_profile">
+                     <span id="profile">
+                        <img alt="img" src="image/yoonahrim/user.png"> <!-- 프로필 가져오기 -->
+                           <p><b>윤아림</b></p>
+                           <p>[[${#strings.arraySplit(s.spAddress, ',')[0]}]]</p>
+                        <div class="container2 text-end">
+                           <button type="button" class="btn_booked" th:onclick="location.href='chating.ah'">1 : 1 채팅방</button>
+                        </div>   
+                     </span>
+                  </span>   
+                   
+                  <div id="content">
+                     <div style="margin:50px">
+                        <p style="margin:10px"><b>[[${s.spTitle}]]</b></p><br>
+                        <p style="margin:10px"><b>[[${#numbers.formatInteger(s.spPrice, 0, 'COMMA')}]]원</b></p><hr><br>
+                        <div class="content-line">
+                           <pre style="margin:10px; overflow: hidden;">[[${s.spContent}]]</pre>
+                        </div>
+                     </div>
+                  </div>
+            </div>
+      </form>
+            <hr id="hr_line">
+            
+         <!-- 댓글 창 -->
+         <div class="container_reply" style="position:absolute; top: 2050px; left: 520px; width: 770px; height: 400px;">
+            <div class="reply" style="margin:30px">
+                  <!-- 댓글 카운트가 보이는 부분 -->
+                  <div class="reply_count">
+                     <p style="margin:20px">댓글 n</p>
+                  </div>
+                  <hr id="hr_count">
+                  <!-- 작성한 댓글이 보이는 부분 -->
+                  <div class="reply_content" id="reply_content" style="width:820px; height:245px; overflow: auto; overflow-x: hidden">
+                     <div class="media fs-7" th:each="r : ${rList}" th:if="${r.replyStatus == 'N'}">
+                        <img class="d-flex rounded-circle" alt="reply_profile" th:src="${r.memberProfilePath}" style="position:absolute; width:50px; height:50px">
+                        <div class="media-body" style="position:relative; left:60px">
+                           <input type="hidden" id="replyNo" th:value="${r.replyNo}"/>
+                              <h6 class="mt-0">[[${r.memberId}]]</h6>
+                              <p>[[${r.replyContent}]]</p>
+	                           <!-- 수정 input type="text" 창 -->
+	                             <div class="modal" tabindex="-1" th:id="'modal-' + ${r.replyNo}">
+	                              <input type="hidden" id="replyNo" th:value="${r.replyNo}"/>
+	                                <div class="modal-dialog modal-dialog-centered">
+	                                  <div class="modal-content">
+	                                    <div class="modal-header">
+	                                      <h6 class="modal-title">댓글 수정 [[${r.replyNo}]]</h6>
+	                                      <button type="button" class="btn-close" id="mymodal" data-bs-dismiss="modal" aria-label="Close" onclick="CloseModal()"></button>
+	                                    </div>
+	                                    <div class="modal-body">
+	                                      <input type="text" th:id="'replyUpdateContent-' + ${r.replyNo}" class="replyUpdateContent" th:value="${r.replyContent}"/>
+	                                    </div>
+	                                    <div class="modal-footer">
+	                                      <h6>[[${r.replyCreateDate}]]</h6>
+	                                      <button type="button" class="editReply btn btn-primary" th:id="'editReply-' + ${r.replyNo}">수정</button>
+	                                    </div>
+	                                  </div>
+	                                </div>
+	                              </div>
+                              <input type="hidden" id="replyNo" th:value="${r.replyNo}"/>
+                           <span id="insert_reply" class="insert_reply" style="cursor: pointer;" th:onclick="'showUpdateModal(' + ${r.replyNo} + ')'" >수정</span>&nbsp;&nbsp;
+                           <span th:id="deleteReply" class="delete_reply" style="cursor: pointer;" th:onclick="'deleteComment(' + ${r.replyNo} + ')'">삭제</span>
+                        </div>
+                        <br>
+                     </div>
+                  </div>   
+               <hr id="hr_content" style="width:820px">
+               <input type="hidden" id="boardNo" th:value="${s.spNo}"/>
+               <!-- 댓글 입력창 -->
+               <div id="reply_write" th:if="${session.loginUser != null}">
+                  <div class="input-group mb-3">
+                      <div class="col-xs-4">
+                        <label for="replyContent">
+                             <input class="form-control" id="replyContent" type="text" placeholder="댓글을 입력하세요">
+                             <button class="btn_reply btn-outline-secondary" type="submit" id="button-addon2" onclick="buttonAddon2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cursor-fill" viewBox="0 0 16 16">
+                                   <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"/>
+                              </svg>
+                             </button>
+                          </label>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+    </th:block>
+      
+<script th:inline="javascript">
+         function booking() {
+            
+               var button = document.getElementById('bookButton');
+               var confirmBooking = confirm("예약 상태를 변경하시겠습니까?");
+               var spNo = document.getElementById('bookButton').value;
+               
+               if (confirmBooking) {
+                   var reservationElement = document.getElementsByClassName('reservation')[0];
+   
+                   if (button.innerText === '예약 중') {
+                       alert("예약 중으로 상태가 변경되었습니다.");
+                       button.innerText = '예약 취소';
+                       location.href = 'booking.ah?spNo=' + spNo; //예약중일때
+                       if (reservationElement) {
+                           reservationElement.style.display = 'block';
+                       }
+                       
+                   } else {
+                       alert("취소되었습니다.");
+                   }
+              }
+         }
+         
+         function bookingUndo() {
+            
+             var button = document.getElementById('bookButton');
+               var confirmBooking = confirm("예약 상태를 변경하시겠습니까?");
+               var spNo = document.getElementById('bookButton').value;
+               
+               if (confirmBooking) {
+                      var reservationElement = document.getElementsByClassName('reservation')[0];
+               
+                  if (button.innerText === '예약 취소'){
+                        alert("예약 취소로 상태가 변경되었습니다.");
+                          button.innerText = '예약 중';
+                          location.href = 'bookingUndo.ah?spNo=' + spNo; //예약취소일때
+                          if (reservationElement) {
+                              reservationElement.style.display = 'none';
+                          }
+                          
+                      } else {
+                          alert("취소되었습니다.");
+                   }
+               }
+         }
+         
+         function markSold() {
+             var outButton = document.getElementById('soldoutButton');
+             var spNo = document.getElementById('soldoutButton').value;
+             
+             if (outButton.innerText == '판매완료') {
+                 var confirmSold = confirm("판매완료로 상태를 변경하시면 상태를 되돌릴 수 없습니다. \n그래도 변경하시겠습니까?");
+                 
+                 if (confirmSold) {
+                     alert("판매완료로 상태가 변경되었습니다.");
+                     outButton.innerText = '삭제';
+                     location.href = 'soldout.ah?spNo=' + spNo; //판매완료일때
+                 } else {
+                     alert("취소되었습니다.");
+                 }
+            }
+         }
+            
+         function markDelete() {
+            var outButton = document.getElementById('soldoutButton');
+            var spNo = document.getElementById('soldoutButton').value;
+            
+            if(outButton.innerText == '삭제'){
+               var confirmDelete = confirm("정말 삭제하시겠습니까?");
+               
+               if (confirmDelete) {
+                     location.href = 'delete.ah?spNo=' + spNo; //삭제일때
+                 } else {
+                     alert("삭제가 취소되었습니다.");
+                 }
+            }
+         }
+         
+         //댓글 insert
+         document.getElementById('button-addon2').addEventListener('click', () => {
+             
+             const content = document.getElementById("replyContent").value;
+             const boardNo = document.getElementById("boardNo").value;
+             
+             if (content !== '') {
+                 $.ajax({
+                     url: 'insertReply.rep',
+                     method: 'POST',
+                     data: { replyContent: content, boardType: '4', boardNo: boardNo },
+                     success: (data) => {
+                         console.log(data);  // 전송에 성공했을 때
+                         location.reload();
+                     },
+                     error: data => console.log(data)  // 전송에 실패했을 때
+                 });
+             } else {
+                 alert("댓글 내용을 입력해주세요");
+             }
+         });
+         
+         //모달 open
+         function showUpdateModal(replyNo) {
+		    const modal = document.getElementById('modal-' + replyNo);
+		    modal.style.display = 'block';
+		    // 추가된 부분: 모달 창이 열릴 때 replyNo를 전역 변수로 설정
+		    window.currentReplyNo = replyNo;
+		}
+         
+         //댓글 update
+        var editReplys = document.getElementsByClassName('editReply');
+         
+		for (var i = 0; i < editReplys.length; i++) {
+		    editReplys[i].addEventListener('click', function (event) {
+		        // 클릭된 버튼을 찾음
+		        let clickedButton = event.target.id;
+		        
+		     	// 정규표현식을 사용하여 숫자 부분 추출
+		        let replyNo = clickedButton.match(/\d+/);
+				let content = document.getElementById('replyUpdateContent-' + replyNo).value;
+	            const boardNo = document.getElementById("boardNo").value;
+	            
+	            //찍히는지 확인
+	            console.log(replyNo, content);
+	            
+		        if (content !== '') {
+		            editReply(replyNo, content, boardNo);
+		        } else {
+		            //console.error("replyUpdateContent not found");
+		        }
+		    });
+		    
+		}
+		
+		  function editReply(replyNo, content, boardNo) {
+              if (content !== '') {
+                  $.ajax({
+                      url: 'updateReply.rep',
+                      method: 'POST',
+                      data: { replyContent: content, boardType: '4', boardNo: boardNo, replyNo: replyNo },
+                      success: (data) => {
+                          console.log(data);  //전송에 성공했을 때
+                          location.reload();
+                      },
+                      error: data => console.log(data)  //전송에 실패했을 때
+                  });
+              } else {
+                  alert("댓글 내용을 입력해주세요");
+              }
+          }
+		
+        //댓글 delete
+        
+        	/*웹 페이지가 로드될 때(DOMContentLoaded 이벤트) document.body에 클릭 이벤트 리스너를 추가합니다. 
+        		이 리스너는 사용자가 페이지 어딘가를 클릭할 때 실행됩니다. 
+        		클릭된 요소가 'delete_reply' 클래스를 포함하는 경우, handleDeleteReply 함수가 호출됩니다.
+        		
+        	document.addEventListener('DOMContentLoaded', function () {
+		    document.body.addEventListener('click', function (event) {
+		        if (event.target.classList.contains('delete_reply')) {
+		            handleDeleteReply(event);
+		        }
+		    });
+		    
+		    function handleDeleteReply(event) {
+		        const mediaElement = event.target.closest('.media');
+		        const replyNo = mediaElement.querySelector('#replyNo').value;
+				console.log(replyNo)
+		        if (replyNo !== 0) {
+		            const confirmDelete = confirm("정말 삭제하시겠습니까?");
+		            if (confirmDelete) {
+		                $.ajax({
+		                    url: 'deleteReply.rep',
+		                    method: 'POST',
+		                    data: { replyNo: replyNo },
+		                    success: (data) => {
+		                        console.log(data);
+		                        location.reload();
+		                    },
+		                    error: data => console.log(data)
+		                });
+		            } else {
+		                alert("삭제가 취소되었습니다.");
+		            }
+		        } else {
+		            alert("유효하지 않은 댓글입니다.");
+		        }
+		    }
+		});
+		*/		  
+		  
+		function deleteComment(replyNo){
+			if ( !confirm('선택하신 댓글을 삭제할까요?') ) {
+	            return false;
+	        }
+			console.log(replyNo)
+			
+	        	$.ajax({
+                    url: 'deleteReply.rep',
+                    method: 'POST',
+                    data: { replyNo: replyNo },
+                    success: (data) => {
+                        console.log(data);
+                        alert('삭제되었습니다.')
+                        location.reload();
+                    },
+                    error: data => console.log(data)
+                });
+		}
+		
+		
+</script>
+</body>
+</html>

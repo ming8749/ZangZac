@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>비밀번호 수정</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<link href="../css/ming/member/MyPage.css" rel="stylesheet">
+<style>
+input:focus {outline:none;}
+</style>
+</head>
+<body>
+	<div class="logo">
+		<a href="/"><img src="../image/ming/member/logo.png" alt="logo"></a>
+	</div>
+	<aside class="sidebar">
+		<div class="user">
+			<img th:src="${loginUser.memberProfilePath}" style="width: 80px; height:80px; border-radius: 50%"></img><br><br>
+			<p style="font-weight: bold; font-size: 1.5em;" th:text="${loginUser.memberName}"></p><br><br>
+		</div>
+		<ul class="links">
+			<li>
+				<img src="../image/ming/member/프로필수정.png" style="width: 60px;"></img>
+				<a href="myPage.me">정보 수정</a>
+			</li>
+			<li th:if="${session.loginUser.memberLoginType == 1}">
+				<img src="../image/ming/member/icons8-비밀번호-50.png" style="width: 60px;"></img>
+				<a href="updatePwd.me">비밀번호 수정</a>
+			</li>
+		<hr>
+			<li>
+				<img src="../image/ming/member/icons8-edit-64.png" style="width: 60px;"></img>
+				<a href="myBoardList.me">내가 쓴 게시글</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/리뷰.png" style="width: 60px;"></img>
+				<a href="review.me">리뷰</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/icons8-계산서-100.png" style="width: 60px;"></img>
+				<a href="myOrderPageView.so">결제내역</a>
+			</li>
+		<hr>
+			<li>
+				<img src="../image/ming/member/icons8-쇼핑몰-50.png" style="width: 60px;"></img>
+				<a href="productListView.so">쇼핑몰 이동</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/icons8-게시판-50.png" style="width: 60px;"></img>
+				<a href="campBoard.su">커뮤니티 이동</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/logout.png" style="width: 60px;"></img>
+				<a href="logout.me">로그아웃</a>
+			</li>
+			<li id="deleteMemberBtn">
+				<img src="../image/ming/member/icons8-취소-100 (1).png" style="width: 60px;"></img>
+				<a id="deleteMember" style="color: red;">회원탈퇴</a>
+			</li>
+		</ul>
+	</aside>
+		<div id="myModal" class="modal">
+	       <!-- 모달 내용 -->
+	       <div class="modal-content">
+	           	<h4 id="modalContent"></h4>
+	           	<span id="modalResult"></span>
+	       </div>
+    	</div>
+	<!--------------------------------------------------------마이페이지 시작--------------------------------------------------------------------->
+		
+		<div id="border" class="changeList" style="width: 1000px; height: 1000px;">
+			<span class="editTitle">비밀번호 수정</span><br>
+			<form action="changePwd.me" method="post" onsubmit="return NoSign()">
+			    <input type="password" class="updateInput" name="currentPwd" id="currentPwd" placeholder="현재 비밀번호">
+			    <input type="password" class="updateInput" name="newMemberPwd" id="newMemberPwd" placeholder="새 비밀번호">
+			    <input type="password" class="updateInput" name="configPwd" id="configPwd" placeholder="새 비밀번호 확인">
+			    <input type="tel" th:value="${loginUser.memberPhone}" id="phone" class="updateInput" name="memberPhone" placeholder="전화번호(-제외)">
+				<input type="button" id="send" value="코드전송" class="updateBtn" >
+				<input type="text" id="userNum" class="updateInput" name="phoneCode" placeholder="인증코드">
+				<input type="button" id="enterBtn" value="인증확인" class="updateBtn" >
+     			<button class="btn-hover color-2"  type="submit" style="left:250px;">수정</button>
+				<button class="btn-hover color-1" type="reset" style="left:550px;">취소</button>
+			</form>
+		</div>	
+
+	<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+	<script>
+	 	document.getElementById('deleteMember').addEventListener('click', function(event) {
+	 		event.preventDefault();
+	 		const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.textContent = '정말 탈퇴하시겠습니까? \n 탈퇴 후 계정 복구는 불가능합니다.';
+            modalContent.appendChild(document.createElement('br'));
+            modalContent.appendChild(document.createElement('br'));
+
+            modal.style.display = 'block';
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '네';
+            deleteButton.className = 'homepage-btn';
+            deleteButton.addEventListener('click', function() {
+                window.location.href = 'deleteMember.me';
+            });
+            modalContent.appendChild(deleteButton);
+            
+            const homepageButton = document.createElement('button');
+            homepageButton.textContent = '아니오';
+            homepageButton.className = 'homepage-btn';
+            homepageButton.addEventListener('click', function() {
+                closeModal();
+            });
+            modalContent.appendChild(homepageButton);
+            
+	 	});
+	 	
+	 	function closeModal() {
+	 	    const modal = document.getElementById('myModal');
+	 	    modal.style.display = 'none';
+	 	};
+	 	
+	</script>
+	
+	<script th:inline="javascript">
+	window.onload = function() {
+        /*<![CDATA[*/
+        var msg = /*[[${msg}]]*/'';
+        /*]]>*/
+        
+           if(msg && msg.trim().length > 0) {
+                alert(msg);
+            }
+        	
+        }
+	
+		<!-- 비밀번호 확인 + 정규식 -->
+		document.getElementById('configPwd').addEventListener('blur', function(event) {
+		    let newMemberPwd = document.getElementById("newMemberPwd");
+		    let pwdConfirm = document.getElementById("configPwd");  // 수정된 부분: "pwdConfirm"으로 변경
+		    let pwdcheck = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#%^&*])[A-Za-z\d!@#%^&*]{8,}$/;
+		    
+		    console.log(pwdConfirm.value);
+		    console.log(newMemberPwd.value);
+		    console.log(pwdcheck.test(newMemberPwd.value));
+		    
+				
+		    if (newMemberPwd.value.trim() == '') {
+		        // 비밀번호 입력하지 않은 경우
+		    } else if (pwdConfirm.value != newMemberPwd.value || !pwdcheck.test(newMemberPwd.value)) {
+		        newMemberPwd.style.borderColor = 'red';
+		        pwdConfirm.style.borderColor = 'red';
+		        console.log(newMemberPwd.value);
+		        console.log(pwdConfirm.value);
+		        alert('비밀번호는 영대소문자, 숫자로 구성된 8글자 이상으로 조합하시오.');
+		        checkPwd = false;
+		    } else if (pwdConfirm.value == newMemberPwd.value && pwdcheck.test(newMemberPwd.value)) {
+		        newMemberPwd.style.borderColor = 'green';
+		        pwdConfirm.style.borderColor = 'green';
+		        console.log(newMemberPwd.value);
+		        console.log(pwdConfirm.value);
+		        checkPwd = true;
+		    }
+		});
+	</script> 
+	<script type="text/javascript">
+		let check_code=false;
+		let check_num;
+		$('#send').click(function() {
+			
+			const to = $('#phone').val();
+			
+			$.ajax ({
+				url: '/send-one',
+				type: 'GET',
+				data: {
+					"phone" : to
+				},
+				success: function(data) {
+					check_num = data;
+					alert("인증번호를 입력해주세요!");
+					
+				}
+			});
+			
+		});
+		
+		$('#enterBtn').click(function() {	
+			const userNum = $('#userNum').val();
+			
+			if(check_num === userNum) {
+				alert('인증 성공하였습니다.');
+                this.innerHTML.value = '인증성공';
+                check_code = true;
+			}
+			else {
+				alert('인증 실패하였습니다. 다시 입력해주세요.');
+				this.innerHTML.value = '인증실패';
+				check_code =false;
+			}
+		});
+		
+		// 모든 폼이 일치해야 넘어오게 
+		function NoSign(){
+			
+			if(check_code){
+			   	checkPwd = true;
+			   	let check_code=true;
+				return true;
+			}else{
+				alert("정보가 올바르게 작성되었는지 확인해주세요.");
+				return false;
+			}
+				
+			
+		}
+	</script>
+	
+</body>
+</html>

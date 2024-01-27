@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>아이디 & 비밀번호 찾기</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<link href="../css/ming/member/find.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<style>
+	.modal {
+	    display: none;
+	    position: fixed;
+	    z-index: 1;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	    height: 100%;
+	    overflow: auto;
+	    background-color: rgba(0, 0, 0, 0.4);
+	}
+
+	.modal-content {
+	    background-color: white;
+	    margin: 15% auto;
+	    margin-left:60%;
+	    padding: 20px;
+	    border: 1px solid #888;
+	    width: 80%;
+	    max-width: 600px;
+	    text-align: center;
+	    height: auto;
+	    max-height: 70%;
+	    overflow-y: auto;
+	    display: flex;
+	    flex-direction: column;
+	}
+	.modal-content Button{
+		background-color: rgb(251, 125, 83);
+		color: white;
+		border-radius: 5px;
+		border-color: rgb(251, 125, 83);
+		height: 40px;
+	}
+</style>
+</head>
+<body>
+	<div id="container" class="container">
+	    <!-- FORM SECTION -->
+	    <div class="row">
+	      <!-- 비밀번호 찾기 시작 -->
+	      <div class="col align-items-center flex-col sign-up">
+	        <div class="form-wrapper align-items-center">
+	          <form class="form sign-up" onsubmit="return NoSign()">
+	            <div class="input-group">
+	              <i class='bx bxs-user'></i>
+	              <input type="text" placeholder="ID" id="memberId" name="memberId">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bx-mail-send'></i>
+	              <input type="email" placeholder="Email" id="memberPwdCode" name="memberEmail" style="width: 300px; display: inline-block;">
+	              <button type="button" id="send-code" style="width: 100px; display: inline-block; background-color: rgb(251, 125, 83); color: white;">코드전송</button></td>
+	            </div>
+	            <p style="text-align: center;">
+	              <a href="/" style="display: inline-block;  margin: 0 10px; text-decoration: none; color: black; font-weight: bold; font-size: 1.5em;">
+					HOME으로 돌아가기
+				  </a>
+	            </p>
+	            <p style="font-size: 0.8em;">
+	              <span>
+	                Already have an account?
+	              </span>
+	              <b onclick="toggle()" class="pointer" >
+	                아이디 찾기
+	              </b>
+	            </p>
+	          </form>
+	        </div>
+	      
+	      </div>
+	      <!-- 비밀번호 찾기 끝 -->
+	      <!-- 아이디 찾기 -->
+	      <div class="col align-items-center flex-col sign-in">
+	        <div class="form-wrapper align-items-center">
+	          <form class="form sign-in" action="selectFindId.me" method="post">
+	            <div class="input-group">
+	              <i class='bx bxs-user'></i>
+	              <input type="text" placeholder="Name" name="memberName" id="memberName" required autofocus>
+	            </div>
+	           <div class="input-group">
+	              <i class='bx bx-mail-send'></i>
+	              <input type="email" placeholder="Email" name="memberEmail" id="memberEmail" style="width: 300px; display: inline-block; ">
+	              <button type="button" id="mail-Check-Btn" style="width: 100px; display: inline-block; background-color: rgb(251, 125, 83); color: white;">코드전송</button></td>
+	            </div>
+	            <div class="input-group">
+		        	<i class='bx bxs-lock-alt'></i>
+		            <input type="text" placeholder="EmailCode" id="EmailCheckNo"><br><br>
+	            </div>
+	            <button type="submit" id="next_btn" style="background-color: rgb(251, 125, 83); color: white;">
+	              아이디 찾기
+	            </button>
+	            <p style="text-align: center;">
+	              <a href="/" style="display: inline-block;  margin: 0 10px; text-decoration: none; color: black; font-weight: bold; font-size: 1.5em;">
+					HOME으로 돌아가기
+				  </a>
+	            </p>
+	            <p>
+	              <span>
+	                Already have an account?
+	              </span>
+	              <b onclick="toggle()" class="pointer">
+	                비밀번호 찾기
+	              </b>
+	            </p>
+	          </form>
+	        </div>
+	      </div>
+	      <!-- 아이디 찾기 끝 -->
+	    </div>
+	    <!-- END FORM SECTION -->
+	    <!-- CONTENT SECTION -->
+	    <div class="row content-row">
+	      <!-- SIGN IN CONTENT -->
+	      <div class="col align-items-center flex-col">
+	        <div class="text sign-in">
+	          <h2>
+	           <a href="/">
+	            	<img src="image/ming/member/logo.png" style="width: 300px;">
+	            </a>
+	            <p style="font-size: 0.5em; margin-top: -50px; color: black;">아이디 찾기</p>
+	          </h2>
+	        </div>
+	        <div class="img sign-in">
+	    
+	        </div>
+	      </div>
+	      <!-- END SIGN IN CONTENT -->
+	      <!-- SIGN UP CONTENT -->
+	      <div class="col align-items-center flex-col">
+	        <div class="img sign-up">
+	        
+	        </div>
+	        <div class="text sign-up">
+	          <h2>
+	          	<a href="/">
+	            	<img src="image/ming/member/logo.png" style="width: 300px;">
+	            </a>
+	            <p style="font-size: 0.5em; margin-top: -50px; color: black;">비밀번호찾기</p>
+	          </h2>
+	        </div>
+	      </div>
+	      <!-- END SIGN UP CONTENT -->
+	    </div>
+	    <!-- END CONTENT SECTION -->
+	  </div>
+		
+	<div id="myModal" class="modal">
+       <!-- 모달 내용 -->
+       <div class="modal-content">
+           	<h4 id="modalContent"></h4>
+           	<span id="modalResult"></span>
+       </div>
+    </div>
+	<script src="../js/member/sign.js"></script>
+	<script>
+        let code="";
+    	let checkE = false;
+	window.onload=()=>{
+          
+          /* 아이디 인증 체크하는 곳 */
+          $('#mail-Check-Btn').click(function() {
+              const checkInput = $('.EmailCheckNo');    // 인증번호 입력하는곳 
+              check_button=true;
+              console.log(document.getElementById('memberEmail').value);
+              $.ajax({
+                  type : 'get',
+                  url : 'mailCheck.me',                // GET방식이라 Url 뒤에 email을 뭍힐수있다.
+                  data: {memberEmail:document.getElementById('memberEmail').value},
+                  success : function (data) {
+                     console.log("data : " +  data);
+                      checkInput.attr('disabled',false);
+                      code =data;
+                      alert('인증번호를 발송했습니다. 인증번호가 오지 않으면 입력하신 정보가 회원정보와 일치하는지 확인해 주세요.')
+                   }         
+           	}); 
+          }); 
+          
+          /* 받아온 랜덤 코드를 비교하는 부분 인증코드 input에서 포커스를 잃었을시 확인*/
+          $('#EmailCheckNo').blur(function () {
+              console.log(code);
+              let inputCode = this.value;
+              if(check_button){
+                 if(inputCode == code){
+                    checkE=true;
+                    console.log(checkE);
+                    $('#EmailCheckNo').css("borderColor", "green");
+                 } else {
+                    checkE=false;
+                    $('#EmailCheckNo').css("borderColor", "red");
+                  }
+              }
+          });
+          
+          
+          /* 비밀번호 재설정 코드 보내기 */
+         $('#send-code').click(function(){
+        	 console.log(document.getElementById('memberPwdCode').value);
+        	 console.log(document.getElementById('memberId').value);
+        	 $.ajax({
+        		type:'get',
+        		url:'pwdReset.me',
+        		data:{memberPwdCode:document.getElementById('memberPwdCode').value, memberId:document.getElementById('memberId').value},
+        		success : function(data) {
+        			console.log("data : " +  data);
+                    code =data;
+                    alert('임시 비밀번호를 발송했습니다. 메일이 오지 않으면 입력하신 정보가 회원정보와 일치하는지 확인해 주세요.')
+   					location.href = "/";
+                    
+                    
+        		},
+        		error: data=> console.log(data)
+        	 })
+        	 
+         });
+          
+	}; 
+	
+			/* 모달창 */
+	        
+	        document.getElementById('next_btn').addEventListener('click', function(event) {
+	            event.preventDefault();
+	            const memberName = document.getElementById('memberName').value.trim();
+	            if (checkE && memberName !== '') {
+	                const modal = document.getElementById('myModal');
+	                const modalContent = document.getElementById('modalContent');
+	
+	                modalContent.textContent = memberName + '님의 아이디입니다.';
+	                
+	                $.ajax({
+	                    url : 'selectId.me',
+	                    method: 'post',
+	                    data: {
+	                    	memberEmail:document.getElementById('memberEmail').value,
+	                    	memberName:document.getElementById('memberName').value
+	                    },
+	                    success : function (data) {
+	                    	const modalContent = document.querySelector('.modal-content');
+	                    	const spanContainer = modalContent.querySelector('span');
+	                    	spanContainer.innerHTML = ''; 
+	                    	if(data.length !== 0){
+	                    		console.log(data);
+		                    	for (const item of data) {
+		                    	    const ulItem = document.createElement('ul'); 
+		                    	    const liItem = document.createElement('li'); 
+		                    	    const spanItem = document.createElement('span'); 
+		                    	    spanItem.textContent = item.memberId; 
+		                    	    liItem.appendChild(spanItem); 
+		                    	    ulItem.appendChild(liItem); 
+		                    	    ulItem.style.padding = '8px 0';
+		                    	    ulItem.style.listStyle = 'none'; 
+		
+		                    	    spanContainer.appendChild(ulItem); 
+		                    	}
+	                    		for (const item of data) {
+	                    		    const ulItem = document.createElement('ul'); 
+	                    		    const liItem = document.createElement('li'); 
+	                    		    const spanItem = document.createElement('span'); 
+	                    		    const memberId = item.memberId;
+
+	                    		    if (/^\d+$/.test(memberId)) {
+	                    		        // 숫자로만 이뤄진 경우
+	                    		        spanItem.textContent = '카카오 간편 로그인 회원입니다.';
+	                    		    } else {
+	                    		        // 영어 및 숫자가 섞인 경우
+	                    		        spanItem.textContent = '아이디: ' + memberId;
+	                    		    }
+
+	                    		    liItem.appendChild(spanItem); 
+	                    		    ulItem.appendChild(liItem); 
+	                    		    ulItem.style.padding = '8px 0';
+	                    		    ulItem.style.listStyle = 'none'; 
+
+	                    		    spanContainer.appendChild(ulItem); 
+	                    		}
+	                    	}else{
+	                    		modalContent.textContent = memberName + '님은 등록된 아이디가 없습니다!';
+	                    	}
+	                       
+	                    	const homepageButton = document.createElement('button');
+	                        homepageButton.textContent = '홈페이지';
+	                        homepageButton.className = 'homepage-btn';
+	                        homepageButton.addEventListener('click', function() {
+                            window.location.href = 'http://localhost:8080';
+	                        });
+	                        
+	                        
+	                        modalContent.appendChild(homepageButton);
+	
+	                        modal.style.display = 'block';
+	                    },
+	                    error: function(xhr, status, error) {
+	                        console.error("에러남!:", error);
+	                    }        
+	                 }); 
+	                
+	                
+	            }else if (EmailCheckNo === ''){
+	            	alert('이메일 인증을 완료해주세요')
+	            }else if(memberName === ''){
+	            	alert('이름을 입력해 주세요')
+	            }
+	        });
+		
+	</script>
+	
+</body>
+</html>

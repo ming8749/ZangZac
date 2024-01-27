@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>관리자 상품등록 페이지</title>
+<link href="css/sohwa/(admin)productEnroll.css" rel="stylesheet">
+</head>
+<body>
+	<div th:replace="~{common/admin :: admin}"></div>
+	
+	<br><br><br><br>
+	<div id="enrollProduct">
+		<h1>상품 등록</h1>
+		<hr style="border:1px solid black;">
+		<br>
+		<form action="productEnroll.so" method="POST" id="enrollForm" enctype="multipart/form-data">
+			<h3>▸▸상품 대표 사진 (최대 4개): </h3>
+			<div id="resultDiv1" class="resultDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					1.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview1')" name="coreFile"><br>
+					<div class="image-container" style="display:inline-block; position: relative; text-align: center;">
+						<img id="preview1" src="image/sohwa/icons8-camera-80.png">
+						<p class="centered-text" style="position: absolute;top: 50%;left: 50%; transform: translate(-50%, -50%); font-size:20px; font-weight:bolder; color:gray;">[썸네일]</p>
+					</div>
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="resultDiv2" class="resultDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					2.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview2')" name="coreFile"><br>
+					<img id="preview2" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="resultDiv3" class="resultDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					3.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview3')" name="coreFile"><br>
+					<img id="preview3" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="resultDiv4" class="resultDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					4.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview4')" name="coreFile"><br>
+					<img id="preview4" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<br><br><br><br>
+			
+			<label for="productCompany" style="font-size: 20px;">▸▸상품 업체 : </label>
+			<input type="text" name="productCompany" id="productCompany" required>
+			
+			
+			<br><br><br>
+			
+			<label for="productName" style="font-size: 20px;">▸▸상품명 : </label>
+			<input type="text" name="productName" id="productName" required>
+			
+			<br><br><br>
+			
+	         <label for="productCategory" style="font-size: 20px;">▸▸카테고리:</label>
+	         <select id="categoryNo" name="categoryNo" required>
+	             <option value="11">텐트</option>
+	             <option value="12">취침용품</option>
+	             <option value="13">조리도구</option>
+	             <option value="14">발화용품</option>
+	             <option value="15">백팩</option>
+	             <option value="16">기타용품</option>
+	           <!-- 카테고리 옵션 추가 -->
+	         </select>
+		
+		    <br><br><br>
+		  
+		    <label for="productPrice" style="font-size: 20px;">▸▸상품가격 : </label>
+		    <input type="number" name="productPrice" id="productPrice" required> 원
+		  
+		    <br><br><br>
+		  
+		    
+		    
+		    <label style="font-size: 20px;">▸▸컬러 옵션 : </label>
+		  	<br><br>
+		  	<div id="optionDiv">
+		  		<div class="optionDiv-content">
+			  		옵션 : &nbsp;<input required type="text" name="option"><button type="button" class="addOption">옵션 추가</button>
+			  		<label for="productEno" style="font-size: 20px;">▸▸상품수량 : </label>
+			    	<input required type="number" name="productEno"> 개
+			  		<br>
+		  		</div>
+		  		
+		  	</div>
+		  	
+		  	<br><br><br>
+		  	
+		  	<label for="deliveryPrice" style="font-size: 20px;">▸▸배송비 : </label>
+			<input type="text" name="deliveryPrice" id="deliveryPrice" required>원
+		  
+		   <br><br><br>
+		  
+		  
+		    <h3>▸▸상품 상세 사진 (최대 4개): </h3>
+			<div id="detailDiv1" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					1.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail1')" name="detailFile"><br>
+					<img id="detail1" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="detailDiv2" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					2.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail2')" name="detailFile"><br>
+					<img id="detail2" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="detailDiv3" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					3.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail3')" name="detailFile"><br>
+					<img id="detail3" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="detailDiv4" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					4.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail4')" name="detailFile"><br>
+					<img id="detail4" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+		  	
+		  	
+		  	
+		  	<br><br><br><br><hr style="border:1px solid black;"><br><br>
+		  	
+		  	
+		  	<button id="preBtn" type="button" onclick="javascript:history.back();">이전으로</button>
+			<button id="enrollBtn">등록하기</button>
+			
+		</form>
+	</div>
+	
+	
+	
+	
+	
+	<br><br><br><br><!--footer--><br><br><br><br>
+	
+	
+	
+	
+	
+	
+	
+	
+	<script th:inline="javascript">
+		//미리보기
+		function previewImage(event, previewId) {
+	      const input = event.target;
+	      const preview = document.getElementById(previewId);
+	      const file = input.files[0];
+	      const reader = new FileReader();
+	
+	      reader.onload = function(e) {
+	        preview.src = e.target.result;
+	      };
+	
+	      reader.readAsDataURL(file);
+	    }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	      // 취소 버튼 클릭 시 해당 파일 인풋(input) 리셋
+		  function resetFileInput(button) {
+		    const parentDiv = button.parentNode; // 클릭된 버튼이 속한 div
+		    const fileInput = parentDiv.querySelector('input[type="file"]');
+		    const preview = parentDiv.querySelector('img');
+		
+		    if (fileInput && preview) {
+		      fileInput.value = ''; // 파일 입력(input) 초기화
+		      preview.src = 'image/sohwa/icons8-camera-80.png'; // 미리보기 이미지 초기화
+		    }
+		  }
+		
+		  // 각 취소 버튼에 이벤트 핸들러 추가
+		  const resultDivButtons = document.querySelectorAll('.resultDiv button');
+		  const detailDivButtons = document.querySelectorAll('.detailDiv button');
+		
+		  resultDivButtons.forEach(function(button) {
+		    button.addEventListener('click', function(event) {
+		      event.preventDefault(); // 기본 이벤트 동작 방지
+		      resetFileInput(this);
+		    });
+		  });
+		
+		  detailDivButtons.forEach(function(button) {
+		    button.addEventListener('click', function(event) {
+		      event.preventDefault(); // 기본 이벤트 동작 방지
+		      resetFileInput(this);
+		    });
+		  });
+		  
+		  
+		  
+		  
+			const form = document.getElementById('enrollForm');
+				document.getElementById('enrollBtn').addEventListener('click', ()=>{
+					const files = document.getElementsByName('coreFile');
+					let isEmpty = true;
+					
+					//첨부파일 비어져있는지 확인
+					for(const f of files){
+						if(f.value != ''){
+							isEmpty = false;
+						}
+					}
+					
+					//첨부파일 비어있으면 일반게시글로 옮겨진다는 모달 뜨게함.
+					if(isEmpty){
+						event.preventDefault();
+						alert('대표사진이 등록되지 않았습니다.\n다시 확인해주세요');
+						event.preventDefault();
+					}else{
+							
+				            var isEmpty2 = false;
+				            var requiredInputs = document.querySelectorAll('input[required], select[required]');
+				            for (var i = 0; i < requiredInputs.length; i++) {
+				                if (requiredInputs[i].value == '') {
+				                    isEmpty2 = true;
+				                }
+				            }
+						
+						
+						const files2 = document.getElementsByName('detailFile');
+						let detailIsEmpty = true;
+						for(const f2 of files2){
+							if(f2.value != ''){
+								detailIsEmpty = false;
+							}
+						}
+						console.log(isEmpty);
+						console.log(detailIsEmpty);
+						if(detailIsEmpty){
+							event.preventDefault();
+							alert('상세사진이 등록되지 않았습니다. \n다시 확인해주세요.');
+							event.preventDefault();
+						}else if (isEmpty2) {
+			                event.preventDefault(); // 폼 제출을 막음
+			                alert('입력되지 않은 항목이 있습니다. 모든 필수 항목을 입력해주세요.');
+			                event.preventDefault(); // 폼 제출을 막음
+			            }else{
+							form.submit();
+						}
+					}
+				
+				
+				
+				
+			});
+		  
+			
+// 			//단일 옵션/ 추가 옵션
+// 			document.addEventListener('DOMContentLoaded', function() {
+// 		        var option1 = document.getElementById('option1');
+// 		        var option2 = document.getElementById('option2');
+// 		        var optionDiv = document.getElementById('optionDiv');
+
+// 		        // 라디오 버튼 변경 이벤트 처리
+// 		        option1.addEventListener('change', function() {
+// 		            optionDiv.style.display = 'none'; // 단일 옵션 선택 시 해당 div를 숨김
+// 		        });
+
+// 		        option2.addEventListener('change', function() {
+// 		            optionDiv.style.display = 'block'; // 추가 옵션을 선택하면 해당 div를 보이게 함
+// 		        });
+// 		    });
+			
+			
+			document.addEventListener('DOMContentLoaded', function() {
+			    var optionDiv = document.getElementById('optionDiv');
+			    var addOptionButton = document.querySelector('.addOption');
+			    var maxOptions = 6;
+			
+			    function addOption(event) {
+			        var optionCount = document.querySelectorAll('.optionDiv-content').length;
+			
+			        if (optionCount < maxOptions) {
+			            var cloneDiv = optionDiv.firstElementChild.cloneNode(true);
+			            var addOptionButtons = cloneDiv.querySelectorAll('.addOption');
+			            var inputElements = cloneDiv.querySelectorAll('input');
+			
+			            inputElements.forEach(function(input) {
+			                input.value = ''; // 입력 값 초기화
+			            });
+			
+			            addOptionButtons.forEach(function(button) {
+			                button.addEventListener('click', addOption);
+			            });
+			
+			            optionDiv.appendChild(cloneDiv);
+			        } else {
+			            alert('옵션은 최대 6개까지 추가 가능합니다.');
+			        }
+			    }
+			
+			    addOptionButton.addEventListener('click', addOption);
+			});
+			
+			
+			
+		  
+  
+	</script>
+
+</body>
+</html>

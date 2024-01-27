@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 리뷰 상세</title>
+	<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .oval-tag {
+            display: inline-block;
+            background-color: #5cb85c;
+            color: #fff;
+            padding: 0.25rem 1rem;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+        .image-container {
+            max-width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+        .image-slideshow {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .image-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+        .slider-buttons {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+        }
+        .slider-button {
+            background-color: rgba(255, 255, 255, 0.0);
+            padding: 0.5rem;
+            cursor: pointer;
+            color : #fff;
+            transition: background-color 0.3s;
+        }
+        .slider-button:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        
+        .foreground{
+		     background: url(https://aldo814.github.io/jobcloud/html/images/user/star_bg02.png) no-repeat;
+		     width: 121px;
+		     height: 20px;
+		     position: relative;
+		   }
+		  .foreground span{
+		     position: absolute;
+		     background: url(https://aldo814.github.io/jobcloud/html/images/user/star02.png);
+		     filter: invert(90%) sepia(10%) saturate(7000%) hue-rotate(570deg) brightness(115%) contrast(120%);
+		     height: 20px;
+		
+		  }
+		  
+		  .buttonStyle{
+		  	background: #F9612B;
+		  }
+    </style>
+</head>
+<body>
+	<div th:insert="~{common/navbar :: navbar}"></div>
+    <div class="max-w-2xl mx-auto my-10 p-6 bg-gray-50 shadow rounded-lg">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-2">
+            	<input type="hidden" th:value="${cr.crNo}" id="crNo">
+                <h1 class="text-2xl font-bold">[[${cr.crTitle}]]</h1>
+                <span class="oval-tag">[[${cr.categoryName}]]</span>
+            </div>
+            <button class="px-4 py-2  bg-blue-500 text-white rounded hover:bg-blue-600" onclick="campingReviewEdit()" th:if="${session.loginUser != null and session.loginUser.memberId eq cr.memberId}">글수정</button>
+        </div>
+        <div class="image-container">
+            <div class="image-slideshow">
+                <div class="image-slide" th:each="ig:${cr.photos}">
+                    <img th:src="${ig.photoPath}" alt="Slide 1" class="rounded-lg w-full" style="height:500px;">
+                </div>
+            </div>
+            <div class="slider-buttons">
+                <button class=" slider-button" onclick="prevSlide()">&#9664;</button>
+                <button class=" slider-button" style="transform: translateX(1750%);" onclick="nextSlide()">▶</button>
+            </div>
+        </div>
+        <div style="margin-left: auto; margin-top:10px;">
+		    <div class="foreground mt-1" style="float: left;">
+		         <span class="background" th:style="'width: ' + (${cr.crStar} * 100 / 5) + '%;'"></span>
+		   </div>
+		   <span class="ml-4 font-bold text-lg ">[[${cr.crStar}]]</span>
+	    </div><br>
+        <div class="mt-4">
+            <p class="mt-2">[[${cr.crContent}]]</p>
+        </div>
+        
+        <!-- Comment Input Section -->
+		
+		<div class="max-w-2xl mx-auto my-10 p-6 bg-gray-50 shadow rounded-lg" th:if="${session.loginUser != null}">
+		    <h2 class="text-xl font-semibold mb-4">댓글 입력</h2>
+		    <form id="comment-form">
+		        <div class="mb-4">
+		            <label for="comment">댓글:</label>
+		            <textarea id="comment" name="comment" rows="4" class="w-full px-3 py-2 border rounded"></textarea>
+		        </div>
+		        <button type="button" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300" onclick="submitComment()">댓글 등록</button>
+		    </form>
+		</div>
+        
+        
+        <!-- Comments Section -->
+		<div class="max-w-2xl mx-auto my-10 p-6 bg-gray-50 shadow rounded-lg">
+		    <h2 class="text-xl font-semibold mb-4">댓글</h2>
+		    <div id="comments-container">
+		        <!-- 서버에서 가져온 데이터로 이 부분을 동적으로 채우세요 -->
+		    </div>
+		</div>
+				
+		
+        
+    </div>
+    <script>
+        const imageSlideshow = document.querySelector('.image-slideshow');
+        let imageIndex = 0;
+
+        function showNextImage() {
+            imageIndex = (imageIndex + 1) % imageSlideshow.children.length;
+            updateImageSlider();
+        }
+
+        function showPrevImage() {
+            imageIndex = (imageIndex - 1 + imageSlideshow.children.length) % imageSlideshow.children.length;
+            updateImageSlider();
+        }
+
+        function updateImageSlider() {
+            const translateValue = -imageIndex * 100;
+            imageSlideshow.style.transform = `translateX(${translateValue}%)`;
+        }
+
+        function nextSlide() {
+            showNextImage();
+        }
+
+        function prevSlide() {
+            showPrevImage();
+        }
+
+        setInterval(showNextImage, 3000);
+    </script>
+    
+<!-- 댓글 기능을 위한 JavaScript 코드 추가 -->
+<!-- 댓글 기능을 위한 JavaScript 코드 추가 -->
+<script th:inline="javascript">
+//실제 댓글 데이터로 교체하세요
+	let commentsData = [
+
+	];
+	
+	 /*<![CDATA[*/
+    let replys = /*[[${cr.replys}]]*/null;
+    /*]]>*/
+	
+    
+    // replys가 null이 아니라면 데이터를 commentsData에 추가
+	if (replys !== null && Array.isArray(replys)) {
+	    replys.forEach(reply => {
+	        // reply에는 각 댓글의 정보가 들어있을 것이라고 가정합니다.
+	        // 필요한 정보에 따라서 프로퍼티 이름을 수정해주세요.
+	        commentsData.push({
+	            id: reply.replyNo,
+	            username: reply.memberName,
+	            profileImage: reply.memberProfilePath,
+	            comment: reply.replyContent,
+	            memberId:reply.memberId
+	        });
+	    });
+	}
+	
+	
+	function renderComments() {
+	    const commentsContainer = document.getElementById("comments-container");
+	    commentsContainer.innerHTML = "";
+
+	    let loginUser = /*[[${session.loginUser}]]*/ null;
+
+	    commentsData.forEach(comment => {
+	        const commentElement = document.createElement("div");
+	        
+	        commentElement.dataset.commentId = comment.id; // 댓글 ID를 data-comment-id 속성에 추가
+
+	        let button = "";
+
+	        if (loginUser != null && comment.memberId == loginUser.memberId) {
+	            // 로그인한 사용자와 댓글 작성자가 동일하면 수정/삭제 버튼 추가
+	            button = `
+	                <div class="flex gap-2">
+	                    <button onclick="editComment(${comment.id})" class="text-blue-500 hover:underline">수정</button>
+	                    <button onclick="deleteComment(${comment.id})" class="text-red-500 hover:underline">삭제</button>
+	                </div>`;
+	        }
+
+	        commentElement.innerHTML = `
+	            <div class="flex items-center mb-4">
+	                <img src="${comment.profileImage}" alt="프로필 사진" class="w-10 h-10 rounded-full mr-4">
+	                <div>
+	                    <p class="mb-1"><strong>${comment.username}:</strong> ${comment.comment}</p>
+	                    ${button}
+	                </div>
+	            </div>
+	            <hr class="my-2">
+	        `;
+	        commentsContainer.appendChild(commentElement);
+	    });
+	}
+
+    // 댓글 양식 제출을 처리하는 함수
+    /*<![CDATA[*/
+    // 댓글 양식 제출을 처리하는 함수
+    function submitComment() {
+        //글 번호 가져오기
+        const crNo = document.getElementById("crNo").value;
+
+        // 댓글 텍스트 가져오기
+        const commentText = document.getElementById("comment").value;
+
+        // 새 댓글을 위해 고유 ID 생성
+        let newCommentId = commentsData.length + 1;
+
+        let loginUser =/*[[${session.loginUser}]]*/null;
+        let memberId;
+        let memberProfilePath;
+        let memberNickName;
+
+        if (loginUser != null) {
+            memberId = loginUser.memberId;
+            memberProfilePath = loginUser.memberProfilePath;
+            memberNickName = loginUser.memberName;
+            
+            console.log(crNo);
+
+            $.ajax({
+                url: 'campingReviewInsertReply.jy', // 서버의 댓글 목록 불러오기 URL
+                method: 'GET',
+                data: {
+                    boardNo: crNo,
+                    replyContent: commentText,
+                    memberId: memberId
+                },
+                success: function (data) {
+                    //댓글 번호 받아와서 넣어주기
+                    if (data.data != "no") {
+                        newCommentId = data.replyNo;
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+
+            // 새 댓글 데이터에 추가
+            commentsData.push({ id: newCommentId, username: memberNickName, profileImage: memberProfilePath, comment: commentText ,memberId:memberId});
+
+            // 입력 필드 비우기
+            document.getElementById("comment").value = "";
+
+            // 업데이트된 댓글 렌더링
+            renderComments();
+        }
+    }
+        /*]]>*/
+
+		function editComment(commentId) {
+		    const editedCommentText = prompt("수정할 내용을 입력하세요:");
+		
+		    // 데이터에서 해당 댓글 찾기
+		    const commentToEdit = commentsData.find(comment => comment.id === commentId);
+		
+		    // 댓글 텍스트 업데이트
+		    if (commentToEdit) {
+		        commentToEdit.comment = editedCommentText;
+		        
+		        //아작스로 업데이트 하기
+		        $.ajax({
+                url: 'campingReviewUpdateReply.jy', // 서버의 댓글 목록 불러오기 URL
+                method: 'GET',
+                data: {
+                	replyNo: commentToEdit.id,
+                    replyContent: editedCommentText,
+                },
+                success: function (data) {
+                    
+                	if(data.replyNo == "no"){
+                		alert('댓글 수정 오류');
+                	}
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+		        
+		        
+		        
+		
+		        // 업데이트된 댓글 렌더링
+		        renderComments();
+		    }
+		}
+
+		function deleteComment(commentId) {
+		    // 사용자에게 확인을 물어봄
+		    const confirmation = confirm("정말로 이 댓글을 삭제하시겠습니까?");
+		    
+		    // 확인이 되었을 때만 댓글 삭제
+		    if (confirmation) {
+		        // 삭제된 댓글 제외
+		        const commentToEdit = commentsData.find(comment => comment.id === commentId);
+		        
+		        // 아작스로 업데이트 하기
+		        $.ajax({
+		            url: 'campingReviewDeleteReply.jy', // 서버의 댓글 삭제 URL
+		            method: 'GET',
+		            data: {
+		                replyNo: commentToEdit.id,
+		            },
+		            success: function (data) {
+		                if (data.replyNo === "no") {
+		                    alert('댓글 삭제 오류');
+		                } else {
+		                    // 서버 응답이 성공적으로 오면 댓글을 삭제하고 렌더링
+		                    commentsData = commentsData.filter(comment => comment.id !== commentId);
+		                    renderComments();
+		                }
+		            },
+		            error: function (data) {
+		                console.log(data);
+		            }
+		        });
+		    }
+		}
+		
+		function campingReviewEdit(){
+			const crNo = document.getElementById("crNo").value;
+			window.location.href="campingReviewEditView.jy?crNo="+crNo;
+		}
+
+    // 초기 댓글 렌더링
+    window.onload=()=>{
+    	renderComments();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅방 리스트</title>
+	<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-card:hover {
+            transform: translateY(-5px);
+            transition: transform 0.2s;
+        }
+    </style>
+</head>
+<body class="bg-white">
+	<div th:insert="~{common/navbar :: navbar}"></div>
+    <div class="container mx-auto p-6">
+        <div class="text-center font-bold text-xl mb-4">채팅방 리스트</div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Chat Room 1 -->
+            <th:block th:each="c:${list}">
+	            <div class="chat-card rounded-lg  p-4 cursor-pointer" th:onclick="enterChatRoom([[${c.clNo}]])">
+	                <img th:src="|image/main${c.clNo}.jpg|" alt="Chat Room 1" class="rounded-full mx-auto mb-4 h-250">
+	                <div class="text-center">
+	                    <div class="font-semibold">[[${c.clName}]]</div>
+	                    <div class="text-gray-600">[[|참가중 ${c.clNowPerson} / ${c.clLimitPerson} 인원|]]</div>
+	                </div>
+	            </div>
+	         </th:block>   
+          
+        </div>
+        <div class="text-center text-gray-600 mt-6">
+            원하는 채팅방 이미지 클릭시 채팅 방으로 입장합니다.<br>
+        </div>
+    </div>
+    
+<script th:inline="javascript">
+
+
+	   /*<![CDATA[*/
+		function enterChatRoom(chatRoomId) {
+	        let isLoggedIn = /*[[${session.loginUser}]]*/ null;
+	        console.log(isLoggedIn);
+	        if (isLoggedIn !== null) {
+	            // 로그인 상태일 때 채팅방으로 이동
+	            window.location.href = '/enterChatRoom.jy?chatRoomId=' + chatRoomId;
+	        } else {
+	            // 비로그인 상태일 때 알림창 표시
+	            alert('로그인이 필요합니다.');
+	        }
+    	}
+	   /*]]>*/
+	
+</script>
+</body>
+</html>

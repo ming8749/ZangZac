@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link href="css/sohwa/reviewUpdate.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+</head>
+<body>
+
+	<div class="flex justify-center items-center h-screen">
+	    <button id="openModalButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+	      모달 열기
+	    </button>
+	</div>
+
+	<!-- 모달 -->
+	<div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center hidden bg-black bg-opacity-50">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body">
+					<div class="bg-gray-50">
+						<br><br>
+						<h1 class="text-2xl font-bold mb-4">리뷰 수정</h1>
+						<button type="button" class="close" id="closeModalButton">
+							<span>&times;</span>
+						</button>
+						
+						<div class="max-w-2xl mx-auto p-6" style="margin-left:60px;">
+							<div class="bg-white shadow-md rounded-lg overflow-hidden mb-4">
+								<div class="p-4 flex">
+									
+									<img class="w-20 h-20 object-cover rounded-full" src="image/sohwa/tent1core1.png" alt="Product">
+									<div class="ml-4">
+										<h2 class="text-lg font-semibold">모비가든</h2>
+										<p class="text-sm text-gray-600">캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용</p>
+										<hr>
+										<p>410,000원</p>
+									</div>
+								</div>
+								<div class="border-t border-gray-200">
+									<div class="p-4">
+										<h3 class="text-lg font-semibold mb-2">별점 등록</h3>
+										<div class="flex items-center mb-4">
+											<div id="starRating">
+												<span class="fa fa-star"></span>
+												<span class="fa fa-star"></span>
+												<span class="fa fa-star"></span>
+												<span class="fa fa-star"></span>
+												<span class="fa fa-star"></span>
+											</div>
+										</div>
+										<!-- 파일 미리보기 영역 -->
+										<div id="imagePreview">
+											<img id="preview" src="image/sohwa/icons8-screenshot-64.png">
+										</div>
+										<br>
+										<div id="addPhoto">
+											<img src="image/sohwa/icons8-camera-80.png">사진첨부
+										</div>
+										<br>
+										<div class="mb-4">
+											<label for="review" class="text-sm font-semibold">리뷰 작성</label>
+											<textarea id="review" rows="3" class="mt-1 p-2 w-full border rounded-md" style="height:250px; overflow: scroll; resize: none;">원래 등록했던 리뷰내용</textarea>
+										</div>
+										<button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" style="float:right; margin-bottom:30px;">
+											수정하기
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<input type="file" id="fileUpload" style="display: none;">
+
+	<script>
+		
+		// 별점 등록
+		var stars = document.querySelectorAll('#starRating .fa');
+		
+		stars.forEach(function(star, index) {
+		    star.addEventListener('click', function() {
+		        // 클릭된 별을 포함하여 그 앞의 별들을 노란색으로 변경하고, 나머지는 회색으로 유지합니다.
+		        for (var i = 0; i <= index; i++) {
+		            stars[i].classList.add('checked');
+		        }
+		        for (var i = index + 1; i < stars.length; i++) {
+		            stars[i].classList.remove('checked');
+		        }
+		    });
+		});
+
+
+		// 파일 첨부 요소를 클릭하는 함수
+		document.getElementById('addPhoto').addEventListener('click', function() {
+			document.getElementById('fileUpload').click(); // 파일 업로드 클릭 이벤트 발생
+		});
+
+		// JavaScript
+		document.getElementById('fileUpload').addEventListener('change', function() {
+			var file = this.files[0]; // 선택된 파일 가져오기
+			var reader = new FileReader(); // 파일을 읽기 위한 객체 생성
+
+			reader.onload = function(event) {
+				var imageUrl = event.target.result; // 이미지 URL
+				var preview = document.getElementById('preview');
+				preview.src = imageUrl; // 미리보기 이미지 URL 설정
+				preview.style.width = '200px'; // 이미지 가로 크기 설정
+				preview.style.height = '200px'; // 이미지 세로 크기 설정
+			};
+
+			if (file) {
+				reader.readAsDataURL(file); // 파일을 읽어서 Data URL로 변환하여 onload 이벤트 실행
+			}
+		});
+
+
+		// 버튼 클릭 시 모달 열기
+		const openModalButton = document.getElementById('openModalButton');
+		const customModal = document.getElementById('customModal');
+		const closeModalButton = document.getElementById('closeModalButton');
+
+		openModalButton.addEventListener('click', function() {
+			customModal.classList.remove('hidden');
+		});
+
+		// 모달 닫기 버튼 클릭 시 모달 닫기
+		closeModalButton.addEventListener('click', function() {
+			customModal.classList.add('hidden');
+		});
+	</script>
+	
+
+</body>
+</html>

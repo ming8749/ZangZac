@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>관리자 상품수정 페이지</title>
+<link href="css/sohwa/(admin)productUpdate.css" rel="stylesheet">
+</head>
+<body>
+	<div th:replace="~{common/admin :: admin}"></div>
+	
+	<br><br><br><br>
+	<div id="enrollProduct">
+		<h1>상품 수정</h1>
+		<hr style="border:1px solid black;">
+		<br>
+		<form id="updatForm" action="productUpdate.so" method="POST" enctype="multipart/form-data">
+			<input type="hidden" th:value="${productNo}" name="productNo">
+			<h3>▸▸상품 대표 사진 (최대 4개): </h3>
+				<div class="thumbnails" th:each="l:${list}" style="display:inline-block;margin-top:20px;">
+			        <div th:if="${l.photoLevel==0}" style="display:inline-block;"><img th:src="${l.photoPath}" alt="Thumbnail 1" class="thumbnail">&nbsp;<button type="button" class="btn btn-outline-dark btn-sm deleteAttm" th:id="|delete~${ l.photoRename }/${l.photoLevel}|">삭제 OFF</button><input type="hidden" name="deleteAttm" value="none"></div>
+			        <div th:if="${l.photoLevel==1}" style="display:inline-block;"><img th:src="${l.photoPath}" alt="Thumbnail 1" class="thumbnail">&nbsp;<button type="button" class="btn btn-outline-dark btn-sm deleteAttm" th:id="|delete~${ l.photoRename }/${l.photoLevel}|">삭제 OFF</button><input type="hidden" name="deleteAttm" value="none"></div>
+			        
+			    </div>
+				<br><br><br>
+				<div id="resultDiv1" class="resultDiv">
+					<div style="display: inline-block;width:250px;height:200px;">
+						1.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview1')" name="coreFile"><br>
+						<img id="preview1" src="image/sohwa/icons8-camera-80.png">
+						<button style="margin-left:65px;">취소</button>
+					</div>
+				</div>
+				
+				<div id="resultDiv2" class="resultDiv">
+					<div style="display: inline-block;width:250px;height:200px;">
+						2.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview2')" name="coreFile"><br>
+						<img id="preview2" src="image/sohwa/icons8-camera-80.png">
+						<button style="margin-left:65px;">취소</button>
+					</div>
+				</div>
+				
+				<div id="resultDiv3" class="resultDiv">
+					<div style="display: inline-block;width:250px;height:200px;">
+						3.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview3')" name="coreFile"><br>
+						<img id="preview3" src="image/sohwa/icons8-camera-80.png">
+						<button style="margin-left:65px;">취소</button>
+					</div>
+				</div>
+				
+				<div id="resultDiv4" class="resultDiv">
+					<div style="display: inline-block;width:250px;height:200px;">
+						4.<input type="file" class="corePhoto" onchange="previewImage(event, 'preview4')" name="coreFile"><br>
+						<img id="preview4" src="image/sohwa/icons8-camera-80.png">
+						<button style="margin-left:65px;">취소</button>
+					</div>
+				</div>
+			
+			
+			<br><br><br><br>
+			
+			<label for="productCompany" style="font-size: 20px;">▸▸상품 업체 : </label>
+			<input type="text" name="productCompany" id="productCompany" th:value="${p.productCompany}" required>
+			
+			
+			<br><br><br>
+			
+			<label for="productName" style="font-size: 20px;">▸▸상품명 : </label>
+			<input type="text" name="productName" id="productName" th:value="${p.productName}" required>
+			
+			<br><br><br>
+			
+	         <label for="productCategory" style="font-size: 20px;">▸▸카테고리:</label>
+	         <select id="productCategory" name="categoryNo" required>
+	             <option th:selected="${p.categoryNo == 11}" value="11">텐트</option>
+	             <option th:selected="${p.categoryNo == 12}" value="12">취침용품</option>
+	             <option th:selected="${p.categoryNo == 13}" value="13">조리도구</option>
+	             <option th:selected="${p.categoryNo == 14}" value="14">발화용품</option>
+	             <option th:selected="${p.categoryNo == 15}" value="15">백팩</option>
+	             <option th:selected="${p.categoryNo == 16}" value="16">기타용품</option>
+	           <!-- 카테고리 옵션 추가 -->
+	         </select>
+		
+		    <br><br><br>
+		  
+		    <label for="productPrice" style="font-size: 20px;">▸▸상품가격 : </label>
+		    <input type="number" name="productPrice" id="productPrice" th:value="${p.productPrice}" required> 원
+		  
+		    
+		  	<br><br><br>
+		  	
+		  	<label style="font-size: 20px;">▸▸컬러 옵션 : </label>
+		  	<br><br>
+		  	<div id="optionDiv">
+		  		<div class="optionDiv-content"  th:each="o:${oList}">
+			  		옵션 : &nbsp;<input required type="text" name="option" th:value="${o.productOptionColor}"><button type="button" class="addOption">옵션 추가</button>
+			  		<label for="productEno" style="font-size: 20px;">▸▸상품수량 : </label>
+			    	<input type="number" name="productEno" th:value="${o.productOptionEno}" required> 개
+			  		<br>
+		  		</div>
+		  		
+		  	</div>
+		  	
+		  	<br><br><br>
+		  	
+		  	<label for="deliveryPrice" style="font-size: 20px;">▸▸배송비 : </label>
+			<input type="text" name="deliveryPrice" id="deliveryPrice" th:value="${p.deliveryPrice}" required>원
+		  
+		   <br><br><br>
+		  
+		  <br><br><br>
+		  
+		  
+		    <h3>▸▸상품 상세 사진 (최대 4개): </h3>
+		    <div class="details" th:each="l:${list}" style="display:inline-block;margin-top:20px;">
+		        <div th:if="${l.photoLevel==2}" style="display:inline-block;"><img th:src="${l.photoPath}" alt="Detail 1" class="detail1l" style="width:200px; height:200px;">&nbsp;<button type="button" class="btn btn-outline-dark btn-sm deleteAttm2" th:id="|delete~${ l.photoRename }/${l.photoLevel}|">삭제 OFF</button><input type="hidden" name="deleteAttm" value="none"></div>
+		    </div>
+		    <br><br>
+			<div id="detailDiv1" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					1.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail1')" name="detailFile"><br>
+					<img id="detail1" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="detailDiv2" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					2.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail2')" name="detailFile"><br>
+					<img id="detail2" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="detailDiv3" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					3.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail3')" name="detailFile"><br>
+					<img id="detail3" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+			
+			<div id="detailDiv4" class="detailDiv">
+				<div style="display: inline-block;width:250px;height:200px;">
+					4.<input type="file" class="detailPhoto" onchange="previewImage(event, 'detail4')" name="detailFile"><br>
+					<img id="detail4" src="image/sohwa/icons8-camera-80.png">
+					<button style="margin-left:65px;">취소</button>
+				</div>
+			</div>
+		  	
+		  	
+		  	
+		  	<br><br><br><br><hr style="border:1px solid black;"><br><br>
+		  	
+		  	
+		  	<button id="preBtn">이전으로</button>
+			<button id="enrollBtn">수정하기</button>
+			
+		</form>
+	</div>
+	
+	
+	
+	
+	
+	<br><br><br><br><!--footer--><br><br><br><br>
+	
+	
+	
+	
+	
+	
+	
+	
+	<script th:inline="javascript">
+	
+		//미리보기
+// 		function previewImage(event, previewId) {
+// 	      const input = event.target;
+// 	      const preview = document.getElementById(previewId);
+// 	      const file = input.files[0];
+// 	      const reader = new FileReader();
+	
+// 	      reader.onload = function(e) {
+// 	        preview.src = e.target.result;
+// 	      };
+	
+// 	      reader.readAsDataURL(file);
+// 	    }
+	    
+	    
+		// 미리보기
+		function previewImage(event, previewId) {
+        const input = event.target;
+        const preview = document.getElementById(previewId);
+        const file = input.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+    } 
+	    
+	    
+	    
+	    
+	    
+	      // 취소 버튼 클릭 시 해당 파일 인풋(input) 리셋
+		  function resetFileInput(button) {
+		    const parentDiv = button.parentNode; // 클릭된 버튼이 속한 div
+		    const fileInput = parentDiv.querySelector('input[type="file"]');
+		    const preview = parentDiv.querySelector('img');
+		
+		    if (fileInput && preview) {
+		      fileInput.value = ''; // 파일 입력(input) 초기화
+		      preview.src = 'image/sohwa/icons8-camera-80.png'; // 미리보기 이미지 초기화
+		    }
+		  }
+		
+		  // 각 취소 버튼에 이벤트 핸들러 추가
+		  const resultDivButtons = document.querySelectorAll('.resultDiv button');
+		  const detailDivButtons = document.querySelectorAll('.detailDiv button');
+		
+		  resultDivButtons.forEach(function(button) {
+		    button.addEventListener('click', function(event) {
+		      event.preventDefault(); // 기본 이벤트 동작 방지
+		      resetFileInput(this);
+		    });
+		  });
+		
+		  detailDivButtons.forEach(function(button) {
+		    button.addEventListener('click', function(event) {
+		      event.preventDefault(); // 기본 이벤트 동작 방지
+		      resetFileInput(this);
+		    });
+		  });
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		 
+		  window.onload=()=>{
+			  
+			  
+			  
+			  
+			  
+			  
+			
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			  
+			
+			//대표사진들 삭제 on/off
+			const resultDiv1 = document.getElementById('resultDiv1');
+			const resultDiv2 = document.getElementById('resultDiv2');
+			const resultDiv3 = document.getElementById('resultDiv3');
+			const resultDiv4 = document.getElementById('resultDiv4');
+			const delBtns = document.getElementsByClassName('deleteAttm');
+			const thumbnailDivs = document.querySelectorAll('.thumbnails');
+			
+			
+			for(const btn of delBtns){
+				//이렇게 for문으로 delete영역 돌려버리면 id = 'delete' 가 더이상 유일해지지 않는다.
+				//따라서 위에 올라가서 id부분 변경해준다. renameName, attmLevel이용해서 구분 가능하도록.
+				btn.addEventListener('click', function(){
+					const nextHidden = this.nextElementSibling;
+					if(this.innerText =='삭제 OFF'){
+						this.style.background='black';
+						this.style.color='white';
+						this.innerText='삭제 ON';
+						nextHidden.value=this.id.split('~')[1]; //delete- 뒤에있는 renameName 가져오겠다는 뜻
+					}else{
+						this.style.background='none';
+						this.style.color='black';
+						this.innerText='삭제 OFF';
+						nextHidden.value="none";
+					}
+					console.log(nextHidden);
+					let deleteOffCount = 0;
+			        // 각각의 'thumbnails' 요소에 대해 반복
+			        thumbnailDivs.forEach(function(thumbnailDiv) {
+			            // 현재 요소 내에서 'deleteAttm' 클래스를 가진 버튼을 선택
+			            var deleteButton = thumbnailDiv.querySelector('.deleteAttm');
+
+			            // 삭제 OFF인 경우에만 deleteOffCount를 증가
+			            if (deleteButton && deleteButton.innerText.trim() === '삭제 OFF') {
+			                deleteOffCount++;
+			            }
+			            console.log(deleteOffCount);
+			            
+			        });
+			        
+			        if(deleteOffCount==0){
+			        	resultDiv1.style.display='inline-block';
+			        	resultDiv2.style.display='inline-block';
+			        	resultDiv3.style.display='inline-block';
+			        	resultDiv4.style.display='inline-block';
+			        }else if(deleteOffCount==1){
+			        	resultDiv1.style.display='none';
+			        	resultDiv2.style.display='inline-block';
+			        	resultDiv3.style.display='inline-block';
+			        	resultDiv4.style.display='inline-block';
+			        }else if(deleteOffCount==2){
+			        	resultDiv1.style.display='none';
+			        	resultDiv2.style.display='none';
+			        	resultDiv3.style.display='inline-block';
+			        	resultDiv4.style.display='inline-block';
+			        }else if(deleteOffCount==3){
+			        	resultDiv1.style.display='none';
+			        	resultDiv2.style.display='none';
+			        	resultDiv3.style.display='none';
+			        	resultDiv4.style.display='inline-block';
+			        }else if(deleteOffCount==4){
+			        	resultDiv1.style.display='none';
+			        	resultDiv2.style.display='none';
+			        	resultDiv3.style.display='none';
+			        	resultDiv4.style.display='none';
+			        }
+			        
+			        
+				});
+		        
+		        
+			}
+			
+			
+			//처음 로드되었을때의 삭제 off의 갯수
+			let deleteOffCount = 0;
+	        // 각각의 'thumbnails' 요소에 대해 반복
+	        thumbnailDivs.forEach(function(thumbnailDiv) {
+	            // 현재 요소 내에서 'deleteAttm' 클래스를 가진 버튼을 선택
+	            var deleteButton = thumbnailDiv.querySelector('.deleteAttm');
+
+	            // 삭제 OFF인 경우에만 deleteOffCount를 증가
+	            if (deleteButton && deleteButton.innerText.trim() === '삭제 OFF') {
+	                deleteOffCount++;
+	            }
+	            console.log(deleteOffCount);
+	            
+	        });
+			
+			
+	        if(deleteOffCount==0){
+	        	resultDiv1.style.display='inline-block';
+	        	resultDiv2.style.display='inline-block';
+	        	resultDiv3.style.display='inline-block';
+	        	resultDiv4.style.display='inline-block';
+	        }else if(deleteOffCount==1){
+	        	resultDiv1.style.display='none';
+	        	resultDiv2.style.display='inline-block';
+	        	resultDiv3.style.display='inline-block';
+	        	resultDiv4.style.display='inline-block';
+	        }else if(deleteOffCount==2){
+	        	resultDiv1.style.display='none';
+	        	resultDiv2.style.display='none';
+	        	resultDiv3.style.display='inline-block';
+	        	resultDiv4.style.display='inline-block';
+	        }else if(deleteOffCount==3){
+	        	resultDiv1.style.display='none';
+	        	resultDiv2.style.display='none';
+	        	resultDiv3.style.display='none';
+	        	resultDiv4.style.display='inline-block';
+	        }else if(deleteOffCount==4){
+	        	resultDiv1.style.display='none';
+	        	resultDiv2.style.display='none';
+	        	resultDiv3.style.display='none';
+	        	resultDiv4.style.display='none';
+	        }
+			
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	        
+	       //상세 사진들 삭제 on/off
+	      //삭제 on/off
+			const detailDiv1 = document.getElementById('detailDiv1');
+			const detailDiv2 = document.getElementById('detailDiv2');
+			const detailDiv3 = document.getElementById('detailDiv3');
+			const detailDiv4 = document.getElementById('detailDiv4');
+			const details = document.querySelectorAll('.details');
+			const delBtns2 = document.getElementsByClassName('deleteAttm2');
+			for(const btn of delBtns2){
+				//이렇게 for문으로 delete영역 돌려버리면 id = 'delete' 가 더이상 유일해지지 않는다.
+				//따라서 위에 올라가서 id부분 변경해준다. renameName, attmLevel이용해서 구분 가능하도록.
+				btn.addEventListener('click', function(){
+					const nextHidden = this.nextElementSibling;
+					if(this.innerText =='삭제 OFF'){
+						this.style.background='black';
+						this.style.color='white';
+						this.innerText='삭제 ON';
+						nextHidden.value=this.id.split('~')[1]; //delete- 뒤에있는 renameName 가져오겠다는 뜻
+					}else{
+						this.style.background='none';
+						this.style.color='black';
+						this.innerText='삭제 OFF';
+						nextHidden.value="none";
+					}
+					let detailDelete = 0;
+			        // 각각의 'thumbnails' 요소에 대해 반복
+			        details.forEach(function(detailDiv) {
+			            // 현재 요소 내에서 'deleteAttm' 클래스를 가진 버튼을 선택
+			            var deleteButton = detailDiv.querySelector('.deleteAttm2');
+
+			            // 삭제 OFF인 경우에만 deleteOffCount를 증가
+			            if (deleteButton && deleteButton.innerText.trim() === '삭제 OFF') {
+			            	detailDelete++;
+			            }
+			            
+			        });
+			        if(detailDelete==0){
+			        	detailDiv1.style.display='inline-block';
+			        	detailDiv2.style.display='inline-block';
+			        	detailDiv3.style.display='inline-block';
+			        	detailDiv4.style.display='inline-block';
+			        }else if(detailDelete==1){
+			        	detailDiv1.style.display='none';
+			        	detailDiv2.style.display='inline-block';
+			        	detailDiv3.style.display='inline-block';
+			        	detailDiv4.style.display='inline-block';
+			        }else if(detailDelete==2){
+			        	detailDiv1.style.display='none';
+			        	detailDiv2.style.display='none';
+			        	detailDiv3.style.display='inline-block';
+			        	detailDiv4.style.display='inline-block';
+			        }else if(detailDelete==3){
+			        	detailDiv1.style.display='none';
+			        	detailDiv2.style.display='none';
+			        	detailDiv3.style.display='none';
+			        	detailDiv4.style.display='inline-block';
+			        }else if(detailDelete==4){
+			        	detailDiv1.style.display='none';
+			        	detailDiv2.style.display='none';
+			        	detailDiv3.style.display='none';
+			        	detailDiv4.style.display='none';
+			        }
+			        
+			        
+				});
+		        
+		        
+			}
+			
+			
+			//처음 로드되었을때의 삭제 off의 갯수
+			let detailDelete = 0;
+	        // 각각의 'thumbnails' 요소에 대해 반복
+	        details.forEach(function(detailDiv) {
+	            // 현재 요소 내에서 'deleteAttm' 클래스를 가진 버튼을 선택
+	            var deleteButton = detailDiv.querySelector('.deleteAttm2');
+
+	            // 삭제 OFF인 경우에만 deleteOffCount를 증가
+	            if (deleteButton && deleteButton.innerText.trim() === '삭제 OFF') {
+	            	detailDelete++;
+	            }
+	            console.log(detailDelete);
+	            
+	        });
+			
+			
+	        if(detailDelete==0){
+	        	detailDiv1.style.display='inline-block';
+	        	detailDiv2.style.display='inline-block';
+	        	detailDiv3.style.display='inline-block';
+	        	detailDiv4.style.display='inline-block';
+	        }else if(detailDelete==1){
+	        	detailDiv1.style.display='none';
+	        	detailDiv2.style.display='inline-block';
+	        	detailDiv3.style.display='inline-block';
+	        	detailDiv4.style.display='inline-block';
+	        }else if(detailDelete==2){
+	        	detailDiv1.style.display='none';
+	        	detailDiv2.style.display='none';
+	        	detailDiv3.style.display='inline-block';
+	        	detailDiv4.style.display='inline-block';
+	        }else if(detailDelete==3){
+	        	detailDiv1.style.display='none';
+	        	detailDiv2.style.display='none';
+	        	detailDiv3.style.display='none';
+	        	detailDiv4.style.display='inline-block';
+	        }else if(detailDelete==4){
+	        	detailDiv1.style.display='none';
+	        	detailDiv2.style.display='none';
+	        	detailDiv3.style.display='none';
+	        	detailDiv4.style.display='none';
+	        }
+			
+			
+			
+		}
+		  
+		  
+		  
+		  
+		//첨부파일 비워져있으면 alert
+		  const form = document.getElementById('updateForm');
+			document.getElementById('enrollBtn').addEventListener('click', ()=>{
+				const files = document.getElementsByName('coreFile');
+				let isEmpty = true;
+				
+				//첨부파일 비어져있는지 확인
+				for(const f of files){
+					if(f.value != ''){
+						isEmpty = false;
+					}
+				}
+				
+				const deleteAttmButtons = document.querySelectorAll('.deleteAttm');
+			    let isDeleteOffSelected = false;
+
+			    deleteAttmButtons.forEach((deleteButton) => {
+			        if (deleteButton.innerText.trim() === '삭제 OFF') {
+			            isDeleteOffSelected = true;
+			        }
+			    });
+			    
+			    const deleteAttmButtons2 = document.querySelectorAll('.deleteAttm2');
+			    let isDeleteOffSelected2 = false;
+
+			    deleteAttmButtons2.forEach((deleteButton2) => {
+			        if (deleteButton2.innerText.trim() === '삭제 OFF') {
+			            isDeleteOffSelected2 = true;
+			        }
+			    });
+			    
+				if(isEmpty && !isDeleteOffSelected){
+					event.preventDefault();
+					alert('대표사진이 등록되지 않았습니다.\n다시 확인해주세요');
+					event.preventDefault();
+				}else{
+					const files2 = document.getElementsByName('detailFile');
+					let detailIsEmpty = true;
+					for(const f2 of files2){
+						if(f2.value != ''){
+							detailIsEmpty = false;
+						}
+					}
+					console.log(isEmpty);
+					console.log(detailIsEmpty);
+					if(detailIsEmpty && !isDeleteOffSelected2){
+						event.preventDefault();
+						alert('상세사진이 등록되지 않았습니다. \n다시 확인해주세요.');
+						event.preventDefault();
+					}else if (isEmpty2) {
+		                event.preventDefault(); // 폼 제출을 막음
+		                alert('입력되지 않은 항목이 있습니다. 모든 필수 항목을 입력해주세요.');
+		                event.preventDefault(); // 폼 제출을 막음
+		            }else{
+						form.submit();
+					}
+				}
+			
+			
+			
+			
+		});
+		  
+		  
+		  
+		  
+		  
+		  document.addEventListener('DOMContentLoaded', function() {
+			    var optionDiv = document.getElementById('optionDiv');
+			    var addOptionButton = document.querySelector('.addOption');
+			    var maxOptions = 6;
+			
+			    function addOption(event) {
+			        var optionCount = document.querySelectorAll('.optionDiv-content').length;
+			
+			        if (optionCount < maxOptions) {
+			            var cloneDiv = optionDiv.firstElementChild.cloneNode(true);
+			            var addOptionButtons = cloneDiv.querySelectorAll('.addOption');
+			            var inputElements = cloneDiv.querySelectorAll('input');
+			
+			            inputElements.forEach(function(input) {
+			                input.value = ''; // 입력 값 초기화
+			            });
+			
+			            addOptionButtons.forEach(function(button) {
+			                button.addEventListener('click', addOption);
+			            });
+			
+			            optionDiv.appendChild(cloneDiv);
+			        } else {
+			            alert('옵션은 최대 6개까지 추가 가능합니다.');
+			        }
+			    }
+			
+			    addOptionButton.addEventListener('click', addOption);
+			});
+
+
+  		
+	</script>
+</body>
+</html>

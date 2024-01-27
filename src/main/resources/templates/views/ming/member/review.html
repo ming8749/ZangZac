@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>내가 쓴 리뷰</title>
+<link href="../css/ming/member/review.css" rel="stylesheet">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+<div class="logo">
+		<a href="/"><img src="../image/ming/member/logo.png" alt="logo"></a>
+	</div>
+	<aside class="sidebar">
+		<div class="user">
+			<img th:src="${loginUser.memberProfilePath}" style="width: 80px; height:80px; border-radius: 50%"></img><br><br>
+			<p style="font-weight: bold; font-size: 1.5em;" th:text="${loginUser.memberName}"></p><br><br>
+		</div>
+		<ul class="links">
+			<li>
+				<img src="../image/ming/member/프로필수정.png" style="width: 60px;"></img>
+				<a href="myPage.me">정보 수정</a>
+			</li>
+			<li th:if="${session.loginUser.memberLoginType == 1}">
+				<img src="../image/ming/member/icons8-비밀번호-50.png" style="width: 60px;"></img>
+				<a href="updatePwd.me">비밀번호 수정</a>
+			</li>
+		<hr>
+			<li>
+				<img src="../image/ming/member/icons8-edit-64.png" style="width: 60px;"></img>
+				<a href="myBoardList.me">내가 쓴 게시글</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/리뷰.png" style="width: 60px;"></img>
+				<a href="review.me">리뷰</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/icons8-계산서-100.png" style="width: 60px;"></img>
+				<a href="myOrderPageView.so">결제내역</a>
+			</li>
+		<hr>
+			<li>
+				<img src="../image/ming/member/icons8-쇼핑몰-50.png" style="width: 60px;"></img>
+				<a href="productListView.so">쇼핑몰 이동</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/icons8-게시판-50.png" style="width: 60px;"></img>
+				<a href="campBoard.su">커뮤니티 이동</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/logout.png" style="width: 60px;"></img>
+				<a href="logout.me">로그아웃</a>
+			</li>
+			<li id="deleteMemberBtn">
+				<img src="../image/ming/member/icons8-취소-100 (1).png" style="width: 60px;"></img>
+				<a id="deleteMember" style="color: red;">회원탈퇴</a>
+			</li>
+		</ul>
+	</aside>
+		<div id="myModal" class="modal">
+	       <!-- 모달 내용 -->
+	       <div class="modal-content">
+	           	<h4 id="modalContent"></h4>
+	           	<span id="modalResult"></span>
+	       </div>
+    	</div>
+    	<!--------------------------------------------------------마이페이지 시작--------------------------------------------------------------------->
+			<div class="my-reviews-container">
+			    <p class="reviewTitle">[[${loginUser.memberName}]]님의 작성한 리뷰<p>
+				    <div class="reviewPage">
+				        <table class="reviews-table">
+						    <tbody>
+						        <tr th:each="r : ${rList}" class="review-item" name="reviewNo">
+						            <td class="review-product-image-cell" >
+						                <img th:each="ph : ${phList}" th:if="${ph.boardType == 6 and r.reviewNo == ph.boardNo}" th:src="${ph.photoPath}" alt="리뷰 상품 이미지">
+						            </td>
+						            <td class="review-details-cell"><!--사진의 리뷰넘버 보드에 보드넘버  -->
+						                <div th:each="p : ${pList}" th:if="${r.productNo == p.productNo}">
+						                    <span class="store" th:text="${p.productCompany}"></span><br>
+						                    <span class="product" th:text="${p.productName}"></span>
+						                </div>
+						                <div class="review-content">
+						                    <div class="score">  
+						                        <div class="foreground">
+						                            <span class="background" th:style="'width: ' + (${r.reviewScore} * 100 / 5) + '%;'"></span>
+						                        </div>
+						                    </div>
+						                    <span class="review-date" th:text="${r.reviewModifyDate == null ? r.reviewUploadDate : r.reviewModifyDate}"></span><br>
+						                    <div class="review-text" th:text="${r.reviewContent}">리뷰 내용</div>
+						                    <div class="review-actions">
+						                    <span th:each="p : ${pList}" th:if="${r.productNo == p.productNo}">
+						                        <input type="hidden" name="reviewNo" th:value="${r.reviewNo}" />
+						                        <a th:href="'productDetail.so?productNo=' + ${p.productNo}"><button class="btn-hover color-2"  type="submit" style="left: 920px; width: 100px; top:-50px;">상세 페이지</button></a>
+					                    	</span>
+					                    	<form>
+						                        <input type="hidden" class="reviewNo" th:value="${r.reviewNo}" />
+						                        <button class="btn-hover color-1 deleteReview" id="deleteReview" type="submit" style="left: 1050px; width: 100px; top:-50px;">삭제</button>
+					                        </form>
+						                    </div>
+						                </div>
+						            </td>
+						        </tr>
+						    </tbody>
+						</table>
+				        <!-- Pagination here -->
+					     <div class="board_bottom_area">
+	         <div id="pagenation" th:with="loc=${loc}" th:if="${!rList.isEmpty}">
+	            <ul>
+	               <!-- 이전 버튼 -->
+	               <li th:if="${pi.currentPage > 10}">
+	                  <a th:href="@{${loc}(page=${pi.currentPage-10})}">&lt; 이전</a>
+	               </li>
+	                   <!-- 페이지 번호 -->
+	                   <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+	                      <a th:href="@{${loc}(page=${p})}" th:id="${p == pi.currentPage} ? 'check_page'">
+	                          [[${p}]] 
+	                      </a>
+	                   <th:block th:if="${keyword != null}">
+	                      <a th:href="@{${loc}(page=${p})}" th:id="${p == pi.currentPage} ? 'check_page'">
+	                         [[${p}]]
+	                     </a>
+	                   </th:block>
+	               </li>
+	                   <!-- 다음 버튼 -->
+	                   <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+	                      <a th:href="@{${loc}(page=${pi.currentPage+10})}">다음 &gt;</a>
+	                   </li>
+	                 </ul>
+	        	 </div>
+	   		</div>
+		</div>
+ 	 </div>
+</body>
+ <script th:inline="javascript">
+	 	document.getElementById('deleteMember').addEventListener('click', function(event) {
+	 		event.preventDefault();
+	 		const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.textContent = '정말 탈퇴하시겠습니까? \n 탈퇴 후 계정 복구는 불가능합니다.';
+            modalContent.appendChild(document.createElement('br'));
+            modalContent.appendChild(document.createElement('br'));
+
+            modal.style.display = 'block';
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '네';
+            deleteButton.className = 'homepage-btn';
+            deleteButton.addEventListener('click', function() {
+                window.location.href = 'deleteMember.me';
+            });
+            modalContent.appendChild(deleteButton);
+            
+            const homepageButton = document.createElement('button');
+            homepageButton.textContent = '아니오';
+            homepageButton.className = 'homepage-btn';
+            homepageButton.addEventListener('click', function() {
+                closeModal();
+            });
+            modalContent.appendChild(homepageButton);
+            
+	 	});
+	 	
+	 	function closeModal() {
+	 	    const modal = document.getElementById('myModal');
+	 	    modal.style.display = 'none';
+	 	};
+	 	
+	 	
+	 	//삭제모달
+        document.addEventListener("DOMContentLoaded", function () {
+            // 기존의 리뷰 삭제 버튼들에 대한 이벤트 등록
+            var deleteButtons = document.getElementsByClassName('deleteReview');
+            for (var i = 0; i < deleteButtons.length; i++) {
+                deleteButtons[i].addEventListener('click', handleDeleteButtonClick);
+            }
+
+            // 새로운 리뷰 삭제 버튼에 대한 이벤트 등록
+            var newDeleteButton = document.getElementById('deleteReview');
+            newDeleteButton.addEventListener('click', handleDeleteButtonClick);
+        });
+
+        function handleDeleteButtonClick(event) {
+            event.preventDefault();
+
+            const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.textContent = '정말 삭제하시겠습니까? \n 삭제 후 리뷰 복구는 불가능합니다.';
+            modalContent.appendChild(document.createElement('br'));
+            modalContent.appendChild(document.createElement('br'));
+            modal.style.display = 'block';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '네';
+            deleteButton.className = 'homepage-btn';
+            deleteButton.addEventListener('click', function () {
+                // 여기에 삭제 동작 및 Ajax 호출 추가
+                var reviewNoInput = event.target.closest('.review-item').querySelector('.reviewNo');
+                var reviewNo = reviewNoInput ? reviewNoInput.value : null;
+
+                if (reviewNo) {
+                    console.log(reviewNo);
+                    // Ajax 호출 및 리뷰 삭제 로직 추가
+                    $.ajax({
+                        type: 'get',
+                        url: 'deleteReview.me',
+                        data: { reviewNo: reviewNo },
+                        success: (data) => {
+                            closeModal();
+                            // 리뷰 삭제 후 해당 리뷰를 DOM에서 제거
+                            event.target.closest('.review-item').remove();
+                        },
+                        error: data => console.log(data)
+                    });
+                } else {
+                    console.log('Review number not found');
+                }
+            });
+
+            modalContent.appendChild(deleteButton);
+
+            const homepageButton = document.createElement('button');
+            homepageButton.textContent = '아니오';
+            homepageButton.className = 'homepage-btn';
+            homepageButton.addEventListener('click', function () {
+                closeModal();
+            });
+
+            modalContent.appendChild(homepageButton);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+	 	
+	</script>
+</html>

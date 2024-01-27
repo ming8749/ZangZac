@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>주문서 작성 페이지</title>
+<link href="css/sohwa/orderPage.css" rel="stylesheet">
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://js.tosspayments.com/v1/payment-widget"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous"><script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+	
+	<div id="allWrapped">
+		<div id="cartLogo">
+			<span>01 장바구니 -></span> 02 주문서 작성 <span>-> 03 주문완료</span>
+		</div>
+		
+		<div id="originalDiv">
+            <br>
+            <hr style="border:2.5px solid black;">
+            <br>
+            <h3 style="margin-left:40px;">배송정보</h3>
+            
+            
+            <ul>
+                 <li><a href="#" id="existingAddress">기존배송지</a></li>
+                 <li id="line"></li>
+             </ul>
+            
+         
+   <!--           <form id="newAddressForm" class="hidden" > -->
+   <!--               신규입력 폼 -->
+   <!--               <label for="name">* 이름<br> -->
+   <!--                    <input type="text"><br><br> -->
+   <!--                </label> -->
+                  
+   <!--             <label for="phone1">* 연락처<br> -->
+   <!--                    <input type="text" name="phone1" style="width:100px;">&nbsp;-&nbsp;<input type="text" id="phone2" style="width:100px;">&nbsp;-&nbsp;<input type="text" id="phone3" style="width:100px;"><br><br> -->
+   <!--                </label> -->
+               
+   <!--             <label for="post" style="display: inline-block;">* 우편번호<br> -->
+   <!--                    <input type="text" id="post" style="width:200px;" id="zip-code1"> -->
+   <!--                </label> -->
+                  
+   <!--                <input type="button"  value="우편번호 찾기" style="width:100px;" onclick="execDaumPostcode1()"><br><br> -->
+               
+   <!--             <label for="address">* 주소<br> -->
+   <!--                    <input type="text" id="address" id="address1-1" name="spAddressStreet1"><br><br> -->
+   <!--                </label> -->
+                  
+   <!--                <label for="detailAddress">* 상세주소<br> -->
+   <!--                    <input type="text" id="detailAddress" id="address1-2" name="spAddressDetail1"><br><br> -->
+   <!--                </label> -->
+               
+         
+   <!--           </form> -->
+         
+         
+         
+             <div id="existingAddressForm">
+                 <!-- 기존배송지 폼 -->
+                 <label for="name">* 이름<br>
+                      <input type="text" id="name" th:value="${loginUser.memberName}"><br><br>
+                  </label>
+                  
+               <label for="phone1">* 연락처<br>
+                      <input th:value="${#strings.substring(loginUser.memberPhone, 0, 3)}" type="text" id="phone1" style="width:100px;">&nbsp;-&nbsp;<input th:value="${#strings.substring(loginUser.memberPhone, 3, 7)}" type="text" id="phone2" style="width:100px;">&nbsp;-&nbsp;<input th:value="${#strings.substring(loginUser.memberPhone,7)}" type="text" id="phone3" style="width:100px;"><br><br>
+                  </label>
+               <br>
+               <label for="post" style="display: inline-block;" >* 우편번호<br>
+                      <input type="text" style="width:200px;" id="zip-code" th:value="${#strings.setSplit(loginUser.memberAddress, '@')[0]}">
+                  </label>
+                  
+                  <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기" style="width:100px;" ><br><br>
+               
+               <label for="address">* 주소<br>
+                      <input type="text" id="address-1" name="spAddressStreet" th:value="${#strings.setSplit(loginUser.memberAddress, '@')[1]}"><br><br>
+                  </label>
+                  
+                  <label for="detailAddress">* 상세주소<br>
+                      <input type="text" id="address-2" name="spAddressDetail" th:value="${#strings.setSplit(loginUser.memberAddress, '@')[2]}"><br><br>
+                  </label>
+                  
+                  <label for="required">* 배송 요청사항<br>
+                      <textarea id="required" name="required" style="width:450px; height:150px;"></textarea><br><br>
+                  </label>
+             </div>
+            
+            
+            <hr style="border:2.5px solid black; margin-top:100px;">
+            
+            <h3>상품정보</h3>
+            <hr>
+            <table>
+               
+               <tr class="cart-row">
+                       <td class="td1">
+                       <input type="hidden" th:value="${p.productNo}" class="productNo">
+                          <input type="hidden" th:value="${p.productPrice}" class="onePrice">
+                     <img th:each="a:${aList}" th:if="${a.boardType==5 && a.boardNo == p.productNo && a.photoLevel ==0}" th:src="${a.photoPath}">
+                     <div>
+                        <div>[[${p.productCompany}]]</div>
+                        <span class="productName">[[${p.productName}]]</span><br>
+                        [[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]<br>
+                        옵션 : <span class="option">[[${option}]]</span>
+                     </div>
+                       </td>
+                       <td class="td2">
+                           <div class="quantity-input">&nbsp;&nbsp;&nbsp;
+                               <button class="quantity-btn decrementBtn">-</button>
+                               <input type="text" class="quantity" th:value="${eno}" min="1">
+                               <button class="quantity-btn incrementBtn">+</button>
+                           </div>
+                       </td>
+                       <td class="td3">
+                           
+                       </td>
+                   </tr>
+                   
+                   
+   <!--                 <tr class="cart-row"> -->
+   <!--                     <td class="td1"> -->
+   <!--                         <input type="checkbox"> -->
+   <!--                   <img src="image/sohwa/tent1core1.png"> -->
+   <!--                   <div> -->
+   <!--                      <div>모비가든</div> -->
+   <!--                      캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용<br> -->
+   <!--                      410,000원 -->
+   <!--                   </div> -->
+   <!--                     </td> -->
+   <!--                     <td class="td2"> -->
+   <!--                         <div class="quantity-input">&nbsp;&nbsp;&nbsp; -->
+   <!--                             <button class="quantity-btn decrementBtn">-</button> -->
+   <!--                             <input type="text" class="quantity" value="1" min="1"> -->
+   <!--                             <button class="quantity-btn incrementBtn">+</button> -->
+   <!--                         </div> -->
+   <!--                     </td> -->
+   <!--                     <td class="td3"> -->
+   <!--                         410,000원 -->
+   <!--                     </td> -->
+   <!--                 </tr> -->
+                   
+            
+            </table>
+            
+            
+         </div>
+		
+		
+		
+		
+	
+	</div>
+	
+	
+	
+	
+	
+	
+	<div id="fixedDiv">
+         
+         <div id="fixedWrapped">
+            <img src="image/sohwa/icons8-camping-64.png">
+            
+            <h3>결제 금액</h3>
+            <hr>
+            <div>총 상품 금액      <span id="totalPrice"></span></div>
+            <br>
+            <div>배송비            <span id="deliveryPrice">[[|${#numbers.formatDecimal(p.deliveryPrice, 0, 'COMMA', 0, 'POINT')}원|]]</span></div>
+            <hr>
+            <br>
+            <div style="font-weight:bold; font-size:20px;">최종 결제 금액    <span style="color:#F9612B;" id="totalPrice2"></span></div>
+            <br>
+            <hr>
+            
+            
+            <!--약관동의-->
+            
+            <p>결제 및 계좌 안내 시 상호명은 <span style="color:#F9612B;">(주)장작</span>으로 표기되니 참고 부탁드립니다.</p>
+            
+            <button id="payButton" type="button">CHECK OUT</button>
+            
+         </div>
+         
+         
+      </div>
+      
+      <div class="modal" tabindex="-1" id="paymentModal">
+        <div class="modal-dialog modal-dialog-centered modal-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">결제창</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <div>
+               <input type="checkbox" id="coupon-box" />
+               <label for="coupon-box"> 5,000원 쿠폰 적용 </label>
+             </div>
+             <!-- 결제 UI, 이용약관 UI 영역 -->
+             <div id="payment-method"></div>
+             <div id="agreement"></div>
+              <button id="payment-button" style="width:100%; border-radius:10px; background-color:blue; color:white; border:none;">결제하기</button>
+             
+            </div>
+          </div>
+        </div>
+      </div>
+	
+	
+	
+	<br><br><br><br><!--footer--><br><br><br><br>
+	
+	
+	
+	
+	
+	
+    
+	<script th:inline="javascript">
+   //우편번호
+    function execDaumPostcode() {
+          new daum.Postcode( {
+            oncomplete: function( data ) {
+              document.getElementById( 'zip-code' ).value = data.zonecode;
+              document.getElementById( 'address-1' ).value = data.address;
+            }
+          } ).open();
+        }
+   
+   
+   
+   let orderPrice = 0;
+   
+   
+   
+   window.onload=()=>{
+        
+        const decrementButtons = document.querySelectorAll('.decrementBtn');
+        const incrementButtons = document.querySelectorAll('.incrementBtn');
+        const quantityInputs = document.querySelectorAll('.quantity');
+        const td3Elements = document.querySelectorAll('.td3');
+        const cartRow = document.querySelectorAll('.cart-row');
+        const totalPrice = document.getElementById('totalPrice');
+        const deliveryPrice = document.getElementById('deliveryPrice');
+        const totalPrice2 = document.getElementById('totalPrice2');
+        let total = 0;
+   
+      
+      
+           // 초기에 각 행의 총 가격 계산
+           for (let i = 0; i < td3Elements.length; i++) {
+              
+               const quantity = parseInt(quantityInputs[i].value);
+               const unitPrice = cartRow[i].querySelector('.onePrice').value;
+               console.log(unitPrice);
+               
+               td3Elements[i].innerText = (unitPrice * quantity).toLocaleString() + '원';
+               updateTotal();
+           }
+
+           // 각 버튼에 이벤트 리스너 추가
+           for (let i = 0; i < decrementButtons.length; i++) {
+               decrementButtons[i].addEventListener('click', function() {
+                   const currentValue = parseInt(quantityInputs[i].value);
+                   if (currentValue > 1) {
+                       quantityInputs[i].value = currentValue - 1;
+                   }
+                   updateTotalPrice(i);
+                   updateTotal();
+                   
+                   
+               });
+
+               incrementButtons[i].addEventListener('click', function() {
+                   const currentValue = parseInt(quantityInputs[i].value);
+                   quantityInputs[i].value = currentValue + 1;
+                   updateTotalPrice(i);
+                   updateTotal();
+               });
+           }
+
+           // 총 가격 업데이트 함수
+           function updateTotalPrice(index) {
+              const unitPrice = cartRow[index].querySelector('.onePrice').value;
+              
+               const quantity = parseInt(quantityInputs[index].value);
+               td3Elements[index].innerText = (unitPrice * quantity).toLocaleString() + '원';
+               
+               
+               
+           }
+           function updateTotal() {
+              let total = 0;
+               for (let i = 0; i < td3Elements.length; i++) {
+                   const unitPrice = cartRow[i].querySelector('.onePrice').value;
+                   const quantity = parseInt(quantityInputs[i].value);
+                   total += unitPrice * quantity;
+               }
+               totalPrice.innerText = total.toLocaleString() + '원';
+
+               // #totalPrice2 업데이트
+               const deliveryPriceValue = parseInt(deliveryPrice.innerText.replace('원', '').replace(',', ''));
+               const totalPriceValue = parseInt(totalPrice.innerText.replace('원', '').replace(',', ''));
+               const finalTotal = deliveryPriceValue + totalPriceValue;
+               totalPrice2.innerText = finalTotal.toLocaleString() + '원';
+            orderPrice = finalTotal;
+           }
+           
+           
+           
+    }
+   
+      
+     const productNosArray = document.querySelectorAll('.productNo');
+     const productNos = Array.from(productNosArray).map(item => item.value).join(',');
+     const enosArray = document.querySelectorAll('.quantity');
+     const enos = Array.from(enosArray).map(item => item.value).join(',');
+     const optionArray = document.querySelectorAll('.option');
+     const options = Array.from(optionArray).map(item => item.innerText).join(',');
+     const userName= document.getElementById('name').value;
+     const address = document.getElementById('zip-code').value + '@' + document.getElementById('address-1').value + '@' + document.getElementById('address-2').value;
+     const phone = document.getElementById('phone1').value + document.getElementById('phone2').value + document.getElementById('phone3').value;
+     
+     document.getElementById('payButton').addEventListener('click', () => {
+             $('#paymentModal').modal('show');
+             const required = document.getElementById('required').value;
+             const userName= document.getElementById('name').value;
+             const address = document.getElementById('zip-code').value + '@' + document.getElementById('address-1').value + '@' + document.getElementById('address-2').value;
+             const phone = document.getElementById('phone1').value + document.getElementById('phone2').value + document.getElementById('phone3').value;
+             const coupon = document.getElementById("coupon-box");
+             const button = document.getElementById("payment-button");
+             // 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요.
+             // 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
+             const widgetClientKey = "test_ck_ZLKGPx4M3MRkvGkMAqG2VBaWypv1";
+             const customerKey = "YM6Ps7Enhho11nfV-yJsz";
+             const paymentWidget = PaymentWidget(widgetClientKey, customerKey); // 회원 결제
+             // const paymentWidget = PaymentWidget(widgetClientKey, PaymentWidget.ANONYMOUS) // 비회원 결제
+              const now = new Date();
+	           const year = now.getFullYear();
+	           const month = String(now.getMonth() + 1).padStart(2, "0");
+	           const day = String(now.getDate()).padStart(2, "0");
+	           const hours = String(now.getHours()).padStart(2, "0");
+	           const minutes = String(now.getMinutes()).padStart(2, "0");
+	           const seconds = String(now.getSeconds()).padStart(2, "0");
+	           const milliseconds = String(now.getMilliseconds()).padStart(3, "0");
+	           const totalPrice = parseInt(totalPrice2.innerText.replace('원', '').replace(',', ''));
+	           const productNames = document.querySelectorAll('.productName');
+             const paymentMethodWidget = paymentWidget.renderPaymentMethods(
+               "#payment-method",
+               { value: orderPrice },
+               { variantKey: "DEFAULT" }
+               
+             );
+
+             paymentWidget.renderAgreement(
+                      "#agreement", 
+                      { variantKey: "AGREEMENT" }
+                    );
+             
+             coupon.addEventListener("change", function () {
+                 if (coupon.checked) {
+                   paymentMethodWidget.updateAmount(amount - 5000);
+                 } else {
+                   paymentMethodWidget.updateAmount(amount);
+                 }
+               });
+
+              button.addEventListener("click", function () {
+                // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요. 
+                // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+                paymentWidget.requestPayment({
+                     orderId: String(Math.floor(Math.random() * 1000000)).padStart(6, "0"),
+
+                     orderName: productNames[0].innerText + "외 " + (productNames.length-1) + "건",
+                     successUrl: 'http://192.168.20.207:8080/insertPayment.so?productNos=' + productNos + '&enos=' + enos +'&address=' + address + '&options=' + options + '&phone=' + phone + '&name=' + userName + '&required=' +required,
+
+
+                     failUrl: window.location.origin + "/fail",
+                     customerEmail: "thghk0206@naver.com",
+                     customerName: userName,
+                     customerMobilePhone: "01012341234",
+                });
+              });
+
+         })
+          
+     
+      
+      
+      
+   </script>
+
+</body>
+</html>

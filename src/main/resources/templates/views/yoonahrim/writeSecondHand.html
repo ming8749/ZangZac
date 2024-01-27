@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>등록 페이지</title>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<link href="css/yoonahrim/writeSecondHand.css?after" rel="stylesheet" type="text/css"/>
+<script src="http://code.jquery.com/jquery-3.1.0.js"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+	
+	<h1 style="text-align:center; font-size: 30px; margin: 50px">중고 매물 글쓰기</h1>
+	
+	<form action="/insert.ah" method="post" enctype="multipart/form-data">
+	   <!-- 업로드할 파일 사진 업로드 및 버튼(업로드버튼 및 추가버튼 구현)-->
+	   <div class="productPhoto">
+	      <div class="photoNum">
+	         <div class="photoUploads">
+	            <img src="image/yoonahrim/istockphoto.jpg" id="photoUpload" style="width:200px; height:200px; border-radius:20%;"/>
+	         </div>
+	      	 <br>
+	         <div class="input-group mb-3" style="left:55px">
+	            <label class="input-group-text" for="inputGroupFile" Multiple>upload</label>
+				<input type="file" class="form-control" name="inputGroupFile" id="inputGroupFile" style="display:none;" onchange="previewImage(event, 'inputGroupFile','photoUpload')" />
+	         </div>
+	      </div>
+	      <div class="addPhoto" style="cursor:pointer;">
+			  <button type="button" class="btn btn-success" id="plus"> + </button>
+		  </div>
+	   </div>
+	   <div id="upfileAddArea" class="upfileAddArea"></div>
+	   
+	   <!-- 업로드할 내용 -->
+	   <div class="edit">
+	   		<label>제목
+	   			<input class="form-control" type="text" name="spTitle" placeholder="제목을 입력해주세요" aria-label="default input example" style="width: 800px;" required>
+	   		</label><br><br>
+	   		<label>캠핑 카테고리
+	   			<select class="form-select" name="categoryNo" required>
+				  <option value="11" name="categoryNo">텐트</option>
+				  <option value="12" name="categoryNo">취침용품</option>
+				  <option value="13" name="categoryNo">조리도구</option>
+				  <option value="14" name="categoryNo">발화용품</option>
+				  <option value="15" name="categoryNo">배낭</option>
+				  <option value="16" name="categoryNo">기타</option>
+				</select>
+			</label><br><br>
+	   		<label>가격
+	   			<input class="form-control" type="number" id="spPrice" name="spPrice" placeholder="Default input" aria-label="default input example" style="width: 800px;" required>
+	   		</label><br><br>
+	   		<!--  
+	   		<label>자세한 설명
+	   			<textarea class="form-control" name="spContent" placeholder="내용을 입력해주세요" style="width: 800px; height: 500px;" required th:value="${s.spContent}"></textarea>
+	   		</label><br><br>
+	   		-->
+	   		<label for="exampleFormControlTextarea1" class="form-label">
+  					 <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" cols="75" style="resize: none;" name="spContent" placeholder="내용을 입력해주세요" required></textarea>
+  			</label><br><br>
+	   		<label>주소
+		   		<p>
+			      <input type="text" id="zip-code" placeholder="우편번호">
+			      <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+			    </p>
+			    <p>
+			      <input type="text" id="address-1" name="spAddressStreet" placeholder="도로명주소" style="width: 500px">
+			    </p>
+			    <input type="hidden" class="text" value=","></input>
+			    <p>
+			      <input type="text" id="address-2" name="spAddressDetail" placeholder="상세주소" style="width: 500px" required>
+			    </p>
+		    </label>
+	   	</div>
+		   <div class="pointerBtn">
+		  		<button type="submit" class="btn-hover color-1" onClick="checkPhotoNum()">작성 완료</button>
+		   </div>
+    </form>
+   
+   <script th:line="javascript">
+   /*
+   function previewImage(event, previewId,photoId){
+	   const fReader1 = new FileReader();
+	   
+       const output = document.getElementById(photoId);
+	   fReader1.readAsDataURL(event.target.files[0]);
+       fReader1.onloadend = function(event){
+       output.src = event.target.result;
+       }
+	   
+   }
+   document.getElementById('plus').addEventListener('click', addPhoto);
+   
+   // '+'버튼을 눌렀을 때 .photoNum이 복제되는 코드 
+   let numOfCopies = 1;  
+
+   function addPhoto() {
+	   const maxCopies = 4;
+	   console.log('??');
+	   if (numOfCopies <= maxCopies) {
+	     // 새로운 이미지 업로드 영역 생성
+	     const newImageUpload = document.createElement('div');
+	     newImageUpload.className = 'photoNum';
+	     newImageUpload.innerHTML = `
+	       <div class="photoUploads" style="">
+	         <img src="image/yoonahrim/istockphoto.jpg" id="photoUpload${numOfCopies}" style="width:200px; height:200px; border-radius:20%;"/>
+	       </div>
+	       <br>
+	       <div class="input-group mb-3" style="left:55px">
+	         <label class="input-group-text" for="inputGroupFile${numOfCopies}" Multiple>upload</label>
+	         <input type="file" class="form-control" id="inputGroupFile${numOfCopies}" name ="inputGroupFile" style="display:none;" onchange="previewImage(event, 'inputGroupFile${numOfCopies}','photoUpload${numOfCopies}')" />
+	       </div>
+	     `;
+
+	     // 새로운 이미지 업로드 영역을 화면에 추가
+	     document.getElementById('upfileAddArea').appendChild(newImageUpload);
+
+	     // id 중복을 피하기 위해 numOfCopies를 증가시킴
+	     numOfCopies++;
+	     console.log(numOfCopies);
+	   } else {
+	     alert('최대 4개까지만 추가할 수 있습니다.');
+	   }
+	 }
+		
+       function checkPhotoNum() {
+    	    console.log("checkPhotoNum 함수 호출 확인");
+
+    	    // 첨부된 사진 개수 확인
+    	    var photoNum = fileCount;
+    	    console.log("사진 개수:", photoNum);
+
+    	    // 사진이 없거나 한 장 미만이면 alert 창 표시
+    	    if (photoNum <= 1) {
+    	        alert("한 장 이상의 사진을 첨부해주세요.");
+    	    }
+    	}
+		*/
+		
+		let numOfCopies = 1;  
+		let fileCount = 0;
+		document.getElementById('plus').addEventListener('click', addPhoto);
+
+		function addPhoto() {
+		    const maxCopies = 4;
+		    if (numOfCopies <= maxCopies) {
+		        // 새로운 이미지 업로드 영역 생성
+		        const newImageUpload = document.createElement('div');
+		        newImageUpload.className = 'photoNum';
+		        newImageUpload.innerHTML = `
+		            <div class="photoUploads">
+		                <img src="image/yoonahrim/istockphoto.jpg" id="photoUpload${numOfCopies}" style="width:200px; height:200px; border-radius:20%;"/>
+		            </div>
+		            <br>
+		            <div class="input-group mb-3" style="left:55px">
+		                <label class="input-group-text" for="inputGroupFile${numOfCopies}" Multiple>upload</label>
+		                <input type="file" class="form-control" id="inputGroupFile${numOfCopies}" name="inputGroupFile" style="display:none;" onchange="previewImage(event, 'inputGroupFile${numOfCopies}','photoUpload${numOfCopies}')" />
+		            </div>
+		        `;
+
+		        // 새로운 이미지 업로드 영역을 화면에 추가
+		        document.getElementById('upfileAddArea').appendChild(newImageUpload);
+
+		        // id 중복을 피하기 위해 numOfCopies를 증가시킴
+		        numOfCopies++;
+		        console.log(numOfCopies);
+		    } else {
+		        alert('최대 4개까지만 추가할 수 있습니다.');
+		    }
+		}
+
+		function previewImage(event, previewId, photoId) {
+		    const fReader1 = new FileReader();
+		    const output = document.getElementById(photoId);
+		    fReader1.readAsDataURL(event.target.files[0]);
+		    fReader1.onloadend = function (event) {
+		        output.src = event.target.result;
+		    }
+		    
+		    // 파일이 선택되면 fileCount 증가
+		    fileCount++;
+		}
+
+		function checkPhotoNum() {
+		    console.log("checkPhotoNum 함수 호출 확인");
+
+		    // 첨부된 사진 개수 확인
+		    console.log("사진 개수:", fileCount);
+
+		    // 사진이 없거나 한 장 미만이면 alert 창 표시
+		    if (fileCount < 1 || fileCount > 4) {
+		        alert("1장에서 4장까지의 사진을 첨부해주세요.");
+		        event.preventDefault();
+		    }
+		}
+		
+		
+       function execDaumPostcode() {
+           new daum.Postcode( {
+             oncomplete: function( data ) {
+               document.getElementById( 'zip-code' ).value = data.zonecode;
+               document.getElementById( 'address-1' ).value = data.address;
+             }
+           } ).open();
+         }
+        
+       var priceInput = document.getElementById('spPrice');
+
+       priceInput.addEventListener('mouseout', function () {
+           var priceNum = parseFloat(priceInput.value);
+
+           if (priceNum < 1) {
+               alert('1부터 입력 가능합니다.');
+           } else if (priceNum > 10000000) {
+               alert('안전한 거래를 위해 10,000,000 보다 작은 금액을 입력해주세요.');
+           }
+       });
+       
+       
+       		
+   </script>
+</body>
+</html>

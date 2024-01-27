@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.seongun.campboard.model.dao.CampBoardDAO">
+	<select id="getListCount" resultType="_int">
+		SELECT count(*) 
+		FROM camp_board_view
+		<where>
+			<if test="categoryNo != 0">
+				and category_no = #{categoryNo}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertCampBoard">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="cbNo">
+			select cb_seq.nextval from dual  
+		</selectKey>
+		insert into camp_board
+		values(#{cbNo}, #{cbTitle}, #{cbContent},default, default, default, default, #{memberId}, #{categoryNo})
+	</insert>
+	
+	<select id="selectBoard" resultType="CampBoard">
+		select *
+		from camp_board_view
+		where cb_no = #{cbNo}
+	</select>
+	
+	<update id="updateCount">
+		update camp_board 
+		set cb_count = cb_count + 1
+		where cb_no = #{cbNo}
+	</update>
+	
+	<select id="searchListCount" resultType="_int">
+		select count(*)
+		FROM camp_board_view
+		<where>
+		    cb_status = 'N'
+		    <if test="searchText != null and searchText != ''">
+		        <choose>
+		            <when test="searchCategory == 0">
+		                and (cb_title like #{searchText} or cb_content like #{searchText} or member_nickname like #{searchText})
+		            </when>
+		            <when test="searchCategory == 1">
+		                and cb_title like #{searchText}
+		            </when>
+		            <when test="searchCategory == 2">
+		                and cb_content like #{searchText}
+		            </when>
+		            <when test="searchCategory == 3">
+		                and member_nickName like #{searchText}
+		            </when>
+		        </choose>
+	    	</if>
+	    	<if test="categoryNo != 0">
+	            and category_no = #{categoryNo}
+	        </if>
+    	</where>
+	</select>
+	
+	<select id="searchBoardList" resultType="CampBoard">
+		select *
+		FROM camp_board_view
+		<where>
+		    cb_status = 'N'
+		    <if test="searchText != null and searchText != ''">
+		        <choose>
+		            <when test="searchCategory == 0">
+		                and (cb_title like #{searchText} or cb_content like #{searchText} or member_nickname like #{searchText})
+		            </when>
+		            <when test="searchCategory == 1">
+		                and cb_title like #{searchText}
+		            </when>
+		            <when test="searchCategory == 2">
+		                and cb_content like #{searchText}
+		            </when>
+		            <when test="searchCategory == 3">
+		                and member_nickName like #{searchText}
+		            </when>
+		        </choose>
+	    	</if>
+	    	<if test="categoryNo != 0">
+	            and category_no = #{categoryNo}
+	        </if>
+    	</where>
+	    order by cb_no desc
+	</select>
+	
+	<update id="deleteCampBoard">
+		update camp_board 
+		set cb_status = 'Y'
+		where cb_no = #{cbNo}
+	</update>
+	
+	<update id="updateCampBoard">
+		update camp_board
+		set cb_title = #{cbTitle}, category_no=#{categoryNo}, cb_content=#{cbContent}, CB_MODIFY_DATE = sysdate
+		where cb_no = #{cbNo}
+	</update>
+	
+	<select id="listCount" resultType="_int">
+		SELECT count(*) 
+		FROM camp_board_view
+		WHERE cb_status = 'N'
+	</select>
+	
+	<select id="popularList" resultType="CampBoard">
+		SELECT *
+		FROM CAMP_BOARD_VIEW
+		WHERE cb_status = 'N'
+		ORDER BY heart_count DESC,CB_COUNT DESC,reply_count DESC
+	</select>
+</mapper>

@@ -1,0 +1,974 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kh.zangzac.sohwa.product.model.dao.ProductDAO">
+
+
+	<insert id="insertProduct">
+		<!-- order : insert/update를 하기 전에 selectKey를 수행할 것인지, 후에 수행할 것인지 (before : insert하기전에 수행) -->
+	    <!-- keyProperty : 가져온 값을 필드에 대입하기 위해서 selectKey를 하는 것임. 어디에 집어넣을지를 적어놓어주는 곳 -->
+		<selectKey order="BEFORE" resultType="_int" keyProperty="productNo">
+			select product_seq.nextval from dual
+		</selectKey>
+		<!-- 이미 시퀀스로 하나 올려진 글번호를 prodcutNo필드에 대입을 했으므로 시퀀스 돌려주는게(product_seq.nextval) 아니라 productNo 넣어주면 된다. -->
+		insert into product
+		values (#{productNo}, #{productName}, #{productPrice}, sysdate, default, #{productScore}, #{categoryNo}, #{productCompany}, #{deliveryPrice}, #{eno})
+	</insert>
+	
+	
+	<insert id="insertProductPhoto">
+	<!-- 유의해야할 점 : insert all안에서 시퀀스 사용하게 되면 시퀀스 한 번만 작동돼서
+		     계속 같은 값을 내뱉음. 따라서, 그냥 photo_seq.nextval로 photo_no 지정하게 되면 무결성 제약조건 오류남. 
+		     oracle로 가서 아래와 같이 함수 만들어준다.
+		     
+		     create or replace function new_aid
+			 return number
+			 is
+			     new_aid number;
+			 begin
+			     select photo_seq.nextval
+			     into new_aid
+			     from dual;
+			    
+			     return new_aid;
+			 end;-->
+		insert all
+		
+		<foreach collection="list" item="item">
+			into photo
+			values (new_aid,  #{ item.photoRename }, #{item.photoPath}, #{item.photoLevel}, 5, #{item.boardNo}, default)
+		</foreach>
+		select * from dual
+	</insert>
+	
+	
+	<insert id="updateReviewPhoto">
+	    insert into photo
+	    values (new_aid, #{photoRename}, #{photoPath}, 0, 6, #{boardNo}, default)
+	</insert>
+	
+	
+	
+	<update id="updateReviewInfo">
+		update review
+		set review_content=#{reviewContent} , review_score=#{reviewScore}, review_modify_date = sysdate
+		where review_no = #{reviewNo}
+	</update>
+	
+	<delete id="deleteReviewPhoto">
+		delete from photo
+		where board_type = 6 and board_no = #{reviewNo}
+	</delete>
+	
+	<select id="deleteSelectReview" resultType="string">
+		select photo_rename
+        from photo
+        where board_type = 6 and board_no=#{review_no}
+	</select>
+	
+	
+	<insert id="insertOption">
+		<!-- 유의해야할 점 : insert all안에서 시퀀스 사용하게 되면 시퀀스 한 번만 작동돼서
+	     계속 같은 값을 내뱉음. 따라서, 그냥 photo_seq.nextval로 photo_no 지정하게 되면 무결성 제약조건 오류남. 
+	     oracle로 가서 아래와 같이 함수 만들어준다.
+	     
+	     create or replace function option_aid
+		 return number
+		 is
+		     option_aid number;
+		 begin
+		     select product_option_seq.nextval
+		     into option_aid
+		     from dual;
+		    
+		     return option_aid;
+		 end;-->
+		insert all
+		<foreach collection="list" item="item">
+			into product_option
+			values(option_aid, #{item.productOptionColor}, #{item.productOptionEno}, #{item.productNo}, default)
+		</foreach>
+		select * from dual
+		
+	</insert>
+	
+	
+	
+	
+	
+<!-- 	<select id="getListCount" resultType="_int"> -->
+<!-- 		select count(*) -->
+<!-- 		from product -->
+<!-- 		where product_status = 'N' -->
+<!-- 		<if test="categoryNo != 0"> -->
+<!-- 			and category_no=#{categoryNo} -->
+<!-- 		</if> -->
+<!-- 	</select> -->
+	
+	<select id="getListCount" resultType="_int">
+		select count(*)
+		from product
+		where product_name like '%${keyword}%'
+		<if test="categoryNo == 0">
+			<if test="standard == 1">
+				order by product_no desc
+			</if>
+			<if test="standard == 2">
+				order by product_price
+			</if>
+			<if test="standard == 3">
+				order by product_price desc
+			</if>
+			<if test="standard == 4">
+				order by product_score desc
+			</if>
+		</if>
+		<if test="categoryNo != 0">
+			and category_No = #{categoryNo}
+			<if test="standard == 1">
+				order by product_no desc
+			</if>
+			<if test="standard == 2">
+				order by product_price
+			</if>
+			<if test="standard == 3">
+				order by product_price desc
+			</if>
+			<if test="standard == 4">
+				order by product_score desc
+			</if>
+		</if>
+		
+	</select>
+	
+	<select id="selectProductMap" resultType="Product">
+		select *
+		from product
+		where product_name like '%${keyword}%' and product_status = 'N'
+
+		<if test="categoryNo != 0">
+			and category_No = #{categoryNo}
+		</if>
+		
+		<if test="standard == 1">
+			order by product_no desc
+		</if>
+		<if test="standard == 2">
+			order by product_price
+		</if>
+		<if test="standard == 3">
+			order by product_price desc
+		</if>
+		<if test="standard == 4">
+			order by product_score desc
+		</if>
+	</select>
+	
+	<select id="selectPhotoMap" resultType="Attachment">
+		select *
+		from photo
+			 join product on (board_no = product_no)
+		where photo_status = 'N' and photo_level = 0 and product_name like '%${keyword}%'
+		<if test="categoryNo == 0">
+			<if test="standard == 1">
+				order by product_no desc
+			</if>
+			<if test="standard == 2">
+				order by product_price
+			</if>
+			<if test="standard == 3">
+				order by product_price desc
+			</if>
+			<if test="standard == 4">
+				order by product_score desc
+			</if>
+		</if>
+		<if test="categoryNo != 0">
+			and category_No = #{categoryNo}
+			<if test="standard == 1">
+				order by product_no desc
+			</if>
+			<if test="standard == 2">
+				order by product_price
+			</if>
+			<if test="standard == 3">
+				order by product_price desc
+			</if>
+			<if test="standard == 4">
+				order by product_score desc
+			</if>
+		</if>
+	</select>
+	
+	<select id="selectPhotoTHMap" resultType="Attachment">
+		select *
+		from photo
+			 join product on (product_no = board_no)
+		where photo_status = 'N' and photo_level in (0,1) and product_name like '%${keyword}%'
+		<if test="categoryNo == 0">
+			<if test="standard == 1">
+				order by product_no desc
+			</if>
+			<if test="standard == 2">
+				order by product_price
+			</if>
+			<if test="standard == 3">
+				order by product_price desc
+			</if>
+			<if test="standard == 4">
+				order by product_score desc
+			</if>
+		</if>
+		<if test="categoryNo != 0">
+			and category_No = #{categoryNo}
+			<if test="standard == 1">
+				order by product_no desc
+			</if>
+			<if test="standard == 2">
+				order by product_price
+			</if>
+			<if test="standard == 3">
+				order by product_price desc
+			</if>
+			<if test="standard == 4">
+				order by product_score desc
+			</if>
+		</if>
+	</select>
+	
+	
+	<select id="searchProduct" resultType="Product">
+		select *
+		from product
+			 JOIN camping_category using (category_no)
+		where product_status = 'N' and product_name like '%${keyword}%'
+		<if test="standard==1">
+			order by product_no desc
+		</if>
+		<if test="standard==2">
+			order by product_price
+		</if>
+		<if test="standard==3">
+			order by product_price desc
+		</if>
+		<if test="standard==4">
+			order by product_score desc
+		</if>
+	</select>
+	
+	
+	<select id="searchPhoto" resultType="Attachment">
+		select *
+		from photo
+			 join product on (board_no = product_no)
+		where photo_status = 'N' and product_name like '%${keyword}%' and photo_level =0 and board_type=5
+		<if test="standard==1">
+			order by product_no desc
+		</if>
+		<if test="standard==2">
+			order by product_price
+		</if>
+		<if test="standard==3">
+			order by product_price desc
+		</if>
+		<if test="standard==4">
+			order by product_score desc
+		</if>
+	</select>
+	
+	<select id="searchPhototh" resultType="Attachment">
+		select *
+		from photo
+			 join product on (board_no = product_no)
+		where photo_status = 'N' and product_name like '%${keyword}%' and photo_level in (0,1) and board_type=5
+		<if test="standard==1">
+			order by product_no desc
+		</if>
+		<if test="standard==2">
+			order by product_price
+		</if>
+		<if test="standard==3">
+			order by product_price desc
+		</if>
+		<if test="standard==4">
+			order by product_score desc
+		</if>
+	</select>
+	
+	
+	
+	<select id="selectProductList" resultType="Product">
+		select *
+		from product
+			 JOIN camping_category using (category_no)
+		where product_status = 'N'
+		<if test="categoryNo != 0">
+			and category_no = #{categoryNo}
+		</if>
+		<if test="standard==1">
+			order by product_no desc
+		</if>
+		<if test="standard==2">
+			order by product_price
+		</if>
+		<if test="standard==3">
+			order by product_price desc
+		</if>
+		<if test="standard==4">
+			order by product_score desc
+		</if>
+		
+	</select>	
+	
+	
+	
+	
+	<select id="selectPhotoList" resultType="Attachment">
+		select *
+		from photo
+			 join product on (product_no = board_no)
+		where photo_status = 'N' and photo_level = 0
+		<if test="categoryNo != 0">
+			and category_no = #{categoryNo}
+		</if>
+		order by board_no
+	</select>
+	
+	<select id="selectPhotothList" resultType="Attachment">
+		select *
+		from photo
+			 join product on (product_no = board_no)
+		where photo_status = 'N' and photo_level in (0,1)
+		<if test="categoryNo != 0">
+			and category_no = #{categoryNo}
+		</if>
+		order by board_no
+	</select>
+	
+	
+	<select id="selectProductDetail" resultType="Product">
+		select *
+		from product
+		where product_no = #{productNo}
+	</select>
+	
+	
+	<select id="selectPhotoDetail" resultType="Attachment">
+		select *
+		from photo
+			  join product on (product_no = board_no)
+		where product_no = #{productNo} and photo_status='N' and board_type=5
+	</select>
+	
+	<select id="selectPhotoReview" resultType="Attachment">
+		select *
+		from photo 
+			 join review on (review_no = board_no)
+		where product_No = #{productNo} and photo_status='N'
+	</select>
+	
+	<select id="optionDetail" resultType="Option">
+		select *
+		from product_option
+		where product_no = #{productNo} AND OPTION_STATUS = 'N'
+	</select>
+	
+	
+	
+	<select id="selectReviewMember" resultType="Member">
+		select *
+        from member
+             join review using (member_id)
+             where product_no = #{productNo}
+	</select>
+	
+	
+	
+	
+	
+	
+	<select id="selectAllProduct" resultType="Product">
+		select *
+		from product
+		where product_status = 'N'
+	</select>
+	
+	<select id="selectAllNProduct" resultType="Product">
+		select *
+		from product
+	</select>
+	
+	
+	<select id="selectAllPhoto" resultType="Attachment">
+		select *
+		from photo
+			 join product on (board_no = product_no)
+		where product_status='N'
+	</select>
+	
+	<select id="selectProductOption" resultType="Option">
+		select *
+		from option
+		where product_no = #{productNo}
+	</select>
+	
+	<select id="selectDeleteProduct" resultType="Product">
+		select *
+		from product
+		where product_status = 'Y'
+	</select>
+	
+	<select id="selectDeletePhoto" resultType="Attachment">
+		select *
+		from photo
+			 join product on (board_no = product_no)
+		where product_status='Y'
+	</select>
+	
+	
+	
+	
+	<insert id="insertCart">
+		insert into cart
+		values(cart_key_seq.nextval, #{productNo}, #{memberId}, #{productEno}, #{buyOption}, #{buyPrice})
+	</insert>
+	
+	<select id="memberCart" resultType="Cart">
+      select *
+      from cart 
+          join product using (product_no)
+          join photo on (board_no=product_no)
+      where member_id=#{id} and photo_level= 0 and photo_status='N' and board_type=5
+   </select>
+   
+   <select id="selectAllOption">
+      select *
+      from product_option
+   </select>
+   
+   
+   <delete id="deleteCart">
+   	  delete from cart
+   	  where cart_key_no = #{cartKeyNo}
+   </delete>
+   
+   
+   <delete id="deleteCarts">
+   	   DELETE FROM cart
+       WHERE cart_Key_No IN
+   	   <foreach collection="list" item="cartKeyNo" open="(" close=")" separator=",">
+        	#{cartKeyNo}
+       </foreach>
+   </delete>
+   
+   <update id="updateCartEno">
+   	   update cart
+   	   set buy_price = #{buyPrice} , product_eno = #{productEno}
+   	   where cart_key_no = #{cartKeyNo}
+   </update>
+	
+	
+	<insert id="insertQna">
+		insert into qna
+		values(question_seq.nextval, #{questionContent}, sysdate, null, null, default, #{memberId} ,#{productNo})
+	</insert>
+	
+	<update id="deleteQuestion">
+		update qna
+		set qna_status = 'Y'
+		where question_no = #{questionNo}
+	</update>
+	
+	<select id="selectMyQna" resultType="Qna">
+		select *
+		from qna
+		where member_id=#{memberId} and qna_status = 'N'
+		order by question_no desc
+	</select>
+	
+	
+	<select id="getListQnaCount" resultType="_int">
+		select count(*)
+		from qna
+			 join product using (product_no)
+		where qna_status='N' and answer_content is null
+		<if test="searchType==1">
+			and product_name like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and question_content like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			and product_no like '%${keyword}%'
+		</if>
+	</select>
+	
+	<select id="getListQnaYCount" resultType="_int">
+		select count(*)
+		from qna
+		 	 join product using (product_no)
+		where qna_status='N' and answer_content is not null
+		<if test="searchType==1">
+			and product_name like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and question_content like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			and product_no like '%${keyword}%'
+		</if>
+	</select>
+	
+	<select id="getListCountProduct" resultType="_int">
+		select count(*)
+		from product
+		where product_status = 'N'
+		<if test="searchType==1">
+			and product_no like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and product_name like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			<if test="keyword=='텐트'">
+				and category_no = 11
+			</if>
+			<if test="keyword=='취침용품'">
+				and category_no = 12
+			</if>
+			<if test="keyword=='조리도구'">
+				and category_no = 13
+			</if>
+			<if test="keyword=='발화용품'">
+				and category_no = 14
+			</if>
+			<if test="keyword=='백팩'">
+				and category_no = 15
+			</if>
+			<if test="keyword=='기타'">
+				and category_no = 16
+			</if>
+		</if>
+	</select>
+	
+	
+	<select id="selectAdminProduct" resultType="Product">
+		select *
+		from product
+		where product_status = 'N'
+		<if test="searchType==1">
+			and product_no like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and product_name like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			<if test="keyword=='텐트'">
+				and category_no = 11
+			</if>
+			<if test="keyword=='취침용품'">
+				and category_no = 12
+			</if>
+			<if test="keyword=='조리도구'">
+				and category_no = 13
+			</if>
+			<if test="keyword=='발화용품'">
+				and category_no = 14
+			</if>
+			<if test="keyword=='백팩'">
+				and category_no = 15
+			</if>
+			<if test="keyword=='기타'">
+				and category_no = 16
+			</if>
+		</if>
+		order by product_no desc
+	</select>
+
+	
+	
+	<select id="selectQna" resultType="Qna">
+		select *
+		from qna
+		where qna_status = 'N' and answer_content is null
+		order by question_no
+	</select>
+	
+	<select id="searchKeyword" resultType="Qna">
+		select *
+		from qna
+			 join product using (product_no)
+		where qna_status = 'N' and answer_content is null 
+		<if test="searchType==1">
+			and product_name like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and question_content like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			and product_no like '%${keyword}%'
+		</if>
+		order by question_no
+	</select>
+	
+	<select id="selectQnaY" resultType="Qna">
+		select *
+		from qna
+		where qna_status = 'N' and answer_content is not null
+		order by question_no
+	</select>
+	
+	<select id="searchYKeyword" resultType="Qna">
+		select *
+		from qna
+			 join product using (product_no)
+		where qna_status = 'N' and answer_content is not null 
+		<if test="searchType==1">
+			and product_name like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and question_content like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			and product_no like '%${keyword}%'
+		</if>
+		order by question_no
+	</select>
+	
+	<update id="updateAnswer">
+		update qna
+		set answer_content=#{answerContent}, answer_date = sysdate
+		where question_no = #{questionNo} and qna_status ='N'
+	</update>
+	
+	<select id="selectProductQna" resultType="Qna">
+		select * 
+		from qna
+		where product_no = #{productNo} and qna_status = 'N'
+		order by question_no
+	</select>
+	
+	<update id="deleteQna">
+		update qna
+		set answer_content = null
+		where question_no = #{questionNo}
+	</update>
+	
+	<insert id="insertReview">
+	
+		<!-- order : insert/update를 하기 전에 selectKey를 수행할 것인지, 후에 수행할 것인지 (before : insert하기전에 수행) -->
+	    <!-- keyProperty : 가져온 값을 필드에 대입하기 위해서 selectKey를 하는 것임. 어디에 집어넣을지를 적어놓어주는 곳 -->
+		<selectKey order="BEFORE" resultType="_int" keyProperty="reviewNo">
+			select review_seq.nextval from dual
+		</selectKey>
+		<!-- 이미 시퀀스로 하나 올려진 글번호를 prodcutNo필드에 대입을 했으므로 시퀀스 돌려주는게(product_seq.nextval) 아니라 productNo 넣어주면 된다. -->
+		insert into review
+		values (#{reviewNo}, #{reviewContent}, sysdate, #{reviewScore}, null, default, #{productNo}, #{memberId})
+	</insert>
+	
+	<insert id="insertReviewPhoto">
+		insert into photo
+		values (new_aid,  #{ photoRename }, #{photoPath}, #{photoLevel}, 6, #{ boardNo }, default)
+	</insert>
+	
+	
+	<select id="selectProductReview" resultType="Review">
+		select *
+		from review
+		where product_no = #{productNo} and review_status = 'N'
+		order by review_no desc
+	</select>
+	
+	
+	<select id="selectProductPhotoReview" resultType="Review">
+		select *
+		from review
+			 join photo on (board_no = review_no)
+		where product_no = #{productNo} and review_status = 'N' and board_type=6
+		order by review_no desc
+	</select>
+	
+	
+	<select id="selectAllProductScore" resultType="_int">
+		select review_score
+		from review
+		where product_no = #{productNo} and review_status = 'N'
+	</select>
+	
+	<update id="updateScore">
+		update product
+		set product_score = #{productScore}
+		where product_no = #{productNo}
+	</update>
+	
+	<select id="selectProductAllReview" resultType="Review">
+		select *
+		from review
+		where review_status = 'N'
+	</select>
+	
+	
+	<update id="deleteReview">
+		update review
+		set review_status = 'Y'
+		where review_no = #{reviewNo}
+	</update>
+	
+	<update id="updateYProduct">
+		update product
+		set product_status='Y'
+		where product_no in
+		<foreach item="productNo" collection="list" open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</update>
+	
+	<update id="updateYOption">
+		update product_option
+		set option_status='Y'
+		where product_no in
+		<foreach item="productNo" collection="list" open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</update>
+	
+	<delete id="updateYCart">
+		delete from cart
+		where product_no in
+		<foreach item="productNo" collection="list" open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</delete>
+	
+	<update id="updateYQna">
+		update qna
+		set qna_status='Y'
+		where product_no in
+		<foreach item="productNo" collection="list" open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</update>
+	
+	<delete id="updateYReview">
+		delete from review
+		where product_no in
+		<foreach item="productNo" collection="list" open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</delete>
+	
+	
+	<select id="selectYPhoto" resultType="string">
+		select photo_rename
+		from photo
+		where board_type = 5 and board_no in
+		<foreach collection="list" item="productNo"  open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</select>
+	
+	<update id="updateYPhoto">
+		update photo
+		set photo_status='Y'
+		where board_type=5 and board_no in
+		<foreach collection="list" item="productNo"  open="(" separator="," close=")">
+			#{productNo}
+		</foreach>
+	</update>
+	
+	<update id="deleteOption">
+		update product_option
+		set option_status = 'Y'
+		where product_no = #{productNo}
+	</update>
+	
+	
+	<delete id="deleteProductPhoto">
+		delete from photo
+		where photo_rename in
+		<foreach item="rename" collection="list" open="(" separator="," close=")">
+			#{rename}
+		</foreach>
+	</delete>
+	
+	<update id="updateProductPhotoY">
+		update photo
+		set photo_status = 'N'
+		where photo_rename in
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item.photoRename}
+		</foreach>
+	</update>
+	
+	<update id="updateProduct">
+		update product
+		set product_name = #{productName} , product_price= #{productPrice}, category_no = #{categoryNo}, product_company=#{productCompany}, delivery_price = #{deliveryPrice}
+		where product_no = #{productNo} and product_status = 'N'
+	</update>
+	
+	
+	<update id="updatePhotoLevel">
+		update photo
+		set photo_level = 0
+		where photo_no = (select min(photo_no)
+						 from photo
+						 where board_no = #{productNo} and board_type=5 and photo_level = 1)
+	</update>
+	
+	
+	<select id="selectCart" resultType="Cart">
+		select *
+		from cart
+		where member_id = #{id}
+	</select>
+	
+	
+	
+	<insert id="insertPayment">
+		insert all
+		
+		<foreach collection="list" item="item">
+			into payment
+			values (order_aid,  #{ item.orderPrice }, sysdate,  #{item.orderNo}, default, #{item.memberId}, #{item.orderAddress}, #{item.orderProductEno},#{item.deliveryStatus},#{item.productOption}, #{item.productNo}, #{item.orderPhone}, #{item.orderName}, sysdate + 3, #{item.orderContent}, #{item.paymentKey})
+		</foreach>
+		select * from dual
+	</insert>
+	
+	<select id="selectMyOrder" resultType="Payment">
+		select *
+		from payment
+		where order_status = 'N' and member_id = #{id}
+		order by order_key_no
+	</select>
+	
+	<select id="selectOrderNo" resultType="_int">
+		SELECT MAX(order_no) AS order_no
+		FROM payment
+		where member_id = #{id}
+		GROUP BY order_no
+		ORDER BY MAX(order_key_no) DESC
+	</select>
+	
+	<select id="selectPayment" resultType="Payment">
+		select *
+		FROM PAYMENT
+		WHERE order_no = #{orderNo}
+		order by order_key_no desc
+	</select>
+	
+	<select id="selectBuyerInfo" resultType="Payment">
+		select order_no, member_id , order_Address, ORDER_PHONE, ORDER_NAME, order_price, order_date, delivery_date, order_content
+		from payment 
+		where order_no = #{orderNo}
+		group by order_no , member_id, order_Address, ORDER_PHONE, ORDER_NAME, order_price, order_date, delivery_date, order_Content
+	</select>
+	
+	
+	<select id="selectOrderDetail" resultType="Payment">
+		select *
+		from payment
+		where order_key_no = #{orderKeyNo}
+	</select>
+	
+	<update id="updateDeliveryStatus">
+		update payment
+		set delivery_status = #{deliveryStatus}
+		where order_no = #{orderNo}
+	</update>
+	
+	<update id="deleteOrder">
+		update payment
+		set order_status = 'Y'
+		where order_no = #{orderNo}
+	</update>
+	
+	<update id="refundOrder">
+		update payment
+		set delivery_status = '환불요청'
+		where order_no = #{orderNo}
+	</update>
+	
+	<select id="getListCountOrder" resultType="_int">
+		select count(*)
+		from payment
+		<if test="searchType==1">
+			where order_no like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			where order_name like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			where delivery_status like '%${keyword}%'
+		</if>
+	</select>
+	
+	<select id="getListCountOrderN" resultType="_int">
+		select count(*)
+		from payment
+		where delivery_status = '환불요청'
+		<if test="searchType==1">
+			and order_no like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and order_name like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			and delivery_status like '%${keyword}%'
+		</if>
+	</select>
+	
+	
+	<select id="selectAllPayment" resultType="Payment">
+		select *
+		from payment
+		
+		<if test="searchType==1">
+			where order_no like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			where order_name like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			where delivery_status like '%${keyword}%'
+		</if>
+	</select>
+	
+	<select id="selectNPayment" resultType="Payment">
+		select *
+		from payment
+		where delivery_status = '환불요청'
+		<if test="searchType==1">
+			and order_no like '%${keyword}%'
+		</if>
+		<if test="searchType==2">
+			and order_name like '%${keyword}%'
+		</if>
+		<if test="searchType==3">
+			and delivery_status like '%${keyword}%'
+		</if>
+	</select>	
+	
+	<select id="selectRecommendProduct" resultType="Product">
+		<![CDATA[
+			SELECT *
+			FROM (
+			    SELECT *
+			    FROM product
+			    ORDER BY product_score DESC
+			)
+			WHERE ROWNUM <= 8
+		]]>
+	</select>
+	
+	<select id="purchaseYN" resultType="_int">
+		select count(*)
+		from payment
+		where member_id = #{memberId} and product_no = #{productNo}
+	</select>
+	
+	<select id="selectPaymentKey" resultType="string">
+		select distinct paymentKey
+		from payment
+		where order_no = #{orderNo}
+	</select>
+</mapper>

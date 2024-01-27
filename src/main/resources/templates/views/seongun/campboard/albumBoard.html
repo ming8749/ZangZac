@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 게시판</title>
+    <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <link rel="stylesheet" href="css/seongun/commonBoard.css">
+    <link rel="stylesheet" href="css/seongun/albumBoard.css">
+    <style>
+    	img{
+    		vertical-align: middle;
+    	}
+    </style>
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+    <a id="back-to-top"><img src='image/seongun/topBtn.png' style='width:38px; height:38px;'></a>
+    <div id="content">
+        <div id="space_zone">
+            <p>
+                <img></img>
+            </p>
+        </div>
+        <div id="board_zone">
+            <div id="snb_zone">
+                <ul>
+                    <li>
+                        <a id="check_snb">캠핑게시판</a>
+                    </li>
+                    <li>
+                        <a href="recipe.su">캠핑레시피</a>
+                    </li>
+                    <li>
+                        <a>중고거래</a>
+                    </li>
+                </ul>
+            </div>
+            <div id="point_zone">
+                <div id="category">
+                    <form method="get">
+                        <input type="hidden" name="categoryNo" value="">
+                        <input type="hidden" name="searchText" th:value="${b.searchText == null ? null : b.searchText}">
+                        <input type="hidden" name="searchCategory" th:value="${b.searchText == null ? 0 : b.searchCategory}">
+                        <a onclick="setCategory('0')" class="on" th:id="${b.categoryNo == 0 ? 'select-category' : ''}">전체보기</a>
+                        <a onclick="setCategory('1')" class="on" th:id="${b.categoryNo == 1 ? 'select-category' : ''}">백패킹</a>
+                        <a onclick="setCategory('2')" class="on" th:id="${b.categoryNo == 2 ? 'select-category' : ''}">오토캠핑</a>
+                        <a onclick="setCategory('3')" class="on" th:id="${b.categoryNo == 3 ? 'select-category' : ''}">장박</a>
+                        <a onclick="setCategory('4')" class="on" th:id="${b.categoryNo == 4 ? 'select-category' : ''}">글램핑</a>
+                    </form>
+                </div>
+				<div id="boardType-area">
+					<a href="campBoard.su"><img src="image/seongun/boardType1.png"></a>
+					<a href="cardBoard.su"><img src="image/seongun/boardType2.png"></a>
+					<a href="albumBoard.su"><img src="image/seongun/boardType3.png"></a>
+				</div>
+            </div>
+            <div class="board-container" th:if="${!list.isEmpty}">
+                <!-- 카드 반복 -->
+                <th:block th:each="b : ${list}">
+	                <div class="card" style="float: left;">
+	                	<input type="hidden" th:value="${b.cbNo}">
+	                    <div class="card-image">
+	                    	<th:block th:if="${b.photoPath != null}">
+	                        	<img th:src="${b.photoPath}" alt="썸네일 이미지" />
+	                        </th:block>
+	                    	<th:block th:if="${b.photoPath == null}">
+	                        	<img src="image/seongun/NONE.png" alt="썸네일 이미지" />
+	                        </th:block>
+	                    </div>
+	                    <div class="card-body">
+	                        <div class="card-title">
+	                            <span class="title-text">[[${b.cbTitle}]]</span>
+	                            <span class="card-category">[[${b.categoryName}]]</span>
+	                        </div>
+	                        <div class="card-author">[[${b.memberNickname.split('#')[0]}]]</div>
+	                        <div class="card-info">
+	                            <table>
+	                                <tr>
+	                                    <td class="info-label">조회수</td>
+	                                    <td class="info-label">댓글</td>
+	                                    <td class="info-label">좋아요</td>
+	                                    <td class="info-value date-year">[[${#strings.arraySplit(b.formatDate, ' ')[0]}]]</td>
+	                                </tr>
+	                                <tr>
+	                                    <td class="info-value">[[${b.cbCount}]]</td>
+	                                    <td class="info-value">[[${b.replyCount}]]</td>
+	                                    <td class="info-value">[[${b.heartCount}]]</td>
+	                                    <td class="info-value date-day">[[${#strings.arraySplit(b.formatDate, ' ')[1]}]]</td>
+	                                </tr>
+	                            </table>
+	                        </div>
+	                    </div>
+	                </div>
+                </th:block>
+                <!-- 카드 반복 끝 -->
+            </div>
+            <div class="board-container" th:if="${list.isEmpty}">
+            	<div class="board-none-text">
+            		<h1>아직 작성된 글이 없어요...</h1>
+            	</div>
+            </div>
+            <div class="border-bottom-div"></div>
+            <div class="write_btn_area">
+                <button type="button" id="write_btn" onclick="writeBtn()">글쓰기</button>
+            </div>
+            <div class="board_bottom_area">
+				<div id="pagenation" th:with="loc=${loc}" th:if="${!list.isEmpty}">
+					<ul>
+						<!-- 이전 버튼 -->
+						<li th:if="${pi.currentPage > 10}">
+							<a th:href="@{${loc}(page=${pi.currentPage-10})}">&lt; 이전</a>
+						</li>
+		                <!-- 페이지 번호 -->
+		                <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+				            <th:block th:if="${b.searchText == null}">
+				                <a th:href="@{${loc}(page=${p})}" th:id="${p == pi.currentPage} ? 'check_page'" >
+				                    [[${p}]] 
+				                </a>
+				            </th:block>
+				            <th:block th:if="${b.searchText != null && b.searchText.trim != ''}">
+				                <a th:href="@{${loc}(page=${p}, searchCategory=${b.searchCategory}, searchText=${b.searchText != null ? b.searchText : ''})}" th:id="${p == pi.currentPage} ? 'check_page'" >
+				                    [[${p}]]
+				                </a>
+				            </th:block>
+				        </li>
+		                <!-- 다음 버튼 -->
+		                <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+		                	<a th:href="@{${loc}(page=${pi.currentPage+10})}">다음 &gt;</a>
+		                </li>
+	              	</ul>
+				</div>
+	            <hr/>
+	              <!-- 검색 필터 영역 -->	
+	            <div class="search_area">
+		            <form action="albumBoard.su">
+			            <select name="searchCategoryNo" class="search_select">
+				            <option value="0">전체보기</option>
+				            <option value="1">백패킹</option>
+				            <option value="2">오토캠핑</option>
+				            <option value="3">장박</option>
+				            <option value="4">글램핑</option>
+				        </select>
+		                <select name="searchCategory" class="search_select">
+		                    <option value="0">전체</option>
+		                    <option value="1">제목</option>
+		                    <option value="2">내용</option>
+		                    <option value="3">글쓴이</option>
+		                </select>
+		                <input type="text" name="searchText" class="search_input" placeholder="검색어를 입력하세요." />
+		                <button type="submit" class="search_button">검색</button>
+	                </form>
+	            </div>
+	        </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+	    /*<![CDATA[*/
+	    let member = /*[[${session.loginUser}]]*/ 'null';
+	    let categoryNo = /*[[${selectedCategory}]]*/ '0';
+	    let list = /*[[${list}]]*/ 'null';
+	
+	    // 문서 로드 시 실행되는 함수들
+	    document.addEventListener('DOMContentLoaded', function() {
+	        setupScrollEvent();
+	        setupBackToTopButton();
+	        setupBoardListClickEvent();
+	    });
+	
+	    // 스크롤 이벤트 설정 함수
+	    function setupScrollEvent() {
+	        window.addEventListener('scroll', toggleBackToTopButton);
+	        window.addEventListener('touchmove', toggleBackToTopButton);
+	    }
+	
+	    // 맨 위로 가기 버튼 설정 함수
+	    function setupBackToTopButton() {
+	        document.getElementById('back-to-top').addEventListener('click', scrollToTop);
+	    }
+	
+	    // 맨 위로 가기 버튼 표시/숨김 함수
+	    function toggleBackToTopButton() {
+	        let backToTopButton = document.getElementById('back-to-top');
+	        backToTopButton.classList.toggle('show', window.pageYOffset > 0);
+	    }
+	
+	    // 맨 위로 스크롤하는 함수
+	    function scrollToTop() {
+	        window.scrollTo({ top: 0, behavior: 'smooth' });
+	        toggleBackToTopButton();
+	    }
+	
+	    // 게시글 목록 클릭 이벤트 설정 함수
+	    function setupBoardListClickEvent() {
+	        const tbody = document.querySelector('tbody');
+	        if (tbody) {
+	            tbody.addEventListener('click', navigateToBoard);
+	        }
+	    }
+	
+		// 카드 클릭 이벤트 설정 함수
+	    document.addEventListener('DOMContentLoaded', function() {
+            // 모든 card 클래스를 가진 요소에 대한 클릭 이벤트 리스너 추가
+            document.querySelectorAll('.card').forEach(function(card) {
+                card.addEventListener('click', function() {
+                    // 클릭된 card 내의 첫 번째 input 요소의 value 추출
+                    var boardId = this.querySelector('input[type="hidden"]').value;
+                    location.href = 'selectBoard.su?cbNo=' + boardId + "&page=" + /*[[${pi.currentPage}]]*/1;
+                });
+            });
+        });
+		
+	    // 글쓰기 버튼 클릭 이벤트
+	    function writeBtn() {
+	        if (member !== 'null') {
+	            window.location.href = "writeCampBoard.su";
+	        } else {
+	            alert("로그인 후 이용해주세요.");
+	            window.location.href = "signUp.me";
+	        }
+	    }
+	
+	    // 카테고리 설정 및 폼 제출 함수
+	    function setCategory(category) {
+	        document.querySelector('input[name="categoryNo"]').value = category;
+	        document.querySelector('form').submit();
+	    }
+	
+	    // 페이지 로드 시 실행되는 함수
+	    window.onload = function() {
+	        let msg = /*[[${msg}]]*/'null';
+	        if (msg != null && msg.trim().length > 0) {
+	            alert(msg);
+	        }
+	
+	        highlightSelectedCategory();
+	    };
+	
+	    // 선택된 카테고리 하이라이트 함수
+	    function highlightSelectedCategory() {
+	        let categoryValue = document.querySelector('input[name="categoryNo"]').value;
+	        if (categoryValue) {
+	            let selectedLink = document.querySelector(`a[onclick="setCategory('${categoryValue}')"]`);
+	            if (selectedLink) selectedLink.id = 'select-category';
+	        }
+	    }
+	    /*]]>*/
+	</script>
+</body>
+</html>

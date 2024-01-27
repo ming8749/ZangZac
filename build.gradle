@@ -1,0 +1,71 @@
+plugins {
+   id 'java'
+   id 'org.springframework.boot' version '3.2.0'
+   id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.kh.zangzac'
+version = '0.0.1-SNAPSHOT'
+
+java {
+   sourceCompatibility = '17'
+}
+
+configurations {
+   compileOnly {
+      extendsFrom annotationProcessor
+   }
+}
+
+repositories {
+   mavenCentral()
+}
+
+dependencies {
+
+   implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+   implementation 'org.springframework.boot:spring-boot-starter-security'
+   implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+   implementation 'org.springframework.boot:spring-boot-starter-web'
+   implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+   implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+   compileOnly 'org.projectlombok:lombok'
+   runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+   annotationProcessor 'org.projectlombok:lombok'
+   testImplementation 'org.springframework.boot:spring-boot-starter-test'
+   testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+   testImplementation 'org.springframework.security:spring-security-test'
+   
+   //문자 api
+      implementation 'net.nurigo:sdk:4.3.0'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.0'
+    implementation 'org.springframework.boot:spring-boot-devtools:3.2.0'
+    
+   //구글 클라우드 관련
+   implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.5.RELEASE'
+   implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.5.RELEASE'
+   
+   //mail 인증
+   implementation 'org.springframework.boot:spring-boot-starter-mail'
+   
+   //JSON
+   implementation group: 'org.json', name: 'json', version: '20231013'
+   
+   // 웹소켓을 위한 디팬던시
+   // https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket
+   implementation group: 'org.java-websocket', name: 'Java-WebSocket', version: '1.5.3'
+
+   // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
+   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-jasper', version: '10.0.22'
+      
+   // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
+   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.7.3'
+   
+   // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+   implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+}
+
+tasks.named('test') {
+   useJUnitPlatform()
+}

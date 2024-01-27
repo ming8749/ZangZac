@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.common.heart.model.dao.HeartDAO">
+	<select id="selectHeart" resultType="Heart">
+		select *
+		from heart
+		where board_no = #{boardNo} and
+			  board_type= #{boardType} and
+			  member_id = #{memberId}
+	</select>
+	
+	<insert id="insertHeart">
+		insert into heart values
+		(heart_seq.nextVal,#{boardNo},#{boardType}, #{memberId})
+	</insert>
+	
+	<delete id="deleteHeart">
+		delete from heart
+		where board_no = #{boardNo} and
+			  board_type= #{boardType} and
+			  member_id = #{memberId}
+	</delete>
+	
+	<select id="countHeart" resultType="_int">
+		select count(*)
+		from heart
+		where board_no = #{boardNo} and
+			  board_type= #{boardType}
+	</select>
+</mapper>

@@ -1,0 +1,80 @@
+@charset "UTF-8";
+
+.col{
+	position: relative;
+	top: 100px;
+	left: 30px;
+	display: flex;
+    flex-direction: column;
+	margin: -40px;
+	padding: 0px 0px;
+}
+
+
+.photoNum {
+    width: 200px;
+    height: 200px;
+    border-radius: 20%;
+    position: relative;
+    left: 550px;
+}
+
+/*
+.deleteBtn{
+   position:relative;
+   left: 15px;
+}
+*/
+
+.deleteAttm{
+	position:relative;
+    left: 70px;
+}
+
+.edit{
+   position: absolute;
+   left: 600px;
+   top: 800px;
+}
+
+.pointerBtn{
+	position: absolute;
+	left: 900px;
+	top: 1800px;
+}
+
+.btn-hover {
+    width: 200px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff; 
+    cursor: pointer;
+    margin: 20px;
+    height: 55px;
+    text-align:center;
+    border: none;
+    background-size: 300% 100%;
+
+    border-radius: 50px;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out; 
+}
+
+.btn-hover:hover {
+    background-position: 100% 0;
+    -moz-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.btn-hover:focus {
+    outline: none;
+}
+
+.color-1{
+    background-color: #5cb85c;
+   	box-shadow: 0 4px 15px 0 rgb(128, 128, 128) !important;
+}

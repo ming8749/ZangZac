@@ -1,0 +1,46 @@
+#popularBoard{
+	max-height:307px; 
+}
+
+#popularBoard table {
+	width: 100%;
+	text-align: center;
+	border-collapse: collapse;
+	position: relative;
+	margin-bottom: 30px;
+}
+
+th, td {
+	width: 5%;
+	padding: 8px;
+	text-align: center;
+}
+
+#popularBoard th {
+	border: 0.5px solid lightgray;
+	border-top: 1px solid black;
+	background-color: #e4e0e0;
+	font-weight: 100px;
+}
+
+#popularBoard td {
+	padding: 13px 10px 15px 10px;
+	border-bottom: solid 1px #dbdbdb;
+	justify-content: space-between;
+	text-align: center;
+	align-items: center;
+	position: relative;
+}
+
+#popularBoard .board_title {
+  max-width: 180px; 
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  vertical-align: middle; 
+}
+
+#popularBoard tbody td{
+	cursor: pointer;
+} 

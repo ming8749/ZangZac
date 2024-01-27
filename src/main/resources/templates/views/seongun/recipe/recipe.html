@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 레시피</title>
+    <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <link rel="stylesheet" href="css/seongun/commonBoard.css">
+    <link rel="stylesheet" href="css/seongun/recipe.css">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <style>
+    	img{
+    		vertical-align: middle;
+    	}
+    </style>
+    <link rel="stylesheet" href="css/seongun/common/recipemodal.css">
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+    <a id="back-to-top"><img src='image/seongun/topBtn.png' style='width:38px; height:38px;'></a>
+    <div id="content">
+        <div id="space_zone">
+            <p>
+                <img></img>
+            </p>
+        </div>
+        <div id="board_zone">
+            <div id="snb_zone">
+                <ul>
+                    <li>
+                        <a href="campBoard.su">캠핑게시판</a>
+                    </li>
+                    <li>
+                        <a id="check_snb">캠핑레시피</a>
+                    </li>
+                    <li>
+                        <a href="secondHand.ah">중고거래</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="board-container">
+				<!-- 카드 반복 -->
+				<th:block th:if="${!list.isEmpty}">
+					<th:block th:each="l : ${list}">
+						<div class="card" style="float: left;">
+							<input type="hidden" th:value="${l.recipeNo}">
+							<div class="">
+							    <button class="update-btn" th:if="${session.loginUser != null && session.loginUser.memberIsAdmin == 'Y'}">
+							        <img style="width:100%; margin-top:10px;" src="image/seongun/boardAdd.png" alt="게시판 설정 버튼" >
+							    </button>
+							    <ul class="editDropDown" style="display: none;">
+							        <li>
+							            <button class="editDropMenu" onclick="boardEditBtn()">수정</button>
+							        </li>
+							        <li>
+							            <button class="editDropMenu" onclick="boardDeleteBtn()">삭제</button>
+							        </li>
+							    </ul>
+							</div>
+							<div class="card-image">
+								<img th:src="${l.photoPath != null ? l.photoPath : 'image/seongun/NONE.png'}" alt="Thumbnail"  style="width: 100%; height: 180px;"/>
+		                	</div>
+		                	<div class="card-body">
+			                  	<table class="card-info">
+			                  		<tr>
+			                    		<th colspan="2" class="title-text">[[${l.recipeName}]]</th>
+			                  		</tr>
+			                  		<tr>
+			                    		<td class="info-title">메인재료</td>
+			                    		<td class="info-title">조리도구</td>
+			                  		</tr>
+			                  		<tr>
+			                    		<td class="info-content">[[${l.recipeIngredients}]]</td>
+			                    		<td class="info-content">[[${#strings.arrayJoin(l.cookCategoryName, ', ')}]]</td>
+			                  		</tr>
+			                  	</table>
+			                	<span class="card-text">[[${l.recipeContent}]]</span>
+		                	</div>
+		              	</div>
+					</th:block>
+              	</th:block>
+              	
+              	<div id="recipeModal" class="modal">
+				    <div class="modal-content">
+				        <span class="close">&times;</span>
+				        <!-- 모달 내용은 여기에 들어갑니다. -->
+				    </div>
+				</div>
+				<!-- 카드 반복 끝 -->
+			</div>
+            <div class="border-bottom-div"></div>
+            <div class="write_btn_area" th:if="${session.loginUser != null && session.loginUser.memberIsAdmin == 'Y'}">
+            	<button type="button" id="write_btn" onclick="writeBtn()">글쓰기</button>
+        	</div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+		/*<![CDATA[*/
+		var modal;
+        document.addEventListener('DOMContentLoaded', function() {
+            // 스크롤이 끝으로 이동 시 이벤트 발생
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset <= 0) {
+                    document.getElementById('back-to-top').classList.remove('show');
+                } else {
+                    document.getElementById('back-to-top').classList.add('show');
+                }
+            });
+
+            window.addEventListener('touchmove', function() {
+                if (window.pageYOffset <= 0) {
+                    document.getElementById('back-to-top').classList.remove('show');
+                } else {
+                    document.getElementById('back-to-top').classList.add('show');
+                }
+            });
+
+            document.getElementById('back-to-top').addEventListener('click', function() {
+                // 페이지 맨 위로 스크롤하는 애니메이션
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                document.getElementById('back-to-top').classList.remove('show');
+            });
+        });
+        
+        function writeBtn(){
+        	window.location.href="insertRecipeView.su";
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var cards = document.querySelectorAll('.card');
+            modal = document.getElementById('recipeModal');
+            var span = document.getElementsByClassName('close')[0];
+            
+            cards.forEach(function(card) {
+                card.addEventListener('click', function(event) {
+                    if (event.target.closest('.update-btn') || event.target.closest('.editDropMenu')) {
+                        return;
+                    }
+                    var boardId = card.querySelector('input[type="hidden"]:first-child').value;
+                    if (boardId) {
+                        $.ajax({
+                            url: 'selectRecipe.su',
+                            method: 'GET',
+                            data: { recipeNo: boardId },
+                            success: function(response) {
+                                $('.modal-content').html(response);
+                                modal.style.display = 'block';
+                                initializeSlider(); // 슬라이더 초기화 함수 호출
+                            }
+                        });
+                    }
+                });
+            });
+			
+            window.onclick = function(event) {
+    		    if (event.target == modal) {
+    		        modal.style.display = 'none';
+    		    }
+    		}
+            var editButtons = document.querySelectorAll('.update-btn');
+            editButtons.forEach(function(btn) {
+                btn.addEventListener('click', function(event) {
+                    var dropdown = this.nextElementSibling;
+                    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                    event.stopPropagation();
+                });
+            });
+
+            // 페이지의 다른 부분을 클릭하면 드롭다운을 숨깁니다.
+            document.addEventListener('click', function(event) {
+                var dropdowns = document.querySelectorAll('.editDropDown');
+                dropdowns.forEach(function(dropdown) {
+                    if (dropdown.style.display === 'block') {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            });
+        });
+		
+        boardEditBtn = () =>{
+        	var card = event.target.closest('.card');
+            if (card) {
+                var recipeNo = card.querySelector('input[type="hidden"]').value;
+                if (recipeNo) {
+                    location.href = "updateRecipeView.su?recipeNo=" + recipeNo;
+                }
+            }
+            event.stopPropagation(); 
+        }
+        
+        boardDeleteBtn = () =>{
+        	var card = event.target.closest('.card');
+            if (card) {
+                // 'card' 요소 내의 첫 번째 숨겨진 input 요소에서 recipeNo 값 가져오기
+                var recipeNo = card.querySelector('input[type="hidden"]').value;
+                if (recipeNo) {
+                	
+                	if(confirm("삭제 하시겠습니까?")){
+                		$.ajax({
+            				url: 'deleteRecipe.su',
+            				method: 'POST',
+            				data: {
+            					recipeNo:  recipeNo
+            				},
+            				success: function(data) {
+            					if(data >= 0){
+            						alert("레시피가 삭제되었습니다.")
+            						location.reload();
+            					}else{
+            						alert("레시피가 삭제를 실패했습니다. 다시 시도해주세요.");
+            					}
+            				},
+            				error: function(error) {
+            					console.error('Error adding comment:', error);
+            				}
+            			});
+                	}
+                }
+            }
+            event.stopPropagation(); 
+        }
+        
+        function initializeSlider() {
+            let sliderImages = document.querySelectorAll('.image-container img');
+            let currentImageIdx = 0;
+            let imageContainer = document.querySelector('.image-container');
+            let paginationContainer = document.querySelector('.slider-pagination');
+
+            // 기존에 생성된 페이징 버튼을 모두 제거
+            while (paginationContainer.firstChild) {
+                paginationContainer.removeChild(paginationContainer.firstChild);
+            }
+
+            // 새로운 페이징 버튼 생성
+            sliderImages.forEach((_, idx) => {
+                let btn = document.createElement('span');
+                btn.classList.add('pagination-btn');
+                btn.addEventListener('click', () => {
+                    currentImageIdx = idx;
+                    updateSliderPosition();
+                    updatePaginationButtons();
+                });
+                paginationContainer.appendChild(btn);
+            });
+
+            function updateSliderPosition() {
+                let sliderWidth = document.querySelector('.image-slider').clientWidth;
+                imageContainer.style.transform = `translateX(${-currentImageIdx * sliderWidth}px)`;
+            }
+
+            function updatePaginationButtons() {
+                let buttons = document.querySelectorAll('.pagination-btn');
+                buttons.forEach((btn, idx) => {
+                    btn.classList.toggle('active', idx === currentImageIdx);
+                });
+            }
+
+            document.querySelector('.prev-btn').addEventListener('click', () => {
+                currentImageIdx = currentImageIdx > 0 ? currentImageIdx - 1 : sliderImages.length - 1;
+                updateSliderPosition();
+                updatePaginationButtons();
+            });
+
+            document.querySelector('.next-btn').addEventListener('click', () => {
+                currentImageIdx = (currentImageIdx + 1) % sliderImages.length;
+                updateSliderPosition();
+                updatePaginationButtons();
+            });
+
+            updateSliderPosition();
+            updatePaginationButtons(); // 초기 페이징 버튼 설정
+        }
+		
+        /*]]>*/
+    </script>
+</body>
+</html>

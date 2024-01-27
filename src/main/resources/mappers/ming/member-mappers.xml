@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kh.zangzac.ming.member.model.dao.MemberDAO">
+
+	<insert id="insertMember">
+		insert into member
+		values (#{memberId}, #{memberPwd}, #{memberName}, #{memberEmail}, #{memberNickName}, #{memberBirth}, #{memberAddress},
+				#{memberPhone},sysdate, default,default,default,default,1 ) 
+	</insert>
+	
+	<select id="login" resultType="Member">
+		select * from member
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</select>
+	
+	<select id="selectId" resultType="Member">
+		select *
+		from member
+		where member_name = #{memberName} and member_email =#{memberEmail} and member_status = 'N'
+	</select>
+	
+	<update id="updateNewPwd">
+	    update MEMBER
+	    set MEMBER_PWD = #{memberPwd}
+	    where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<select id="checkId" resultType="_int">
+		select count(*)
+		from member
+		where member_id = #{memberId} and member_status = 'N'
+	</select>
+	
+	<select id="checkEmail" resultType="_int">
+		select count(*)
+		from member
+		where member_email = #{memberEmail} and member_status = 'N'
+	</select>
+	
+	<select id="checkcurrentPwd" resultType="_int">
+		select count(*)
+		from member
+		where MEMBER_PWD = #{memberPwd} and member_status = 'N'
+	</select>
+	
+	<select id="getMemberLoginType">
+		select *
+		from member
+		where member_email = #{memberEmail} and member_status = 'N' and MEMBER_LOGIN_TYPE = '2'
+	</select>
+	
+	<update id="deleteMember">
+		update member
+		set member_status = 'Y'
+		where member_id = #{memberId}
+	</update>
+	
+	<update id="changePwd">
+		update MEMBER
+	    set MEMBER_PWD = #{memberPwd}
+	    where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<update id="updateMemberName">
+		update member
+		set member_name = #{memberName}
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<update id="updateMemberNickname">
+		update member
+		set MEMBER_NICKNAME = #{memberNickname}
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<update id="updatememberPhone">
+		update member
+		set MEMBER_PHONE = #{memberPhone}
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<update id="updatememberEmail">
+		update member
+		set MEMBER_EMAIL = #{memberEmail}
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<update id="updatememberAddress">
+		update member
+		set MEMBER_ADDRESS = #{memberAddress}
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	<update id="updateMemberProfile">
+		update member
+		set MEMBER_PROFILE_PATH = #{memberProfilePath}
+		where MEMBER_ID = #{memberId} and member_status = 'N'
+	</update>
+	
+	
+	<update id="updateInfo">
+		update member
+		set ${column} = #{data}
+		where member_id = #{id}
+	</update>
+	
+	<update id="adminUpdateNickName">
+	    update member
+	    set MEMBER_NICKNAME = #{memberNickName}
+	    where MEMBER_ID = #{memberId}
+	</update>
+	
+	<update id="adminUpdateName">
+		update member
+		set MEMBER_NAME = #{memberName}
+		where MEMBER_ID = #{memberId}
+	</update>
+	
+	<select id="getListCount" resultType="_int">
+		select count(*)
+		from member
+	</select>
+	
+	<select id="searchList" resultType="_int">
+	    SELECT COUNT(*)
+	    FROM member
+	    <where>
+	        <if test="searchType =='memberId'">
+	            AND MEMBER_ID LIKE '%'|| #{keyword} ||'%'
+	        </if>
+	        <if test="searchType == 'memberName'">
+	            AND MEMBER_NAME LIKE '%'|| #{keyword} ||'%'
+	        </if>
+	        <if test="searchType == 'memberNickName'">
+	            AND MEMBER_NICKNAME LIKE '%'|| #{keyword} ||'%'
+	        </if>
+	    </where>
+	    ORDER BY MEMBER_NAME DESC
+	</select>
+	
+	<select id="searchtNoticeList" resultType="Member">
+		SELECT *
+	    FROM member
+	    <where>
+	    <if test="searchType =='memberId'">
+	         MEMBER_ID LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'memberName'">
+	         MEMBER_NAME LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'memberNickName'">
+	         MEMBER_NICKNAME LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    </where>
+	    ORDER BY MEMBER_NAME DESC
+	</select>
+	
+	<insert id="kakaoLogin">
+		insert into member
+		values (#{memberId}, #{memberPwd}, #{memberName}, #{memberEmail}, #{memberNickName}, #{memberBirth}, #{memberAddress},
+				#{memberPhone},sysdate, default,default,default, #{memberProfilePath},2) 
+	</insert>
+	
+	<select id="isEmailDuplicate" resultType="boolean">
+		select count(*)
+		from member
+		where member_email = #{memberEmail} and member_status = 'N'
+	</select>
+	
+	<select id="getReviewListCount" resultType="_int">
+		select count(*)
+		from REVIEW
+		where REVIEW_STATUS = 'N'
+	</select>
+	
+	<select id="selectReview" resultType="review">
+	    SELECT *
+	    FROM review
+	    WHERE review_status = 'N' AND member_id=#{memberId}
+	    ORDER BY review_no DESC
+	</select>
+	
+	
+	<select id="selectAllProduct" resultType="Product">
+		select *
+		from Product
+		where PRODUCT_STATUS ='N'
+	</select>
+	
+	
+	<select id="selectAllPotoProduct" resultType="Photo">
+		select *
+		from Photo
+		where PHOTO_STATUS ='N'
+	</select>
+	
+	<update id="deleteReview">
+		update review
+		set review_status = 'Y'
+		where review_no = #{reviewNo}
+	</update>
+	
+	<select id="deleteSelectReview" resultType="string">
+		select photo_rename
+        from photo
+        where board_type = 6 and board_no=#{review_no}
+	</select>
+	
+	<select id="getmySecondHandProductListCount" resultType="_int" parameterType="map">
+		select count(*)
+		from SECONDHAND_PRODUCT
+		where SP_STATUS = 'N' AND member_id = #{memberId}
+	</select>
+	
+	<select id="getmyBoardListCount" resultType="_int" parameterType="map">
+	    SELECT COUNT(*)
+	    FROM CAMP_BOARD
+	    WHERE CB_STATUS = 'N' AND member_id = #{memberId}
+	</select>
+	
+	<select id="selectsecondHandProduct" resultType="secondHandProduct">
+		select *
+		from SECONDHAND_PRODUCT
+		WHERE SP_STATUS = 'N' AND member_id=#{memberId}
+	    ORDER BY SP_NO DESC
+	</select>
+	
+	<select id="selectCampBoard" resultType="CampBoard">
+		select *
+		from CAMP_BOARD_VIEW
+		WHERE CB_STATUS = 'N' AND member_id=#{memberId}
+	    ORDER BY CB_NO DESC
+	</select>
+	
+	<select id="searchSPListCount" resultType="_int">
+		SELECT COUNT(*)
+	    FROM SECONDHAND_PRODUCT
+	    where SP_STATUS = 'N' AND member_id=#{memberId}
+	    <if test="searchType =='spTitle'">
+	         and SP_TITLE LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'spContent'">
+	       	and SP_CONTENT LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'spAddress'">
+	        and SP_ADDRESS LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    ORDER BY SP_NO DESC
+	</select>
+	
+	<select id="searchSpList" resultType="secondHandProduct">
+		SELECT *
+	    FROM SECONDHAND_PRODUCT
+	    where SP_STATUS = 'N' AND member_id=#{memberId}
+	    <if test="searchType =='spTitle'">
+	         and SP_TITLE LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'spContent'">
+	       	and SP_CONTENT LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'spAddress'">
+	        and SP_ADDRESS LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    ORDER BY SP_NO DESC
+	</select>
+	
+	
+	<select id="searchCbListCount" resultType="_int">
+		SELECT COUNT(*)
+	    FROM CAMP_BOARD_VIEW
+	    where CB_STATUS = 'N' AND member_id=#{memberId}
+	    <if test="searchType == 'cbTitle'">
+	       	and CB_TITLE LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'categoryName'">
+	        and CATEGORY_NAME LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    ORDER BY CB_NO DESC
+	</select>
+	
+	<select id="searchCbList" resultType="CampBoard">
+		SELECT *
+	    FROM CAMP_BOARD_VIEW
+	    where CB_STATUS = 'N' AND member_id=#{memberId}
+	    <if test="searchType == 'cbTitle'">
+	       	and CB_TITLE LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    <if test="searchType == 'categoryName'">
+	        and CATEGORY_NAME LIKE '%'|| #{keyword} ||'%'
+	    </if>
+	    ORDER BY CB_NO DESC
+	</select>
+	
+</mapper>

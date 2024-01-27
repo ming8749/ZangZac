@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 친구작성</title>
+	<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Additional styles if needed */
+        .image-preview {
+            display: none;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body >
+   <div th:insert="~{common/navbar :: navbar}"></div>
+   <form action="campingFriendEdit.jy" method="post" enctype="multipart/form-data" onsubmit="">
+	    <div class=" max-w-2xl mx-auto my-10">
+	    	<input type="hidden" name="PhotoRename" th:value="${cf.PhotoRename}">
+	    	<header class="flex justify-between items-center mb-6 ">
+	            <h1 class="text-2xl font-bold ml-12">캠핑 친구 구하기</h1>
+	        </header>
+	        <div class=" bg-gray-50 shadow-md rounded-md p-6">
+	            <!-- Post Title -->
+	            <div class="mb-4">
+	            	<input type="hidden" name="memberId" th:value ="${session.loginUser.memberId}">
+	            	<input type="hidden" name="cfNo" th:value ="${cf.cfNo}">
+	                <label for="postTitle" class="block text-gray-700 text-sm font-bold mb-2">제목</label>
+	                <input id="postTitle" name="cfTitle" type="text" placeholder="포스트제목" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required="required"
+	                th:value= "${cf.cfTitle}">
+	            </div>
+	            
+	            <div class="mb-4">
+	                <label for="postCategory" class="block text-gray-700 text-sm font-bold mb-2">카테고리</label>
+	                <select id="postCategory" name="categoryNo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+					    <option th:value="1" th:selected="${cf.categoryNo == 1}">백패킹</option>
+					    <option th:value="2" th:selected="${cf.categoryNo == 2}">오토캠핑</option>
+					    <option th:value="3" th:selected="${cf.categoryNo == 3}">장박</option>
+					    <option th:value="4" th:selected="${cf.categoryNo == 4}">글램핑</option>
+					    <option th:value="5" th:selected="${cf.categoryNo == 5}">야영장</option>
+					</select>
+	            </div>
+	            
+	            <!-- Post Content -->
+	            <div class="mb-4">
+	                <label for="postContent" class="block text-gray-700 text-sm font-bold mb-2">내용</label>
+	                <textarea id="postContent" name="cfContent" placeholder="본문 내용" required="required" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline h-32">[[${cf.cfContent}]]</textarea>
+	            </div>
+	
+	            <!-- Image Upload Section -->
+	            <div class="mb-4">
+	                <label class="block text-gray-700 text-sm font-bold mb-2">등록한 사진</label>
+	                <input type="hidden" name="preImage" value="|${cf.photoPath@1}|">
+	                <div id="preImage" th:if="${cf.photoPath != null}">
+		                <img  th:src="${cf.photoPath}">
+		                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button"  onclick="removeImage()">
+		                	삭제
+		                </button>
+		                <br><br>
+	                </div>
+	                
+	                <div class="flex items-center justify-center w-full">
+	                    <label class="flex flex-col w-full h-32 border-4 border-dashed hover:bg-gray-100 hover:border-gray-300">
+	                    <img id="imagePreview1" class="image-preview" th:src="${cf.photoPath}" />
+	                        <div class="flex flex-col items-center justify-center pt-7">
+	                            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+	                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+	                            </svg>
+	                            <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
+	                                썸네일
+	                            </p>
+	                        </div>
+	                        <input type="file" name="file" class="opacity-0" accept="image/*" onchange="sumviewImage(event)" />
+	                    </label>
+	                </div>
+	                <!-- Image Preview -->
+	                <img id="imagePreview" class="image-preview" />
+	            </div>
+	
+	            <!-- Additional Image Upload -->
+	          
+	
+	            <!-- Submit Button -->
+	            <div class="flex justify-end">
+	                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+	                    등록완료
+	                </button>
+	            </div>
+	        </div>
+	    </div>
+	</form>
+    <script>
+    
+    function sumviewImage(event) {
+        var reader = new FileReader();
+        let output = document.getElementById('imagePreview');
+        if (event.target.files.length > 0) {
+	        reader.onload = function() {
+	            
+	            output.src = reader.result;
+	            output.style.display = 'block';
+	            removeImage();
+	            console.log('hello');
+	        };
+	        reader.readAsDataURL(event.target.files[0]);
+        }else{
+        	
+            output.style.display = 'none';
+        }
+    }
+    
+   
+
+   
+   
+</script>
+
+<script th:inline="javascript">
+ function removeImage(){
+	 
+	 /*<![CDATA[*/
+     let photoPath = /*[[${cf.photoPath}]]*/null;
+     /*]]>*/
+	 const preDiv = document.getElementById('preImage');
+	 const prePhtoPath = preDiv.previousElementSibling;
+	 if(photoPath != null){
+	 	prePhtoPath.value = photoPath+"@2" /*2가 들어가면 삭제 기본은 1*/
+	 	preDiv.remove();
+	 }else{
+		prePhtoPath.value = photoPath+"@1" /*2가 들어가면 삭제 기본은 1*/
+	 }
+	 
+ }
+ 
+ 
+ 
+ 
+
+</script>
+</body>
+</html>

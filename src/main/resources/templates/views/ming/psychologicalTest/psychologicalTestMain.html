@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>캠핑테스트</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/ming/psychologicalTest/testMain.css">
+<style>
+	.kakao{
+		position: relative;
+		left: -10px;
+		width: 60px;
+	}
+	.kakaoText{
+		position: relative;
+		left: 1500px;
+		top:-125px;
+		width: 50px;
+		text-decoration: none;
+		color: black;
+	}
+</style>
+</head>
+<body>
+	<div th:insert="~{common/navbar :: navbar}"></div>
+	  <div class="container">
+	    <section id="main" class="mx-auto my-5 py-5 px-3">
+	      <h1>테스트로 알아보는 나의 캠핑 취향</h1><br><br><br><br>
+	      <div class="col-lg-6 col-md-8 col-sm-10 col-12 mx-auto">
+	        <img src="image/ming/psychologicalTest/autumn-season-5580628_1280.png" alt="mainImage" class="img-fluid">
+	      </div>
+	      <p class="test_p">
+	        <br>캠핑 취향 알아보고<br><br>
+	         ZangZac에서 다양한<br><br> 캠핑 콘텐츠를 즐기세요!
+	      </p>
+	     	 <div class="box bg-3">
+			 	 <button class="button button--quidel button--inverted" onclick="js:begin()"><i class="button__icon icon icon-cross"></i><span>시작하기</span></button>
+			 </div>
+	    </section>
+	    <section id="qna">
+			<div class="qnaPoto">
+			<br><br>
+				<img src="image/ming/psychologicalTest/qnaPoto.jpg" style="width: 80%; height: 500px;">
+			</div>
+	      <div class="status mx-auto mt-5">
+	        <div class="statusBar">
+	        </div>
+	      </div>
+	      <div class="qBox my-5 py-3 mx-auto">
+	
+	      </div>
+	      <div class="answerBox">
+	
+	      </div>
+	      <br><br>
+	    </section>
+	    <section id="result">
+		  <br><br>
+		  <span style="font-size: 4em; font-weight: bold; color: #F9612B;">당신의 결과는?!</span><br>
+		  <div class="resultContainer">
+		    <div class="resultname"></div>
+		    <div id="resultImg" class="my-3 col-lg-6 col-md-8 col-sm-10 col-12 mx-auto"></div>
+		    <div class="resultDesc"></div>
+		    <span class="ItemTilte">캠핑 아이템을 구매하여 캠핑을 시작해보세요!</span>
+		    <span class="ItemTilte2">글씨를 클릭하면 구매 사이트로 이동됩니다.</span>
+		    <div class="resultItem">
+		     	<img class="poto1" src="image/ming/psychologicalTest/37470.jpg" style="width: 200px; height: 200px;"><a href="productListView.so?categoryNo=11" id="poto1" >텐트</a>
+		    	<img class="poto2" src="image/ming/psychologicalTest/sleeping_bag.jpg" style="width: 200px; height: 200px;"><a href="productListView.so?categoryNo=12" id="poto2" >취침도구</a>
+		    	<img class="poto3" src="image/ming/psychologicalTest/picnic.jpg" style="width: 200px; height: 200px;"><a href="productListView.so?categoryNo=13" id="poto3" >조리도구</a>
+		    	<img class="poto4" src="image/ming/psychologicalTest/8066069.jpg" style="width: 200px; height: 200px;"><a href="productListView.so?categoryNo=14" id="poto4" >발화용품</a>
+		    </div>
+		    <div class="box bg-3">
+			 	 <button class="button button--quidel button--inverted" style="position: absolute; top: 1930px;" onclick="redirectToHome()"><i class="button__icon icon icon-cross"></i><span>홈으로가기</span></button>
+			 </div>
+		  </div>
+	</section>
+	  </div>
+	   <script src="js/ming/psychologicalTest/data.js" charset="UTF-8"></script>
+	    <script src="js/ming/psychologicalTest/start.js" charset="UTF-8"></script>
+	    <script src="js/ming/psychologicalTest/share.js" charset="UTF-8"></script>
+	   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.6.0/kakao.min.js" integrity="sha384-6MFdIr0zOira1CHQkedUqJVql0YtcZA1P0nbPrQYJXVJZUkTk/oX4U9GhUIs3/z8" crossorigin="anonymous"></script>
+		<script>
+		  Kakao.init('27f35515f4482390b9bfc7632ab7663f'); // 사용하려는 앱의 JavaScript 키 입력
+		</script>
+		
+		<a id="kakaotalk-sharing-btn" href="javascript:;" class="kakaoText"> 
+		  <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png"
+		    alt="카카오톡 공유 보내기 버튼" class="kakao" />친구와 함께하기
+		</a>
+		
+		<script>
+		  Kakao.Share.createDefaultButton({
+		    container: '#kakaotalk-sharing-btn',
+		    objectType: 'feed',
+		    content: {
+		      title: '캠핑 유형 테스트',
+		      description: '#캠핑 #Zangzac #여행 #장작 #백팩킹',
+		      imageUrl:
+		        'https://gongu.copyright.or.kr/gongu/wrt/cmmn/wrtFileImageView.do?wrtSn=13286043&filePath=L2Rpc2sxL25ld2RhdGEvMjAyMS8yMS9DTFMxMDAwNi8xMzI4NjA0M19XUlRfMjFfQ0xTMTAwMDZfMjAyMTA2MTVfMQ==&thumbAt=Y&thumbSe=b_tbumb&wrtTy=10006',
+		      link: {
+		        // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
+		        webUrl: 'http://192.168.20.207:8080',
+		      },
+		    },
+		    buttons: [
+		      {
+		        title: '테스트 하러가기!',
+		        link: {
+		          webUrl: 'http://192.168.20.207:8080/psychologicalTestMain.me',
+		        },
+		      },
+		    ],
+		  });
+		</script>
+		<script>
+		    function redirectToHome() {
+		        location.href = '/';
+		    }
+		</script>
+</body>
+
+</html>

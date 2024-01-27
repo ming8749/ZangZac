@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>관리자 문의관리 목록페이지</title>
+<link href="css/sohwa/(admin)qnaList.css" rel="stylesheet">
+</head>
+<body>
+
+
+	<div th:replace="~{common/admin :: admin}"></div>
+	<br><br><br><br>
+	<div id="qnaListWrapped">
+		<h1>문의 목록</h1>
+		<p style="color:gray;">-답변을 하면 자동으로 문의목록에서 사라집니다.</p>
+		<!-- 문의내역-->
+			<div id="qnaDiv">
+				
+				<div style="float:right;">
+					<a id="answerY" href="adminQnaListView.so?status=2">>>답변완료내역</a>
+					<div class="dropdown">
+		                <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+		                    상품이름 검색
+		                </button>
+		                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		                    <li><a class="dropdown-item" onclick="showSearch('search1', '상품이름 검색')">상품이름 검색</a></li>
+		                    <li><a class="dropdown-item" onclick="showSearch('search2', '문의내용 검색')">문의내용 검색</a></li>
+		                    <li><a class="dropdown-item" onclick="showSearch('search3', '상품번호 검색')">상품번호 검색</a></li>
+		                </ul>
+		            </div>
+					
+					<div class="search" id="search1">
+						<input type="text" placeholder="상품이름 입력" id="searchInput1" name="keyword">
+			  			<a id="searchLink1"><img id="searchImg1" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"></a>
+					</div>
+					<div class="search" id="search2" style="display: none;">
+						<input type="text" placeholder="문의내용 입력" name="keyword" id="searchInput2">
+			  			<a id="searchLink2"><img id="searchImg2" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"></a>
+					</div>
+					<div class="search" id="search3" style="display: none;">
+						<input type="text" placeholder="상품번호 입력" name="keyword" id="searchInput3">
+			  			<a id="searchLink3"><img id="searchImg3" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"></a>
+					</div>
+				</div>
+				
+				
+				<input type="hidden" th:value="${status}" id="hiddenStatus">
+				<!--반복-->
+				<div th:each="q:${qList}" class="cart-row">
+		            <table>
+		                <tr>
+		                    <td class="td1">
+		                        <img th:each="a:${aList}" th:if="${a.boardNo eq q.productNo && a.photoLevel==0 && a.boardType==5}" th:src="${a.photoPath}">
+		                        <div th:each="p:${pList}" th:if="${p.productNo eq q.productNo}">
+		                            <div>[[${p.productCompany}]]</div>
+		                            [[${p.productName}]]<br>
+		                            [[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]
+		                        </div>
+		                    </td>
+		                    <td class="line"></td>
+		                    <td class="td4" style="width:500px;">
+		                        <div style="margin-left:30px; display:flex; align-items: center;">
+		                            <img src="image/sohwa/icons8-q-64.png">
+		                            [[${q.questionContent}]]
+		                        </div>
+		                    </td>
+		                    <td>
+		                    	<th:block th:if="${q.answerContent ==null}">
+		                    		<button class="btn-hover color-2 openModalButton">답변</button>
+		                    	</th:block>
+		                    	<th:block th:unless="${q.answerContent ==null}">
+		                    		<button class="btn-hover color-1" th:onclick="'deleteQna(' + ${q.questionNo} + ');'">삭제</button>
+		                    		<button class="btn-hover color-2">답변</button>
+		                    	</th:block>
+		                    </td>
+		                </tr>
+		            </table>
+		            <div class="answerDiv">
+	 					<div><img src="image/sohwa/icons8-a-64.png">관리자 : [[${q.answerContent}]]</div> 
+	 				</div>
+            		<br><br>
+					<!-- 모달 영역 -->
+					<div class="modal qnaModal" style="display:none; width:640px; height:820px; overflow:hidden;">
+						<div style="width:600px; height:780px; margin:20px; border:1px solid gray; border-bottom:1px solid gray;">
+		                    <span class="close">&times;</span>
+		                    <div class="bg-gray-50">
+		                        <div class="max-w-2xl mx-auto p-6">
+		                            <h1 class="text-2xl font-bold mb-4" style="margin-left:15px;">문의 등록</h1>
+		                            <div class="bg-white shadow-md rounded-lg overflow-hidden mb-4">
+		                                <div class="p-4 flex" style="display:inline-flex; justify-content: center; align-content: center;">
+		                                    <img th:each="a:${aList}" th:if="${q.productNo == a.boardNo && a.photoLevel==0 && a.boardType==5}" th:src="${a.photoPath}" class="w-20 h-20 object-cover rounded-full" alt="Product">
+		                                    <div class="ml-4" th:each="p:${pList}" th:if="${p.productNo eq q.productNo}" style="margin-left:20px; display:inline-block;">
+		                                        <p class="text-sm text-gray-600">[[${p.productName}]]</p>
+		                                        <p>[[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]</p>
+		                                        문의 : <span style="color:gray;">[[${q.questionContent}]]</span>
+		                                    </div>
+		                                </div>
+										<hr>
+		                                <div class="border-t border-gray-200" th:each="p:${pList}" th:if="${p.productNo eq q.productNo}">
+		                                	<form action="insertAnswer.so" method="POST">
+			                                    <div class="p-4">
+			                                        <div class="mb-4">
+			                                        	<input type="hidden" th:value="${q.questionNo}" name="questionNo">
+			                                            <label for="review" class="text-sm font-semibold">답변을 작성해주세요.</label><br>
+			                                            <textarea name="answerContent" rows="3" class="mt-1 p-2 w-full border rounded-md" style="height:250px; width:550px; resize: none;"></textarea>
+			                                        </div>
+			                                        <button class="enrollQna" style="float:right; margin-bottom:30px;">
+			                                            문의등록
+			                                        </button>
+			                                    </div>
+		                                    </form>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		                 </div>
+		            </div>
+					
+				</div>
+				
+				
+				<!--반복-->
+<!-- 				<table> -->
+<!-- 					<tr class="cart-row"> -->
+<!-- 	                    <td class="td1"> -->
+<!-- 							<img src="image/sohwa/tent1core1.png"> -->
+<!-- 							<div> -->
+<!-- 								<div>모비가든</div> -->
+<!-- 								캠스존 오르딘 글램핑 리빙쉘 대형 거실형텐트 5-6인용<br> -->
+<!-- 								410,000원 -->
+<!-- 							</div> -->
+<!-- 	                    </td> -->
+<!-- 	                    <td class="line"></td> -->
+<!-- 	                    <td class="td4"> -->
+<!-- 							<div style="margin-left:30px; display:flex; align-items: center;"> -->
+<!-- 								<img src="image/sohwa/icons8-q-64.png"> -->
+<!-- 								택배박스에 구매상세 내역이 적혀있나요? 숨겨져서 왔으면 좋겠습니다. -->
+<!-- 							</div> -->
+<!-- 						</td> -->
+<!-- 						<td><button class="btn-hover color-2 openModalButton">댭변</button></td> -->
+<!-- 	                </tr> -->
+<!-- 				</table> -->
+<!-- 				<br><br> -->
+				
+				
+				
+				<!-- 페이지네이션 -->
+				<div id="pagenation" th:with="loc=${loc}" th:if="${!qList.isEmpty}">
+		            <ul>
+		               <!-- 이전 버튼 -->
+		               <li th:if="${pi.currentPage > 10}">
+		                  <a th:href="@{${loc}(status=${status},searchType=${searchType},keyword=${keyword},page=${pi.currentPage-10})}">&lt; 이전</a>
+		               </li>
+		                   <!-- 페이지 번호 -->
+                       <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+		                    <a th:href="@{${loc}(status=${status},searchType=${searchType},keyword=${keyword},page=${p})}" th:id="${p == pi.currentPage ? 'check_page' : ''}">
+		                       [[${p}]] 
+		                    </a>
+                       </li>
+
+		                   <!-- 다음 버튼 -->
+		               <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+		                  <a th:href="@{${loc}(status=${status},searchType=${searchType},keyword=${keyword},page=${pi.currentPage+10})}">다음 &gt;</a>
+		               </li>
+		            </ul>
+		        </div>
+		
+		</div>
+				
+				
+				
+				
+	</div>
+			
+			
+			
+			
+			
+			
+			
+		
+	
+	
+	
+	
+
+
+
+	<br><br><br><br><!--footer--><br><br><br><br>
+	
+	
+	
+	
+	
+	
+	<script th:inline="javascript">
+	
+	
+	
+		
+		document.addEventListener('DOMContentLoaded', function () {
+	        document.querySelector('#qnaDiv').addEventListener('click', function (event) {
+	            if (event.target.classList.contains('openModalButton')) {
+	                const modal = event.target.closest('.cart-row').querySelector('.qnaModal');
+	                if (modal) {
+	                    modal.style.display = 'block';
+	                }
+	            }
+	        });
+	
+	        document.querySelectorAll('.close').forEach(closeButton => {
+	            closeButton.addEventListener('click', function () {
+	                const modal = this.closest('.modal');
+	                if (modal) {
+	                    modal.style.display = 'none';
+	                }
+	            });
+	        });
+	    });
+		
+		
+	    
+	    
+	    
+	    //드롭다운 변경
+		function showSearch(searchId, dropdownText) {
+            document.querySelectorAll('.search').forEach(function(searchElement) {
+                searchElement.style.display = 'none';
+            });
+            document.getElementById(searchId).style.display = 'block';
+            document.getElementById('dropdownMenuButton').innerText = dropdownText;
+        }
+	    
+	    
+		var searchInput1 = document.getElementById("searchInput1");
+		var searchInput2 = document.getElementById("searchInput2");
+		var searchInput3 = document.getElementById("searchInput3");
+		var searchImg1 = document.getElementById("searchImg1");
+		var searchImg2 = document.getElementById("searchImg2");
+		var searchImg3 = document.getElementById("searchImg3");
+		var searchLink1 = document.getElementById('searchLink1');
+		var searchLink2 = document.getElementById('searchLink2');
+		var searchLink3 = document.getElementById('searchLink3');
+		var status = document.getElementById('hiddenStatus').value;
+	    
+
+	    searchImg1.addEventListener("click", function() {
+	        var keyword = searchInput1.value;
+	        location.href= 'adminQnaListView.so?status=' + status + '&searchType=1&keyword=' + keyword;
+	    });
+	    
+	    searchImg2.addEventListener("click", function() {
+	        var keyword = searchInput2.value;
+	        location.href= 'adminQnaListView.so?status=' + status + '&searchType=2&keyword=' + keyword;
+	    });
+	    
+	    searchImg3.addEventListener("click", function() {
+	        var keyword = searchInput3.value;
+	        location.href= 'adminQnaListView.so?status=' + status + '&searchType=3&keyword=' + keyword;
+	    });
+	    
+	    
+	    
+	    
+	    
+	    //답변보이게 하기
+		document.addEventListener('DOMContentLoaded', function () {
+            // 각 답변 div 요소를 숨깁니다.
+            const answerDivs = document.querySelectorAll('.answerDiv');
+            answerDivs.forEach(answerDiv => {
+                answerDiv.style.display = 'none';
+            });
+
+            // 각 답변 버튼을 찾습니다.
+            const answerButtons = document.querySelectorAll('.cart-row button.btn-hover.color-2');
+
+            // 각 답변 버튼에 대한 클릭 이벤트를 설정합니다.
+            answerButtons.forEach((button, index) => {
+                button.addEventListener('click', function () {
+                    // 해당하는 답변 div를 찾습니다.
+                    const correspondingAnswer = answerDivs[index];
+
+                    // 해당하는 답변이 현재 보이는 상태인지 확인하고 상태를 변경합니다.
+                    const isAnswerVisible = correspondingAnswer.style.display === 'block';
+                    correspondingAnswer.style.display = isAnswerVisible ? 'none' : 'block';
+                });
+            });
+        });
+	
+	    
+		function deleteQna(questionNo){
+        	var confirmation = confirm('해당 문의의 답변을 삭제하시겠습니까?');
+        	
+        	if(confirmation){
+        		 location.href='deleteQna.so?questionNo='+questionNo;
+        	}
+        }
+		
+		
+	</script>
+
+</body>
+</html>

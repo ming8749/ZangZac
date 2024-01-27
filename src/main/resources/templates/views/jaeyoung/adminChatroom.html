@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Insert title here</title>
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link href="css/ming/admin/memberList.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <style>
+  .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        display: none;
+
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal.show {
+        display: block;
+      }
+
+      .modal_body {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 500px;
+        height: 700px;
+        padding: 40px;
+        background-color: rgb(255, 255, 255);
+        border-radius: 10px;
+        box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
+        transform: translateX(-50%) translateY(-50%);
+      }
+      .modal_title{
+      	text-align: center;
+      	font-size: 2em;
+      	font-weight: bold;
+      	padding-bottom: 5px;
+      }
+      .modal_body p{
+      	padding: 7px;
+    	margin: 10px auto;
+      }
+      .modal_body input {
+		    margin: 10px auto;
+		}
+      
+      .selectState{
+      	color: rgb(251, 125, 83);
+      	font-weight: bold;
+      }
+	  .unselectState{background: none;}
+  </style>
+</head>
+<body>
+	<div th:replace="~{common/admin :: admin}"></div>
+	<div style="height:100px; width:100%;"></div>
+	<div id="orderListWrapped">
+      <h1>채팅방 관리</h1>
+      <button class="cateBtn active" onclick="toggleTable('allMember', 'refundMember')">채팅 목록</button>
+      <div style="float:right;">
+	       <button type="button" id="addChat" onclick="openModal()">채팅방 추가</button>
+      </div>
+      
+      
+      <table id="allMember">
+         <tr>
+            <th >번호</th>
+            <th >정원</th>
+            <th >현재인원</th>
+            <th >이름</th>
+            <th >카테고리</th>
+            <th></th>
+         </tr>
+         <tr th:each="c:${list}">
+         	<th >[[${c.clNo}]]</th>
+         	<th >[[${c.clLimitPerson}]]</th>
+         	<th >[[${c.clNowPerson}]]</th>
+         	<th >[[${c.clName}]]</th>
+         	<th >[[${c.categoryName}]]</th>
+         	<th><button value="삭제" onclick="deleteChat(event)">삭제</button> <th>
+         </tr>
+         
+      </table>
+    
+   </div>
+	<div class="modal" id="modal" >
+		<form action="insertChatRoom.jy" method="post">
+			<div class="modal_body" style="height:350px; width: 400px">
+				<p class="modal_title">채팅방정보</p>
+				<p name="clName" style="display:inline-block;">이&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp름:</p><input type="text" name="clName"><br>
+				<p name="clLimitPerson" style="display:inline-block;">정&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp원:</p><input type="text" name="clLimitPerson"><br>
+				<p name="categoryName" style="display:inline-block;">카테고리:</p><input type="text" name="categoryName"><br>
+				&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+				<input type="submit" value="등록">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+			    <input type="button" onclick="closeModal()" value="취소">
+			 </div>
+		 </form>
+	</div>
+	
+   <script>
+
+   		const modal = document.getElementById('modal');
+   		
+  		 function openModal(){
+  		 	modal.classList.toggle('show');
+  		 }
+  		 
+  		 function closeModal(){
+   		 	modal.classList.toggle('show');
+   		 }
+  		
+  		//드롭다운 변경
+  		function showSearch(searchId, dropdownText) {
+              document.querySelectorAll('.search').forEach(function(searchElement) {
+                  searchElement.style.display = 'none';
+              });
+              document.getElementById(searchId).style.display = 'block';
+              document.getElementById('dropdownMenuButton').innerText = dropdownText;
+          }
+  		
+  		function deleteChat(event){
+  			let no = event.target.parentNode.parentNode.children[0].innerText;
+  			
+  			window.location.href = 'deleteChat.jy?no='+no;
+  		}
+  		
+
+	        
+	      
+	    
+ 	</script>
+</body>
+</html>

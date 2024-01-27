@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 레시피</title>
+    <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <link href="css/seongun/writeboard.css" rel="stylesheet">
+    <style>
+    	img{
+    		vertical-align: middle;
+    	}
+    </style>
+</head>
+<body>
+	<div th:replace="~{common/navbar :: navbar}"></div>
+    <div class="head-container">
+        <h1>레시피 작성</h1>
+    </div>
+    <div class="write-container">
+        <form method="post" action="updateRecipe.su" enctype="multipart/form-data">
+        	<input type="hidden" name="recipeNo" th:value="${r.recipeNo}">
+            <!-- 제목 입력 -->
+            <div class="write-row">
+                <input type="text" id="title" name="recipeName" placeholder="요리 이름" th:value="${r.recipeName}" />
+            </div>
+            <!-- 카테고리 선택 -->
+            <div class="write-row">
+            	<h4>조리도구를 선택해 주세요</h4>
+            	<div id="category" th:object="${r}">
+				    <label><input type="checkbox" name="cookCategoryNo" value="1" th:checked="${#arrays.contains(r.cookCategoryNo, 1)}"> 후라이팬</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="2" th:checked="${#arrays.contains(r.cookCategoryNo, 2)}"> 가위</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="3" th:checked="${#arrays.contains(r.cookCategoryNo, 3)}"> 칼</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="4" th:checked="${#arrays.contains(r.cookCategoryNo, 4)}"> 버너</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="5" th:checked="${#arrays.contains(r.cookCategoryNo, 5)}"> 에어프라이어</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="6" th:checked="${#arrays.contains(r.cookCategoryNo, 6)}"> 그릴</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="7" th:checked="${#arrays.contains(r.cookCategoryNo, 7)}"> 찜기</label>
+				    <label><input type="checkbox" name="cookCategoryNo" value="8" th:checked="${#arrays.contains(r.cookCategoryNo, 8)}"> 토치</label>
+				</div>
+            </div>
+            <input type="text" name="recipeTaste" th:value="${r.recipeTaste}"/>
+            <!-- 내용 입력 -->
+            <div class="write-row">
+                <textarea id="content" name="recipeIngredients" placeholder="요리 재료를 입력하세요.">[[${r.recipeIngredients}]]</textarea>
+            </div>
+            <div class="write-row">
+                <textarea id="content" name="recipeContent" placeholder="조리 법을 입력하세요.">[[${r.recipeContent}]]</textarea>
+            </div>
+            <!-- 파일 첨부 -->
+            <th:block th:if="${not #lists.isEmpty(pList)}">
+				<th:block th:each="p : ${pList}">
+					<input type="hidden" name="deletePhoto" th:value="${p.photoRename + '#is'}">
+					<div class="upload-container">
+						<div class="upload-top-area">
+							<label class="upload-label" th:text="${p.photoLevel == 0 ? '대표 사진' : '등록한 사진'}"></label>
+							<button type="button" class="delete-upload-file">취소하기</button>
+							<div th:if="${p.photoLevel == 0}">
+								<button type="button" id="add-upload-container">파일 추가</button>
+							</div>
+							<div th:if="${p.photoLevel == 1}">
+								<button type="button" class="delete-upload-container">파일 삭제</button>
+							</div>
+						</div>
+						<label class="upload-box"> 
+						<input type="file" name="file" class="file-input" accept="image/*" onchange="sumviewImage(event)" />
+							<div class="upload-area">
+								<div class="upload-content" id="uploadContent">
+									<svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+			                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+			                        </svg>
+									<p class="upload-text">대표사진</p>
+								</div>
+								<!-- Image Preview -->
+								<img id="imagePreview" class="image-preview" th:src="${p.photoPath}" />
+							</div>
+						</label>
+					</div>
+				</th:block>
+			</th:block>
+			<th:block th:unless="${not #lists.isEmpty(pList)}">
+    <!-- pList가 비어 있을 때 출력할 내용 -->
+    <div class="upload-container">
+    	<input type="hidden" name="deletePhoto"  value="none#is">
+        <div class="upload-top-area">
+            <label class="upload-label">등록한 사진</label>
+            <button type="button" id="add-upload-container">파일 추가</button>
+        </div>
+        <label class="upload-box">
+            <input type="file" name="file" class="file-input" accept="image/*" onchange="sumviewImage(event)" />
+            <div class="upload-area">
+                <div class="upload-content" id="uploadContent">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <p class="upload-text">대표사진</p>
+                </div>
+                <!-- Image Preview -->
+                <img id="imagePreview" class="image-preview" />
+            </div>
+        </label>
+    </div>
+	</th:block>
+            <div class="write-row">
+                <button type="submit" class="submit-btn">등록</button>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+    	/*<![CDATA[*/
+    	let memeber = /*[[${session.loginUser}]]*/null;
+	    function sumviewImage(event) {
+	        var imagePreview = event.target.parentNode.querySelector('.image-preview');
+	        var uploadContent = event.target.parentNode.querySelector('.upload-content');
+	        var hiddenInput = event.target.parentNode.parentNode.previousElementSibling; // 부모의 이전 hidden input 찾기
+			
+	        if (hiddenInput && hiddenInput.type === 'hidden' && !hiddenInput.value.includes('del')) {
+	            // 여기에 hiddenInput 값을 변경하는 로직 추가
+	            hiddenInput.value += 'del';
+	            console.log(hiddenInput.value);
+	        }
+	        
+	        var file = event.target.files[0];
+	        if (file) {
+	            imagePreview.src = URL.createObjectURL(file);
+	            imagePreview.onload = function() {
+	                URL.revokeObjectURL(imagePreview.src); // 메모리 해제
+	            }
+	            imagePreview.style.display = 'block'; // 이미지 미리보기 표시
+	            uploadContent.style.display = 'none'; // 기존 콘텐츠 숨김
+	        } else {
+	            // 파일이 선택되지 않았을 경우, 기존 이미지 (있는 경우) 표시
+	            if (imagePreview.getAttribute('src') !== '') {
+	                imagePreview.style.display = 'block';
+	                uploadContent.style.display = 'none';
+	            }
+	        }
+	    }
+	
+	    document.addEventListener('DOMContentLoaded', function() {
+	        var addUploadButton = document.getElementById('add-upload-container');
+	        var originalUploadContainer = document.querySelector('.upload-container');
+	
+	        addUploadButton.addEventListener('click', function() {
+	            var newUploadContainerHTML = `
+	                <div class="upload-container">
+	                    <div class="upload-top-area">
+	                        <label class="upload-label">등록한 사진</label>
+	                        <button type="button" class="delete-upload-container">파일 삭제</button>
+	                    </div>
+	                    <label class="upload-box">
+	                        <input type="file" name="file" class="file-input" accept="image/*" onchange="sumviewImage(event)" />
+	                        <div class="upload-area">
+	                            <div class="upload-content">
+	                                <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+	                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+	                                </svg>
+	                                <p class="upload-text">추가 사진</p>
+	                            </div>
+	                            <!-- Image Preview -->
+	                            <img class="image-preview" style="display: none;" />
+	                        </div>
+	                    </label>
+	                </div>`;
+	
+	            var newUploadContainer = document.createElement('div');
+	            newUploadContainer.innerHTML = newUploadContainerHTML;
+	            originalUploadContainer.parentNode.insertBefore(newUploadContainer, originalUploadContainer.nextSibling);
+	
+	            // 파일 삭제 버튼에 이벤트 리스너 추가
+	            var deleteButtons = document.querySelectorAll('.delete-upload-container');
+	            deleteButtons.forEach(function(button) {
+	                button.onclick = function() {
+	                    this.parentElement.parentElement.remove();
+	                };
+	            });
+	        });
+	    });
+	    document.addEventListener('DOMContentLoaded', function() {
+	        // 파일 삭제 및 취소하기 버튼에 대한 이벤트 리스너 설정 함수
+	        function setupListeners() {
+	            // 파일 삭제 버튼 이벤트 리스너
+	            document.querySelectorAll('.delete-upload-container').forEach(function(button) {
+	            button.addEventListener('click', function() {
+	                // 현재 버튼과 관련된 hidden input 찾기
+	                var hiddenInput = this.parentNode.parentNode.parentNode.previousElementSibling;
+	                // hidden input 값 업데이트
+	                if (hiddenInput && hiddenInput.type === 'hidden' && !hiddenInput.value.includes('del')) {
+	                    hiddenInput.value += 'del';
+	                    console.log(hiddenInput.value);
+	                }
+	
+	                // 현재 버튼이 포함된 upload-container 요소 찾기 및 제거
+	                var uploadContainer = this.closest('.upload-container');
+	                if (uploadContainer) {
+	                    uploadContainer.remove();
+	                }
+	            });
+	        });
+	
+	            // 취소하기 버튼 이벤트 리스너
+	            document.querySelectorAll('.delete-upload-file').forEach(function(button) {
+	                button.addEventListener('click', function() {
+	                    var hiddenInput = this.parentNode.parentNode.previousElementSibling;
+	                    var imagePreview = this.closest('.upload-container').querySelector('.image-preview');
+	                    hideImagePreview(imagePreview);
+	                    updateHiddenInput(hiddenInput);
+	                });
+	            });
+	        }
+	
+	        // hiddenInput 값을 업데이트하는 함수
+	        function updateHiddenInput(hiddenInput) {
+	            if (hiddenInput && hiddenInput.type === 'hidden' && !hiddenInput.value.includes('del')) {
+	                hiddenInput.value += 'del';
+	            }
+	        }
+	
+	        // 이미지 미리보기 숨기는 함수
+	        function hideImagePreview(imagePreview) {
+	            if (imagePreview) {
+	                imagePreview.style.display = 'none';
+	                imagePreview.src = '';
+	            }
+	        }
+	
+	        // 이벤트 리스너 설정
+	        setupListeners();
+	    });
+
+
+
+    
+        // 페이지 로드 시 이미지를 표시하는 로직
+        window.onload = function() {
+        	document.querySelectorAll('.image-preview').forEach(function(imagePreview) {
+                if (imagePreview.getAttribute('src') !== '') {
+                    imagePreview.style.display = 'block';
+                    imagePreview.parentNode.querySelector('.upload-content').style.display = 'none';
+                }
+            });
+        	if(memeber == null){
+        		alert("로그인 후 이용 해주세요.");
+        		history.back();
+        	}
+        };
+	    /*]]>*/
+</script>
+</body>
+</html>

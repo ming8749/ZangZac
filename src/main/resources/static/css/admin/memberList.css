@@ -1,0 +1,126 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+*{
+   font-family: 'GmarketSansMedium';
+}
+
+#orderListWrapped{
+   margin-left:20%;
+   margin-right: 10%;
+}
+
+.cateBtn{
+   margin-top:20px;
+   background-color: white;
+   font-size:20px;
+   border:none;
+}
+
+table{
+   margin-top:10px;
+   width:100%;
+   border-bottom: 2px solid rgb(56, 56, 56);
+   border-top: 2px solid rgb(56, 56, 56);
+   margin-bottom:50px;
+   padding-left: 50px;
+}
+th{
+   border-bottom:2px solid rgb(56, 56, 56);
+   padding: 8px;
+   text-align: center !important;
+}
+
+.td1{
+   width:0;
+}
+
+.td2{
+   width:12%;
+}
+
+.td3{
+   width:10%;
+}
+
+.td4{
+   width:8%;
+}
+
+.td5{
+   width:20%;
+}
+.td6{
+   width:12%;
+}
+.td7{
+   width:5%;
+}
+.td8{
+   width:11%;
+}
+
+tr{
+   height:40px;
+}
+
+.td1 input[type="checkbox"]{
+   width:20px;
+   height:20px;
+}
+
+
+td {
+    border-bottom: 1px solid #ddd; /* 구분선 스타일 */
+    padding: 8px;
+    text-align: center;
+  }
+  
+.pagination .page-link {
+    color: #F9612B;
+}
+
+
+.search {
+   margin-left:10px;
+   margin-bottom:5px;
+   float: right;
+   display: inline-flex; /* Flexbox를 이용하여 인라인 요소로 표시하여 수평 정렬 */
+    align-items: center;
+    position: relative;
+    width: 300px;
+}
+
+.search input {
+  width: 100%;
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.search img {
+  position : absolute;
+  width: 17px;
+  top: 10px;
+  right: 12px;
+  margin: 0;
+}
+
+.dropdown{
+   display: inline-block;
+}
+
+.hidden{
+   display: none;
+}
+
+.cateBtn.active {
+    border-bottom: 4px solid #F9612B; /* 선택한 버튼의 아래쪽 테두리 색상 */
+  }
+  

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link href="css/sohwa/productList.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+	button:hover{
+		opacity:0.6;
+	}
+</style>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>결제 성공 페이지</title>
+</head>
+<body class="bg-gray-50 font-sans leading-normal tracking-normal">
+	<div th:replace="~{common/navbar :: navbar}"></div>
+	<div class="container mx-auto p-8">
+		<br><br>
+	  	<div style="border:3px solid gray; margin-left:30%; margin-right:30%; background-color:#F6F6F6; border-radius:10px; text-align:center;">
+	  		<img style="margin-left:270px;" src="image/sohwa/icons8-check-64.png">
+	  		<h2 style="font-size:30px; color:darkolivegreen;">결제가 완료되었습니다!</h2>
+	  		<br>
+	  		<div style="border:1px solid black; margin-left:30px; margin-right:30px; font-size:20px; border-radius:10px; background-color:white; text-align:left;">
+	  			<input type="hidden" th:value="${orderNo}" id="orderNo">
+	  			<br>
+	  			<br>
+	  			<span style="font-weight:bolder; margin-left:10px;">결제 금액 :</span> [[|${#numbers.formatDecimal(price, 0, 'COMMA', 0, 'POINT')}원|]]
+	  			<br><br>
+	  			<span style="font-weight:bolder;margin-left:10px;">성함 :</span> [[${name}]]
+	  			<br> <br>
+	  			<div style="margin-left:10px;margin-bottom:0px;"><span style="font-weight:bolder;">배송 주소 :</span> [[${address}]]</div>
+	  			<br> 
+	  			<span style="font-weight:bolder;margin-left:10px;">번호 :</span> [[${phone.substring(0, 3) + '-' + phone.substring(3, 7) + '-' + phone.substring(7)}]]
+	  			<br><br>
+	  			<div style="text-align:center;"><a th:href="@{'detailOrderView.so?orderNo=' + ${orderNo}}"><button style="border:1px solid black; border-radius: 3px; width:150px; background-color: black; color:white;">내 주문내역</button></a></div>
+	  			<br>
+	  		</div>
+	  		<br><br>
+	  	</div>
+	</div>
+</body>
+
+	
+	
+	
+	
+
+</html>

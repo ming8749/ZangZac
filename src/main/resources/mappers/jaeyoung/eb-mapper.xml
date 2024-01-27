@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.jaeyoung.eventBoard.model.dao.EventBoardDAO">
+	
+	<insert id="insertEventBoard">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="ebNo">
+         	select EB_SEQ.nextval 
+         	from dual
+     	 </selectKey>
+		insert into event_board
+		values (#{ebNo}, #{ebLocation}, #{ebName}, #{ebIntroduce}, #{ebPrice},#{ebTime},default,#{ebDate}, #{ebInformation}, #{ebScore}, #{ebHost}) 
+	</insert>
+	<select id="getListCount">
+		select count(*)
+		from event_board
+		where eb_status='N'
+	</select>
+	
+	<select id="selectEventBoardList">
+		select *
+		from event_board
+		where eb_status='N'
+		order by eb_no desc
+	</select>
+	
+	<select id="selectEventBoard">
+		select * 
+		from event_board
+		where eb_no = #{ebNo} and eb_status='N'
+	</select>
+	
+	<update id="updateEventBoard">
+		UPDATE event_board
+		SET
+		  eb_location = #{ebLocation},
+		  eb_name = #{ebName},
+		  eb_introduce = #{ebIntroduce},
+		  eb_price = #{ebPrice},
+		  eb_time = #{ebTime},
+		  eb_date = #{ebDate},
+		  eb_information = #{ebInformation},
+		  eb_score = #{ebScore},
+		  eb_host = #{ebHost}
+		WHERE
+		  eb_no = #{ebNo}
+	</update>
+	
+	<update id="deleteEventBoard">
+		UPDATE event_board
+		SET
+		  eb_status = 'Y'
+		WHERE
+		  eb_no = #{ebNo}
+	</update>
+	
+
+
+</mapper>

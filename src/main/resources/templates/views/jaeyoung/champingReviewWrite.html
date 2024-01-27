@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캠핑 리뷰작성</title>
+	<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Additional styles if needed */
+        .image-preview {
+            display: none;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .foreground{
+		     background: url(https://aldo814.github.io/jobcloud/html/images/user/star_bg02.png) no-repeat;
+		     width: 121px;
+		     height: 20px;
+		     position: relative;
+		     cursor: pointer; /* 클릭 가능한 요소로 설정 */
+		     display: inline-block;
+		   }
+		  .foreground span{
+		     position: absolute;
+		     background: url(https://aldo814.github.io/jobcloud/html/images/user/star02.png);
+		     filter: invert(90%) sepia(10%) saturate(7000%) hue-rotate(570deg) brightness(115%) contrast(120%);
+		     height: 20px;
+		
+		  }
+    </style>
+</head>
+<body >
+   <div th:insert="~{common/navbar :: navbar}"></div>
+    <div class=" max-w-2xl mx-auto my-10">
+   <form action="campingReviewWirte.jy" method="post" enctype="multipart/form-data" onsubmit="return checkThumnail()">
+    	<header class="flex justify-between items-center mb-6 ">
+            <h1 class="text-2xl font-bold ml-12">캠핑장 후기</h1>
+        </header>
+        <div class=" bg-gray-50 shadow-md rounded-md p-6">
+            <!-- Post Title -->
+            <div class="mb-4">
+            	<input type="hidden" name="memberId" th:value ="${session.loginUser.memberId}">
+                <label for="postTitle" class="block text-gray-700 text-sm font-bold mb-2">제목</label>
+                <input id="postTitle" required="required" name="crTitle" type="text" placeholder="포스트제목" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            
+            <div class="mb-4">
+                <label for="postCategory" class="block text-gray-700 text-sm font-bold mb-2">카테고리</label>
+                <select id="postCategory" name="categoryNo" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="1">백패킹</option>
+                    <option value="2">오토캠핑</option>
+                    <option value="3">장박</option>
+                    <option value="4">글램핑</option>
+                    <option value="5">야영장</option>
+                </select>
+            </div>
+            
+            <!-- Post Content -->
+            <div class="mb-4">
+                <label for="postContent" class="block text-gray-700 text-sm font-bold mb-2">내용</label>
+                <textarea id="postContent"  required name="crContent" placeholder="본문 내용" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline h-32"></textarea>
+                <label for="postContent" class="block text-gray-700 text-sm font-bold mb-2">별점</label>
+                <div id="ratingContainer" class="foreground">
+				    <span id="background" class="background" style="width:0%;"></span>
+				</div>
+				<span id="ratingValue">0.0</span>
+				<input type="hidden" id="crStar" name="crStar">
+				<br>
+            </div>
+
+            <!-- Image Upload Section -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">등록한 사진</label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="flex flex-col w-full h-32 border-4 border-dashed hover:bg-gray-100 hover:border-gray-300">
+                        <div class="flex flex-col items-center justify-center pt-7">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
+                                썸네일
+                            </p>
+                        </div>
+                        <input type="file" id="thumnail" name="thumnailFile" class="opacity-0" accept="image/*" onchange="sumviewImage(event)" />
+                    </label>
+                </div>
+                <!-- Image Preview -->
+                <img id="imagePreview" class="image-preview" />
+            </div>
+
+            <!-- Additional Image Upload -->
+            <div class="mb-4">
+                <button id="addImage" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+                    추가 이미지 등록
+                </button>
+                <!-- Placeholder for additional images -->
+                <div id="additionalImages" class="mt-4"></div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex justify-end">
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    수정완료
+                </button>
+            </div>
+        </div>
+	</form>
+  </div>
+    <script>
+    
+    function sumviewImage(event) {
+        var reader = new FileReader();
+        let output = document.getElementById('imagePreview');
+        if (event.target.files.length > 0) {
+	        reader.onload = function() {
+	            
+	            output.src = reader.result;
+	            output.style.display = 'block';
+	        };
+	        reader.readAsDataURL(event.target.files[0]);
+        }else{
+        	
+            output.style.display = 'none';
+        }
+    }
+    
+    // JavaScript for handling image preview
+    function previewImage(event, previewId) {
+    	var reader = new FileReader();
+
+        // Check if files are selected
+        if (event.target.files.length > 0) {
+            reader.onload = function() {
+            	
+                var output = document.getElementById(previewId);
+                output.src = reader.result;
+                output.style.display = 'block';
+            };
+
+            reader.readAsDataURL(event.target.files[0]);
+        } else {
+            // Handle the case where no files are selected
+            console.error("No file selected");
+            var output = document.getElementById(previewId);
+            output.style.display = 'none';
+        }
+    }
+
+    // JavaScript for handling additional image uploads
+    document.getElementById('addImage').addEventListener('click', function() {
+        var additionalImagesContainer = document.getElementById('additionalImages');
+        var newIndex = additionalImagesContainer.children.length + 1;
+        
+        var newImageUpload = document.createElement('div');
+        newImageUpload.className = 'flex items-center justify-center w-full';
+        newImageUpload.innerHTML = `
+        	<div class="mb-4">
+	            <label class="flex flex-col w-full h-32 border-4 border-dashed hover:bg-gray-100 hover:border-gray-300 mt-4">
+	                <div class="flex flex-col items-center justify-center pt-7">
+	                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+	                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+	                    </svg>
+	                    <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">
+	                        이미지를 업로드하세요.
+	                    </p>
+	                </div>
+	                <input type="file" name="file" id="imageInput${newIndex}" class="opacity-0" accept="image/*" onchange="previewImage(event, 'imagePreview${newIndex}')" />
+	            </label>
+	            <img id="imagePreview${newIndex}" class="image-preview" />
+	        </div>
+        `;
+        additionalImagesContainer.appendChild(newImageUpload);
+    });
+</script>
+<!--별점-->
+<script>
+    var foreground = document.getElementById("ratingContainer");
+    var background = document.getElementById("background");
+    var ratingValue = document.getElementById("ratingValue");
+    var crStar = document.getElementById("crStar");
+
+    foreground.addEventListener("click", function (event) {
+        // 클릭한 위치에 따라 배경의 너비를 계산
+        var clickX = event.clientX - foreground.getBoundingClientRect().left;
+        var percent = (clickX / foreground.offsetWidth) * 100;
+
+        // 너비 업데이트
+        background.style.width = percent + "%";
+
+        // 클릭 위치에 따른 별점 업데이트
+        var rating = (percent / 100) * 5; // 전체 별점이 5일 때
+        ratingValue.textContent = rating.toFixed(1); // 소수점 첫째 자리까지 표시
+        crStar.value=rating.toFixed(1);
+    });
+</script>
+<script >
+	function checkThumnail(){
+		thumnail
+		
+		var fileInput = document.getElementById('thumnail');
+		
+		 if (fileInput.files.length > 0) {
+		        // 파일이 선택된 경우
+		        return true;
+		    } else {
+		        // 파일이 선택되지 않은 경우
+		    	alert('썸네일이 지정되지 않았습니다.');
+		        return false;
+		    }
+	}
+</script>
+</body>
+</html>

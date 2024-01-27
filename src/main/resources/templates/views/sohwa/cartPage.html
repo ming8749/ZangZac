@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link href="css/sohwa/cartPage.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>장바구니 페이지</title>
+</head>
+<body>
+   <div th:replace="~{common/navbar :: navbar}"></div>
+   
+   <br><br><br><br><br><br>
+   <div id="cartWrapped">
+      <div id="cartLogo">
+         01 장바구니 <span>-> 02 주문서 작성 -> 03 주문완료</span>
+      </div>
+      <p style="text-align: center;">무료배송 상품이 하나이상 포함일시 주문상품 모두 무료배송으로 진행됩니다.</p>
+      <hr style="border:2.5px solid black;">
+      
+      <table>
+         <tr>
+            <th class="th1" >
+               <input id="allSelect" type="checkbox" checked><span style="margin-left: 70px;">상품정보</span>
+            </th>
+            <th class="th2">
+               옵션
+            </th>
+            <th class="th2">
+               수량
+            </th>
+            <th class="th3">
+               주문금액
+            </th>
+            <th class="th4">
+               배송비
+            </th>
+            <th class="th5">
+               
+            </th>
+         </tr>
+         
+         
+         <!--장바구니에 상품이 있는 것만큼 반복-->
+         <th:block th:each="l:${list}">
+            <tr class="cart-row" th:each="p:${pList}" th:if="${l.productNo eq p.productNo}">
+               <td class="td1">
+               	  <input class="cartKeyNo" type="hidden" th:value="${l.cartKeyNo}">
+                  <input type="checkbox" checked>
+                  <img th:each="a:${aList}" th:if="${a.photoLevel==0 && p.productNo == a.boardNo && a.boardType==5}" th:src="${a.photoPath}">
+                  <div>
+                     <div>[[${p.productCompany}]]</div>
+                     [[${p.productName}]]<br>
+                     <span class="price">[[|${#numbers.formatDecimal(p.productPrice, 0, 'COMMA', 0, 'POINT')}원|]]</span><br>
+                     <th:block th:if="${p.eno == 0}"><button style="background-color:black; border-radius:3px;width:90px; border:none; color:white;">일시품절</button></th:block>
+                 	 <th:block th:if="${p.deliveryPrice == 0}"><button style="background-color:gray; border-radius:3px;width:90px; border:none; color:white;">무료배송</button></th:block>
+                  </div>
+                  
+               </td>
+               <td style="text-align:center;">
+                 	[[${l.buyOption}]]
+               </td>
+               <td class="td2">
+                  <div class="quantity-input" style="margin-left:10px;">
+                        <button class="quantity-btn decrementBtn">-</button>
+                        <input type="text" class="quantity" value="1" min="1" th:value="${l.productEno}">
+                        <button class="quantity-btn incrementBtn">+</button>
+                  </div>
+               </td>
+               <td class="td3">
+                  <span class="resultPrice"></span>
+               </td>
+               <td class="td4">
+               	  <th:block th:if="${p.deliveryPrice == 0}">무료배송</th:block>
+                  <th:block th:unless="${ p.deliveryPrice == 0}" th:text="|${#numbers.formatDecimal(p.deliveryPrice, 0, 'COMMA', 0, 'POINT')}원|"></th:block>
+               </td>
+               <td class="td5">
+                  <a th:href="@{'/deleteCart.so?cartKeyNo=' + ${l.cartKeyNo}}"><button class="close-btn" style="border:none;">X</button></a>
+                  
+                  
+               </td>
+            </tr>
+         </th:block>
+         
+         
+         
+         
+         
+         
+         
+         
+      </table>
+      
+      <br>
+      <button id="deleteBtn">선택 상품 삭제</button>
+      
+      
+      <hr style="border:2.5px solid black; margin-top:150px;">
+      
+      <table style="margin-bottom: 50px;">
+         <tr id="tr1">
+            <th id="th1">총 주문금액</th>
+            <th style="width:50px;"></th>
+            <th id="th2">총 배송비</th>
+            <th style="width:50px;"></th>
+            <th id="th3">총 결제금액</th>
+         </tr>
+         
+         <tr id="tr2">
+            <td id="td1"></td>
+            <td><img src="image/sohwa/icons8-plus-64.png"></td>
+            <td id="td2"></td>
+            <td><img src="image/sohwa/icons8-equal-24.png"></td>
+            <td id="td3"></td>
+         </tr>
+         
+      </table>
+      
+      <button class="btn-hover color-1" style="color:gray; margin-left:280px;">쇼핑하기</button>
+      <button class="btn-hover color-2" onclick="goCartOrder()">주문하기</button>
+      
+   </div>   
+   
+   <br><br><br><br><br><!--footer넣는 곳--><br><br><br><br><br>
+   
+   
+   
+   <script th:inline="javascript">
+   
+   	  
+   
+   
+   
+   
+   
+   
+   
+   
+      //전체선택/해제
+      document.addEventListener('DOMContentLoaded', function() {
+          const allSelect = document.getElementById('allSelect');
+          const checkboxes = document.querySelectorAll('.cart-row input[type="checkbox"]');
+          
+          allSelect.addEventListener('change', function() {
+              checkboxes.forEach(function(checkbox) {
+                  checkbox.checked = allSelect.checked;
+              });
+          });
+      });
+      
+      
+      
+      
+//     수량 가격 연동
+      document.addEventListener('DOMContentLoaded', function () {
+          const cartRows = document.querySelectorAll('.cart-row');
+          
+          
+          updateTotalOrderPrice();
+
+          function updateTotalOrderPrice() {
+              const td2Element = document.getElementById('td2');
+              const deliveryPrice = calculateDeliveryPrice();
+
+              if (deliveryPrice === 0 || deliveryPrice === '0') {
+                  td2Element.textContent = '0원';
+              } else {
+                  td2Element.textContent = formatCurrency(deliveryPrice) + '원';
+              }
+
+              // 나머지 계산 로직은 유지
+              const resultPriceElements = document.querySelectorAll('.resultPrice');
+              let totalOrderPrice = 0;
+
+              resultPriceElements.forEach(function(element) {
+                  const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10);
+                  if (!isNaN(price)) {
+                      totalOrderPrice += price;
+                  }
+              });
+
+              document.getElementById('td1').textContent = formatCurrency(totalOrderPrice) + '원';
+              document.getElementById('td3').textContent = formatCurrency(totalOrderPrice) + '원';
+          }
+
+          function calculateDeliveryPrice() {
+              let hasFreeDelivery = false;
+
+              cartRows.forEach(function(row) {
+                  const td4Element = row.querySelector('.td4');
+                  const deliveryText = td4Element.textContent.trim();
+
+                  if (deliveryText === '무료배송') {
+                      hasFreeDelivery = true;
+                  }
+              });
+
+              return hasFreeDelivery ? 0 : 2500;
+          }
+          
+          
+          
+          
+          
+          cartRows.forEach(function (row) {
+              const quantityInput = row.querySelector('.quantity');
+              const priceElement = row.querySelector('.price');
+              const resultPriceElement = row.querySelector('.resultPrice');
+              const decrementButton = row.querySelector('.decrementBtn');
+              const incrementButton = row.querySelector('.incrementBtn');
+      		  
+              updateTotalPrice();
+      
+              if (quantityInput) {
+                  quantityInput.addEventListener('input', updateTotalPrice);
+              }
+      
+              if (decrementButton) {
+                  decrementButton.addEventListener('click', function () {
+                      changeQuantity(-1);
+                      
+                      const cartKeyNo = row.querySelector('.cartKeyNo').value; // 해당 행의 cartKeyNo 가져오기
+                      const quantity = quantityInput.value; // 변경된 수량 가져오기
+                      const price = parseInt(priceElement.textContent.replace(/[^0-9]/g, ''), 10);
+                      const total = quantity * price;
+
+                      // 수량 변경과 함께 updateCart.so 요청 보내기
+                      $.ajax({
+                          url: 'updateCartEno.so',
+                          method: 'POST',
+                          data: {
+                              cartKeyNo: cartKeyNo,
+                              quantity: quantity,
+                              price:total
+                          },
+                          success: function (data) {
+                              console.log('수량 변경 성공:', data);
+                              // 수량을 변경했으므로 주문 가격 다시 계산
+                              
+                              updateTotalOrderPrice();
+                              window.location.reload();
+                          },
+                          error: function (error) {
+                              console.error('수량 변경 실패:', error);
+                          }
+                      });
+                      
+                      
+                  });
+              }
+      
+              if (incrementButton) {
+                  incrementButton.addEventListener('click', function () {
+                      changeQuantity(1);
+                      
+                      
+                      const cartKeyNo = row.querySelector('.cartKeyNo').value; // 해당 행의 cartKeyNo 가져오기
+                      const quantity = quantityInput.value; // 변경된 수량 가져오기
+                      const price = parseInt(priceElement.textContent.replace(/[^0-9]/g, ''), 10);
+                      const total = quantity * price;
+                      
+                      $.ajax({
+                          url: 'updateCartEno.so',
+                          method: 'POST',
+                          data: {
+                              cartKeyNo: cartKeyNo,
+                              quantity: quantity,
+                              price:total
+                          },
+                          success: function (data) {
+                              console.log('수량 변경 성공:', data);
+                              // 수량을 변경했으므로 주문 가격 다시 계산
+                              updateTotalOrderPrice();
+                          },
+                          error: function (error) {
+                              console.error('수량 변경 실패:', error);
+                          }
+                      });
+                      
+                      
+                  });
+              }
+      
+              function changeQuantity(delta) {
+                  let currentValue = parseInt(quantityInput.value, 10);
+                  currentValue += delta;
+                  if (currentValue < 1) {
+                      currentValue = 1;
+                  }
+                  quantityInput.value = currentValue;
+                  updateTotalPrice();
+              }
+      
+              function updateTotalPrice() {
+                  const quantity = parseInt(quantityInput.value, 10);
+                  const price = parseInt(priceElement.textContent.replace(/[^0-9]/g, ''), 10);
+      
+                  const total = quantity * price;
+                  resultPriceElement.textContent = formatCurrency(total) + '원';
+              }
+          });
+      
+          function formatCurrency(value) {
+              return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+          }
+      });
+      
+      
+      
+      
+      
+      
+      
+      document.addEventListener('DOMContentLoaded', function() {
+	    const allSelect = document.getElementById('allSelect');
+	    const checkboxes = document.querySelectorAll('.cart-row input[type="checkbox"]');
+	    const deleteBtn = document.getElementById('deleteBtn');
+	    
+	    allSelect.addEventListener('change', function() {
+	        checkboxes.forEach(function(checkbox) {
+	            checkbox.checked = allSelect.checked;
+	        });
+	    });
+	    
+
+        const closeBtns = document.querySelectorAll('.close-btn');
+        closeBtns.forEach(function(closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                const row = closeBtn.closest('.cart-row');
+                row.remove();
+                updateTotalOrderPrice();
+            });
+        });
+	
+// 	    deleteBtn.addEventListener('click', function() {
+// 	        checkboxes.forEach(function(checkbox) {
+// 	            if (checkbox.checked) {
+// 	                const row = checkbox.closest('.cart-row');
+// 	                row.remove();
+// 	            }
+// 	        });
+// 	        updateTotalOrderPrice();
+// 	    });
+	
+	
+// 		deleteBtn.addEventListener('click', function() {
+// 		    const cartKeyNos = []; // 새로운 배열 생성
+		
+// 		    checkboxes.forEach(function(checkbox) {
+// 		        if (checkbox.checked) {
+// 		            const row = checkbox.closest('.cart-row');
+// 		            const cartKeyNoElement = row.querySelector('.cartKeyNo');
+// 		            console.log(row);
+// 		            if (cartKeyNoElement) {
+// 		                const cartKeyNo = cartKeyNoElement.value;
+// 		                cartKeyNos.push(cartKeyNo); // 선택된 행의 cartKeyNo를 배열에 추가
+// 		            }
+// 		            row.remove();
+// 		        }
+// 		    });
+		
+// 		    console.log('선택된 행의 cartKeyNo:', cartKeyNos); // 선택된 행의 cartKeyNo 배열을 출력 (나중에 할 작업에 맞게 수정 필요)
+// 		    updateTotalOrderPrice();
+// 		});
+
+
+
+
+		//체크박스 삭제 ajax
+		deleteBtn.addEventListener('click', function() {
+		    const cartKeyNos = [];
+		
+		    checkboxes.forEach(function(checkbox) {
+		        if (checkbox.checked) {
+		            const row = checkbox.closest('.cart-row');
+		            const cartKeyNoElement = row.querySelector('.cartKeyNo');
+		            if (cartKeyNoElement) {
+		                const cartKeyNo = cartKeyNoElement.value;
+		                cartKeyNos.push(cartKeyNo);
+		            }
+		            row.remove();
+		        }
+		    });
+		
+		    console.log('선택된 행의 cartKeyNo:', cartKeyNos);
+		    updateTotalOrderPrice();
+		    
+		    const cartKeyNosJSON = JSON.stringify(cartKeyNos);
+			
+		    $.ajax({
+		    	url:'deleteCarts.so',
+		    	method: 'POST',
+		        contentType: 'application/json',
+		        data: cartKeyNosJSON, // JSON 형태의 데이터 전송
+		    	success:(data)=>{
+		    		if(data == "success"){
+		    			console.log('성공');
+		    		}else{
+		    			console.log('실패');
+		    		}
+		    	},error:(data)=>console.log(data)
+		    })
+		    
+		});
+	
+	
+	
+	    function updateTotalOrderPrice() {
+	        const resultPriceElements = document.querySelectorAll('.resultPrice');
+	        let totalOrderPrice = 0;
+	
+	        resultPriceElements.forEach(function(element) {
+	            const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10);
+	            if (!isNaN(price)) {
+	                totalOrderPrice += price;
+	            }
+	        });
+	        const deliveryPrice = parseInt(document.getElementById('td2').innerText.replace('원', '').replace(',', ''));
+	        document.getElementById('td1').textContent = formatCurrency(totalOrderPrice) + '원';
+	        document.getElementById('td3').textContent = formatCurrency(totalOrderPrice + deliveryPrice) + '원';
+	    }
+	
+	    function formatCurrency(value) {
+	        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	    }
+	
+	    updateTotalOrderPrice();
+	
+	    const cartRows = document.querySelectorAll('.cart-row');
+	    cartRows.forEach(function(row) {
+	        const resultPriceElement = row.querySelector('.resultPrice');
+	        resultPriceElement.addEventListener('DOMSubtreeModified', updateTotalOrderPrice);
+	    });
+	});
+      	
+      	
+      	function goCartOrder(){
+      		
+      		const deliveryPrice = parseInt(document.getElementById('td2').innerText.replace('원', '').replace(',', ''));
+      		location.href='goCartOrder.so?deliveryPrice=' +deliveryPrice;
+      	}
+      	
+      	
+   </script>
+
+</body>
+</html>

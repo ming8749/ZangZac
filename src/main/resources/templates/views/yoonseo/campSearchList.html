@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta name="viewport">
+<meta charset="UTF-8">
+<title>캠핑장 검색 리스트</title>
+ <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/seongun/b9045bb4-dad6-4ab1-b9fa-4841e6716aed">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+<style>
+  #pagenation {
+   text-align: center;
+}
+
+#pagenation ul {
+   list-style: none;
+   padding: 0;
+   display: inline-block; /* 중앙 정렬을 위해 inline-block으로 변경 */
+   margin: 0; /* 기본 마진 제거 */
+}
+
+#pagenation ul li {
+   display: inline;
+   margin: 0 5px;
+}
+
+#pagenation ul li a {
+   text-decoration: none;
+    text-align: center;
+    color: #333;
+    font-size: 14px;
+    width: 30px; /* 정사각형의 너비 */
+    height: 30px; /* 정사각형의 높이 */
+    line-height: 30px; /* 텍스트를 수직 중앙에 위치시킴 */
+    padding: 0; /* 패딩을 제거하거나 조정 */
+    border-radius: 5px; /* 모서리를 둥글게 */
+    display: inline-block; /* 블록 레벨 요소처럼 너비와 높이를 적용 */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#pagenation ul li a:hover {
+   background-color:#F9612B;
+   color: #e6e6e6;
+}
+
+#pagenation ul li a#check_page {
+   background-color:#F9612B;
+   color: #e6e6e6;
+}
+</style>
+ 
+</head>
+<body>
+       <div th:replace="~{common/navbar :: navbar}"></div>
+       
+		 <div class="container">
+			 <form action="campSearchList.ys">
+			   <div class="mb-4 rounded-3 " style="height:200px; margin-top: 100px; background-color: #F3F4F6;">
+			       <img src="image/yoonseo/img/icons8-camping-94.png" style="float: left; margin: 15px;">
+			       <div class="container-fluid" style="padding-top:50px;">
+			       	  <h2 class="display-8 fw-bold" style="display: inline-block;" >캠핑장 검색</h2>
+			       	  <h4 class="display-15" style="margin-left: 10px; margin-top:10px; display: inline-block;">검색 된 캠핑장 [[${result}]]개</h4>
+			       	  <hr style="width:90%;">
+			       </div>
+			        <div>
+			         <input type="text" name="keyword" th:value="${keyword}" style="margin-left: 20px; width:250px; height:40px; float: left; margin-right: 20px; ">
+			         <div class="search_boxes">
+			          <div class="search_box">
+			            <select name="city" id="" onchange="categoryChange(this)" style="float: left; margin-right: 10px; height:40px;">
+			              <option value=''>시/도 선택</option>
+			              <option th:selected="${city} == '강원도'">강원도</option>
+			              <option th:selected="${city} == '경기도'">경기도</option>
+			              <option th:selected="${city} == '경상남도'">경상남도</option>
+			              <option th:selected="${city} == '경상북도'">경상북도</option>
+			              <option th:selected="${city} == '광주'">광주</option>
+			              <option th:selected="${city} == '대구'">대구</option>
+			              <option th:selected="${city} == '대전'">대전</option>
+			              <option th:selected="${city} == '부산'">부산</option>
+			              <option th:selected="${city} == '서울'">서울</option>
+			              <option th:selected="${city} == '울산'">울산</option>
+			              <option th:selected="${city} == '인천'">인천</option>
+			              <option th:selected="${city} == '전라남도'">전라남도</option>
+			              <option th:selected="${city} == '전라북도'">전라북도</option>
+			              <option th:selected="${city} == '제주도'">제주도</option>
+			              <option th:selected="${city} == '충청남도'">충청남도</option>
+			              <option th:selected="${city} == '충청북도'">충청북도</option>
+			            </select>
+			          </div>
+			          <div>
+			            <select style="height:40px; float: left;" name ="type">
+			               <option value=''>선택</option>
+			               <option th:selected="${type} == '일반야영'">일반야영</option>
+			               <option th:selected="${type} == '오토캠핑'">오토캠핑</option>
+			               <option th:selected="${type} == '장박'">장박</option>
+			               <option th:selected="${type} == '글램핑'">글램핑</option>
+			               <option th:selected="${type} == '카라반'">카라반</option>
+			               <option th:selected="${type} == '차박'">차박</option>
+			            </select>   
+			          </div>
+			          <button class="btn btn-primary" type="submit" style="background-color: #F9612B; border-color: #F9612B; margin-left: 10px; height:40px;">검색</button>
+			       </div>
+			     </div>
+			  </div>
+		     </form>
+		 <button onclick="location.href='campSearch.ys'" style="border-radius: 5px; border: 1px solid #F3F4F6; background-color: #F3F4F6;">캠핑장 전체 보기</button>
+		  <div class="container" style="border:1px solid #F3F4F6; width:100%; height:850px; border-radius: 10px;"> 
+		     
+            <div id="map" style="width:900px; height: 800px; margin-left:5px; float:left; margin-top: 10px; position:relative;"></div>
+                
+		        <div style="float:right; width:350px; font-size: 15px;">
+			        <table class="table table-hover" id="campingTable" style="margin-right: 10px; margin-top: 20px;">
+					  <tbody> 
+						  <tr th:each="list : ${campList}">
+						     <th class="table-th" style="cursor:pointer;">
+						         <h5 style="display: inline;" th:text ="|[${list.cgRegion}]|"></h5>
+						         <h5 style="display: inline;">[[${list.cgName}]]</h5>
+						         <h6>[[${list.cgAddress}]]</h6>
+						         <h6>[[${list.cgPhone}]]</h6>
+						         <input type="hidden" th:value="${list.cgNo}" name ="cgNo">
+						     </th>
+						  </tr>
+					  </tbody>  
+			       </table>
+			      <div id="pagenation" th:with="loc=${loc}" th:if="${campList != null}">
+		             <ul>
+		               <!-- 이전 버튼 -->
+		               <li th:if="${pi.currentPage > 10}">
+		                  <a th:href="@{${loc}(page=${pi.currentPage-10},keyword=${keyword},city=${city},type=${type})}">&lt; 이전</a>
+		               </li>
+		                <!-- 페이지 번호 -->
+		               <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+						  <th:block th:if="${campList != null}" >
+						     <a th:href="@{${loc}(page=${p},keyword=${keyword},city=${city},type=${type})}" th:id="${p == pi.currentPage ? 'check_page' : ''}">
+						        [[${p}]] 
+						     </a>
+						  </th:block>
+					 
+		
+		               </li>
+	                   <!-- 다음 버튼 -->
+	                   <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+	                      <a th:href="@{${loc}(page=${pi.currentPage+10},keyword=${keyword},city=${city},type=${type})}">다음 &gt;</a>
+	                   </li>
+		              </ul>
+                   </div>   	     		
+		       </div>
+		  </div> 
+	 </div>
+	
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=362c8d7a95d256d3dd4fb76acc17aa45&libraries=services"></script>
+ <script th:inline="javascript">
+ 
+		const mapContainer = document.getElementById('map'), // 지도를 표시할 div
+		mapOption = {
+		  center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+		  level: 3 // 지도의 확대 레벨
+		};
+		
+		// 지도를 생성합니다
+		const map = new kakao.maps.Map(mapContainer, mapOption);
+		
+		
+		// 주소-좌표 변환 객체를 생성합니다
+		const geocoder = new kakao.maps.services.Geocoder();
+		
+		/*<![CDATA*/
+		const mapList = /*[[${campList}]]*/1;
+		/*]]>*/ 
+		
+		
+		 const positions = [];
+		for(let i = 0; i < mapList.length; i++){
+			positions.push({
+				name:mapList[i].cgName,
+				address:mapList[i].cgAddress,
+				phone : mapList[i].cgPhone,
+				no: mapList[i].cgNo,
+				region: mapList[i].cgRegion
+			});
+		}
+		console.log(positions); 
+		
+		
+		/* const positions = [
+			{	title: '카카오',
+				address: '제주특별자치도 제주시 첨단로 242',
+				phone:'010-1111-1111',
+				region:'ddd'
+				
+			},
+			{
+				title: '생태연못',
+				address: '경기 남양주시 조안면 능내리 50',
+				phone:'010-1111-1111'
+			},
+			{
+				title: '근린공원',
+				address: '경기 남양주시 별내면 청학로68번길 40',
+				phone:'010-1111-1111'
+			}
+	    ]; */
+		
+		
+		
+		
+	// 지도를 재설정할 범위정보를 가지고 있을 LatLngBounds 객체를 생성합니다
+		   const bounds = new kakao.maps.LatLngBounds(); //추가한 코드
+		   let testPage = /*[[${pi.currentPage}]]*/1;
+		 
+		
+		  // 마커를 담을 배열입니다
+		  const markers = [];
+
+		 function firstMarkers(){
+			 
+			  positions.forEach(function (position) {
+			    // 주소로 좌표를 검색합니다
+			    geocoder.addressSearch(position.address, function(result, status) {
+	
+			      // 정상적으로 검색이 완료됐으면
+			      if (status === kakao.maps.services.Status.OK) {
+	
+			        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+	
+			        // 결과값으로 받은 위치를 마커로 표시합니다
+			        const marker = new kakao.maps.Marker({
+			          map: map,
+			          position: coords
+			        });
+			        
+			        marker.setMap(map); //추가한 코드
+	
+			        // LatLngBounds 객체에 좌표를 추가합니다
+			        bounds.extend(coords); //추가한 코드, 현재 코드에서 좌표정보는 point[i]가 아닌 coords이다.
+			        
+			        
+			     // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다
+			        const iwContent = '<div style="width:200px; text-align:center; padding:2px 0;">[' 
+			                            + position.region+']' + position.name + '<br>'+ position.phone 
+			                            +'<br> <a href="campDetail.ys?no=' 
+			                            + position.no + '&page=' 
+			                            + testPage + '" style="color:blue" target="blank">상세보기</a></div>'; // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+					
+	              
+			        // 인포윈도우로 장소에 대한 설명을 표시합니다
+			        const infowindow = new kakao.maps.InfoWindow({
+			          content: iwContent
+			        });
+			     // 마커에 클릭 이벤트를 등록합니다
+                    kakao.maps.event.addListener(marker, 'click', function () {
+                    	// 현재 열려 있는 인포윈도우가 있다면 닫아줍니다
+                    	if (currentInfowindow) {
+                            currentInfowindow.close();
+                        }
+
+                    	// 마커에 클릭 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+                        infowindow.open(map, marker);
+                        // 클릭한 마커의 인포윈도우를 현재 열려 있는 인포윈도우로 저장합니다.
+                        currentInfowindow = infowindow;
+                    });
+                   
+			        // 지도에 클릭 이벤트 추가
+			        kakao.maps.event.addListener(map, 'click', function () {
+			            // 지도를 클릭하면 인포윈도우를 닫음
+			            infowindow.close();
+			        });
+	
+			       
+			        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+			        map.setCenter(coords); //제거한 코드
+			        setBounds();  //추가한 코드
+			        
+			     // 마커와 인포윈도우를 배열에 추가
+		            markers.push({ marker, infowindow });
+			      }
+			    });
+			  });
+		    }
+		  
+		
+		  function setBounds() { //추가한 함수
+		    // LatLngBounds 객체에 추가된 좌표들을 기준으로 지도의 범위를 재설정합니다
+		    // 이때 지도의 중심좌표와 레벨이 변경될 수 있습니다
+		    map.setBounds(bounds);
+		  
+		  }
+		  
+		  function clearMarkers() {
+			  
+			    // 배열에 추가된 마커와 인포윈도우를 모두 지도에서 제거합니다
+			    for (let i = 0; i < markers.length; i++) {
+			        markers[i].marker.setMap(null);
+			        markers[i].infowindow.close();
+			    }
+			    // 배열을 비워줍니다
+			    markers.length = 0;
+			}
+		  
+		  
+		
+		        const table = document.getElementById('campingTable');
+				
+		        const ths = document.getElementsByClassName('table-th');
+		      
+		        for(th of ths){
+			        th.addEventListener('click',function(){
+		        	    const region = this.children[0].textContent;
+			        	const campName = this.children[1].textContent;
+		        		const location = this.children[2].textContent;
+		        		const phone = this.children[3].textContent;
+		        		const no = this.children[4].value;
+		        		clearMarkers();
+		        		
+		        		// 클릭한 div에 대응되는 새로운 마커 생성
+		        	    createMarker(no, region, location, campName, phone);
+		        		
+		        		
+	
+			        });
+			        
+		        }
+		        let currentInfowindow  = null;
+		        function createMarker(no, region, location, campName, phone) {
+		        	
+		        	console.log('test');
+		            // divId에 대응되는 새로운 마커를 생성하고 지도에 표시
+		            const position = getPositionForDivId(location,campName);
+
+		            // 주소-좌표 변환 객체를 생성합니다
+		            const geocoder = new kakao.maps.services.Geocoder();
+
+		            // 주소로 좌표를 검색합니다
+		            geocoder.addressSearch(location, function (result, status) {
+		                // 정상적으로 검색이 완료됐으면
+		                if (status === kakao.maps.services.Status.OK) {
+		                    const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+		                    
+		                    // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+					        map.setCenter(coords); //제거한 코드
+					        setBounds();  //추가한 코드
+
+		                    // 결과값으로 받은 위치를 마커로 표시합니다
+		                    const marker = new kakao.maps.Marker({
+		                        map: map,
+		                        position: coords
+		                    });
+
+		                    // LatLngBounds 객체에 좌표를 추가합니다
+		                    bounds.extend(coords);
+		                    
+
+		                    // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다
+		                    const iwContent = '<div style="width:200px; height:100px; text-align:center; padding:2px 0;">' 
+		                                      +region +campName + '<br>'+ phone +'<br><a href="campDetail.ys?no=' 
+                                              + no + '&page=' 
+                                              + testPage + '" style="color:blue" target="blank">상세보기</a></div>'; 
+		                    
+                            const infowindow = new kakao.maps.InfoWindow({
+		                        content: iwContent
+		                    });
+							
+		                 // 마커와 인포윈도우를 배열에 추가
+		    	            markers.push({ marker, infowindow });
+		                 
+		                    // 마커에 클릭 이벤트를 등록합니다
+		                    kakao.maps.event.addListener(marker, 'click', function () {
+		                    	// 현재 열려 있는 인포윈도우가 있다면 닫아줍니다
+		                    	if (currentInfowindow) {
+		                            currentInfowindow.close();
+		                        }
+
+		                    	// 마커에 클릭 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+		                        infowindow.open(map, marker);
+		                        // 클릭한 마커의 인포윈도우를 현재 열려 있는 인포윈도우로 저장합니다.
+		                        currentInfowindow = infowindow;
+		                    });
+		                    // 지도에 클릭 이벤트 추가
+					        kakao.maps.event.addListener(map, 'click', function () {
+					            // 지도를 클릭하면 인포윈도우를 닫음
+					            infowindow.close();
+					        });
+		                }
+		            });
+		            
+		        }
+		        
+		        function getPositionForDivId(location,campName) {
+		            //  대응되는 위치 정보를 반환하는 함수
+		            switch (location,campName) {
+		                case location,campName:
+		                    return {
+		                        title: campName,
+		                        address: location
+		                    };
+		                // 다른 처리를 추가할 수 있습니다.
+		                // case '다른 div의 id':
+		                //     return {
+		                //         title: '다른 마커',
+		                //         address: '다른 주소'
+		                //     };
+		                default:
+		                    return {};
+		            }
+		        }
+		        
+		        window.onload = () => {
+		        	firstMarkers();
+		        }
+		        
+
+		       
+
+
+</script>
+
+</body>
+</html>

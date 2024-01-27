@@ -1,0 +1,99 @@
+@font-face {
+    font-family: 'GmarketSansMedium';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'GmarketSansMedium';
+}
+
+.recipe-detail {
+    width: 40%;
+    margin: auto;
+}
+
+.recipe-detail h1{
+    text-align: center;
+}
+.image-slider {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.image-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    transition: transform 0.5s ease;
+}
+
+.image-container img {
+    max-width: 100%;
+    flex: 0 0 100%;
+    display: block;
+}
+
+.slide-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    width: 50px; /* 버튼 크기 설정 */
+    height: 50px; /* 버튼 크기 설정 */
+    background-size: cover; /* 이미지 크기 조정 */
+    z-index: 10;
+}
+
+.prev-btn {
+    left: 10px;
+    background-image: url('../../image/seongun/back.png'); /* 이전 버튼 이미지 */
+}
+
+.next-btn {
+    right: 10px;
+    background-image: url('../../image/seongun/next.png'); /* 다음 버튼 이미지 */
+}
+
+.slider-pagination {
+    text-align: center;
+    padding: 10px 0;
+    position: absolute;
+    bottom: 10px; /* 이미지 하단에 위치 */
+    left: 0;
+    width: 100%;
+}
+
+.pagination-btn {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.pagination-btn.active {
+    background-color: #333;
+}
+
+.recipe-info {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.recipe-info th, .recipe-info td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.recipe-description {
+    margin-top: 20px;
+}

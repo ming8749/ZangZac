@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.yoonahrim.spBoard.model.dao.secondHandDAO">
+	<insert id="insertSecondHand">
+		<!-- order : insert/update를 하기 전에 selectKey를 수행할 것인지, 후에 수행할 것인지 (before : insert하기전에 수행) -->
+        <!-- keyProperty : 가져온 값을 필드에 대입하기 위해서 selectKey를 하는 것임. 어디에 집어넣을지를 적어놓어주는 곳 -->
+		<selectKey order="BEFORE" resultType="_int" keyProperty="spNo">
+         	select SP_SEQ.nextval 
+         	from dual
+     	 </selectKey>
+		<!-- 이미 시퀀스로 하나 올려진 글번호를 prodcutNo필드에 대입을 했으므로 시퀀스 돌려주는게(product_seq.nextval) 아니라 productNo 넣어주면 된다. -->
+		insert into SECONDHAND_PRODUCT
+		values (#{spNo}, #{spTitle}, #{spPrice}, #{spContent}, #{spAddress}, default, default, #{memberId}, #{categoryNo}, default, sysdate, sysdate) 
+	</insert>
+	
+	<update id="updateSecondHand">
+		UPDATE SECONDHAND_PRODUCT
+		SET SP_TITLE = #{spTitle}, SP_PRICE = #{spPrice}, SP_CONTENT = #{spContent}, SP_ADDRESS = #{spAddress}, CATEGORY_NO = #{categoryNo}
+		where member_id = #{memberId} and SP_STATUS = 'N' and sp_no = #{spNo}
+	</update>
+	
+	<insert id="insertAttmSecondHand">
+		insert all<!-- insert all 안에서는 nextval이라고 적어놓고 여러번 들어간다하더라도 딱 1번 nextval이 되고 나머지는 같은 값이 들어간다 -->
+		<foreach collection="list" item="item">
+			into photo
+			values (new_aid, #{item.photoRename}, #{item.photoPath}, #{item.photoLevel}, 4, #{item.boardNo}, default)
+		</foreach>
+		select * from dual
+	</insert>
+		
+	<select id="selectMyList" resultType="secondHandProduct">
+		SELECT
+	    s.*,
+	    c.category_name,
+	    (
+	        SELECT COUNT(*)
+	        FROM reply
+	        WHERE board_type = 4 AND board_no = s.SP_NO AND reply_status = 'N'
+	    ) AS reply_count,
+	    m.member_profile_path
+	FROM
+	    SECONDHAND_PRODUCT s
+	    LEFT JOIN camping_category c ON s.category_no = c.category_no
+	    LEFT JOIN member m ON s.member_Id = m.member_Id  -- 추가: member 테이블 조인
+	WHERE
+	    s.SP_STATUS = 'N' and s.SP_NO = #{spNo}
+	ORDER BY
+	    s.SP_NO DESC 
+	</select>
+	
+	
+	<delete id="deleteAttmSecondHand">
+		update photo
+		set photo_status = 'Y'
+		where BOARD_NO = #{spNo} and BOARD_TYPE = '4'
+	</delete>
+
+	<!--  
+	<delete id="deleteAttmSecondHand">
+		delete from photo
+		where BOARD_NO = #{spNo} and BOARD_TYPE = '4'
+	</delete>
+	-->
+	
+	<select id="selectAttachmentList" resultType="Photo">
+		select *
+		from photo
+		where BOARD_NO = #{spNo} and board_type = '4' and PHOTO_STATUS = 'N'
+	</select>
+	
+	<update id="updateBooking">
+		update SECONDHAND_PRODUCT
+		SET SP_IS_BOOK='Y'
+		where SP_NO = #{spNo}
+	</update>
+	
+	<update id="updateBookingundo">
+		update SECONDHAND_PRODUCT
+		SET SP_IS_BOOK='N'
+		where SP_NO = #{spNo}
+	</update>
+	
+	<update id="soldout">
+		update SECONDHAND_PRODUCT
+		SET SP_IS_SELL='Y'
+		where SP_NO = #{spNo}
+	</update>
+	
+	<update id="markDelete">
+		update SECONDHAND_PRODUCT
+		SET SP_STATUS='Y'
+		where SP_NO = #{spNo}
+	</update>
+	
+	<!--   
+	<select id="selectSeconHand" resultType="SecondHandProduct">
+		select s.*, c.category_name 
+		from SECONDHAND_PRODUCT s
+			 left JOIN camping_category c ON s.category_no = c.category_no
+		WHERE s.SP_STATUS = 'N'
+		ORDER BY s.SP_NO DESC
+	</select>
+	-->
+	
+	<select id="selectSeconHand" resultType="SecondHandProduct">
+	    SELECT
+	        s.*,
+	        c.category_name,
+	        (
+	            SELECT COUNT(*)
+	            FROM reply
+	            WHERE board_type = 4 AND board_no = s.SP_NO AND reply_status = 'N'
+	        ) AS reply_count
+	    FROM
+	        SECONDHAND_PRODUCT s
+	        LEFT JOIN camping_category c ON s.category_no = c.category_no
+	    WHERE
+	        s.SP_STATUS = 'N'
+	    ORDER BY
+	        s.SP_NO DESC
+	</select>
+	
+	<select id="selectPhotoSeconHand" resultType="Photo"><!-- 페이징 -->
+		select *
+		from Photo
+		where BOARD_TYPE = '4' and PHOTO_LEVEL = '0'
+	</select>
+	
+	<update id="updateAttmSecondHand">
+		update photo
+		set (new_aid, #{item.photoRename}, #{item.photoPath}, #{item.photoLevel}, 4, #{item.boardNo}, default)
+	</update>
+	
+	<delete id="deleteAttm">
+		delete from photo
+		where photo_rename in 
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</delete>	
+	
+	<update id="deleteAttmForN">
+		update photo
+		set Photo_status = 'N'
+		where PHOTO_NO = #{spNo}
+	</update>
+	
+	<update id="updatePhotoLevel">
+		update photo
+	      set photo_Level = 0
+	      where photo_No = (select min(photo_No)
+	                  from photo
+	                  where BOARD_NO = #{spNo})
+	</update>
+	
+	<select id="selectAdminList" resultType="secondHandProduct">
+		select s.*, c.category_name, m.member_name, m.member_nickname
+		from SECONDHAND_PRODUCT s
+			 JOIN camping_category c ON s.category_no = c.category_no
+			 join member m on s.member_id = m.member_id
+		order by sp_no desc
+	</select>
+	
+	<select id="getListCount" resultType="_int">
+		select count(*)
+		from SECONDHAND_PRODUCT
+		where SP_STATUS = 'N'
+	</select>
+	
+	<select id="selectBoardList" resultType="secondHandProduct">
+		select s.*, c.category_name, m.member_name, m.member_nickname
+		from SECONDHAND_PRODUCT s
+			JOIN camping_category c ON s.category_no = c.category_no
+			join member m on s.member_id = m.member_id
+		order by sp_no desc
+	</select>
+	
+	<update id="updateAdminInfo">
+		update SECONDHAND_PRODUCT
+		set SP_TITLE = #{spTitle},
+			SP_PRICE = #{spPrice},
+			SP_CONTENT = #{spContent},
+			SP_ADDRESS = #{spAddress},
+			SP_IS_SELL = #{spIsSell},
+			SP_IS_BOOK = #{spIsBook},
+			SP_STATUS = #{spStatus}
+		where SP_NO = #{spNo}
+	</update>
+	
+	<select id="searchSpCount" resultType="_int">
+		SELECT count(*)
+		FROM SECONDHAND_PRODUCT
+		WHERE sp_status = 'N'
+		   <if test="region != null and region != ''">
+	           AND sp_address LIKE '%' || #{region} || '%'
+	       </if>
+	       <if test="type != null and type != ''">
+	           AND category_no LIKE '%' || #{type} || '%'
+	       </if>
+		ORDER BY SP_NO DESC
+	</select>
+	
+	<select id="searchSpList" parameterType="hashMap" resultType="secondHandProduct">
+	    SELECT
+	        s.*,
+	        c.category_name,
+	        (
+	            SELECT COUNT(*)
+	            FROM reply
+	            WHERE board_type = 4 AND board_no = s.SP_NO AND reply_status = 'N'
+	        ) AS reply_count
+	    FROM
+	        SECONDHAND_PRODUCT s
+	        LEFT JOIN camping_category c ON s.category_no = c.category_no
+	    WHERE s.sp_status = 'N'
+	        <if test="region != null and region != ''">
+	           AND s.sp_address LIKE '%${region}%'
+	       </if>
+	       <if test="type != null and type != ''">
+	           AND s.category_no LIKE '%${type}'
+	       </if>
+	    ORDER BY s.SP_NO DESC
+   </select>
+   
+   <select id="searchAdminList" resultType="_int">
+   	select count(*)
+   	from SECONDHAND_PRODUCT
+   	where sp_status = 'N'
+   		<if test="searchType == 'spNo'">
+   			and sp_no like '%' || #{keyword} || '%'
+   		</if>
+   		<if test="searchType == 'spTitle'">
+   			and sp_title like '%' || #{keyword} || '%'
+   		</if>
+   		<if test="searchType == 'memberId'">
+   			and member_id like '%' || #{keyword} || '%'
+   		</if>
+   </select>
+   
+   <select id="searchtAdminList" resultType="secondHandProduct">
+   	select s.*, c.category_name
+   	from SECONDHAND_PRODUCT s
+   		JOIN camping_category c ON s.category_no = c.category_no
+   	where sp_status = 'N'
+   		<if test="searchType == 'spNo'">
+   			and sp_no like '%${keyword}%'
+   		</if>
+   		<if test="searchType == 'spTitle'">
+   			and sp_title like '%${keyword}%'
+   		</if>
+   		<if test="searchType == 'memberId'">
+   			and member_id like '%${keyword}%'
+   		</if>
+   </select>
+   
+   <update id="updateCount">
+	   	update SECONDHAND_PRODUCT
+	   	set sp_count = sp_count + 1
+	   	where sp_no = #{spNo}
+   </update>
+   
+   <select id="chatterList" resultType="Member">
+   		select *
+	 	from member
+   </select>
+	
+	<select id="getSpList" resultType="secondHandProduct">
+		select *
+		from SECONDHAND_PRODUCT
+	</select>
+	
+	<select id="selectSpPhoto" resultType="Photo">
+		select *
+		from photo
+		where BOARD_NO = #{spNo} and board_type = '4' and PHOTO_STATUS = 'N'
+	</select>
+</mapper>

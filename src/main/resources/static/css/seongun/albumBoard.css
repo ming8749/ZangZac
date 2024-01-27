@@ -1,0 +1,179 @@
+/* 게시글이 없을 때*/
+
+.board-none-text {
+    padding: 0 32%;
+}
+
+.board-none-container h1 ::before{
+    font-size: 21px;
+    margin: 0; /* h1의 기본 마진을 제거 */
+}
+
+/* 내용물 */
+div.card :hover{
+	cursor: pointer;
+}
+.board_list_card .txt {
+	max-height: 44px;
+	margin-top: 6px;
+	font-size: 14px;
+	line-height: 22px;
+	display: -webkit-box; /* 웹킷 브라우저에서의 표시 방식 설정 */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	-webkit-line-clamp: 2; /* 표시할 최대 줄 수를 2로 설정 */
+	-webkit-box-orient: vertical;
+	word-wrap: break-word; /* 넘치는 단어를 줄 바꿈하여 표시 */
+	word-break: break-word; /* 단어 내 줄 바꿈을 가능하게 함 */
+	color: #666;
+}
+
+/* card bottom */
+.board_list_card .con_bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	padding-top: 35px;
+}
+
+/* 닉네임 설정 */
+.board_list_card .user_info {
+	overflow: hidden;
+}
+
+.board_list_card .user_info .user_nick_area {
+	float: left;
+}
+
+.board_list_card .user_info .user_nick_area>table {
+	width: auto;
+	border-collapse: collapse;
+	table-layout: fixed; tbody { display : table-row-group;
+	vertical-align: middle;
+	border-color: inherit;
+}
+
+tr {
+	display: table-row;
+	vertical-align: inherit;
+	border-color: inherit;
+}
+
+}
+.board-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: flex-start;
+	padding-top: 20px;
+	margin-left: 1%;
+	margin-right: 1%;
+	width: 98%;
+	margin-bottom: 20px;
+}
+
+.card {
+	margin: 1%;
+	margin-left:0;
+	width: calc(24% - 20px); /* 너비를 조절합니다 */
+	background-color: #fff;
+	display: inline-block;
+	position: relative;
+	border-radius: 10px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.border-bottom-div {
+	margin-left: 1%;
+	width: 97%; /* 전체 너비를 사용 */
+	border-top: 1px solid #e6e6e6; /* 하단 테두리 설정 */
+	padding-bottom: 20px; /* 하단 테두리 아래에 여백을 줌 */
+}
+
+.card-image{
+	width: 100%;
+	height: 200px;
+}
+.card-image img {
+	width: 100%;
+	height: 100%;
+	object-fit:fill;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	border-bottom: 1px solid #e6e6e6;
+}
+
+.card-body {
+	padding: 10px;
+	text-align: left;
+}
+
+.card-title {
+	display: flex;
+	align-items: center; /* 세로 정렬 */
+	justify-content: space-between; /* 요소들 사이에 공간을 균등하게 분배 */
+	padding: 0;
+}
+
+.title-text {
+	font-size: 1rem;
+	font-weight: bold;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	flex-grow: 1; /* 제목이 남는 공간을 채우도록 설정 */
+}
+
+.card-category {
+	padding: 3.5px 8px 3px 8px;
+	background-color: #5cb85c;
+	color: #fff;
+	border-radius: 8px;
+	font-size: 0.8rem;
+	white-space: nowrap;
+	margin-left: 10px;
+	flex-shrink: 0; /* 카테고리 크기가 줄어들지 않도록 설정 */
+}
+
+.card-author {
+	font-size: 0.9rem;
+	padding-top: 4px;
+	font-weight: bold;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+	display: block;
+}
+
+.card-info {
+	padding-top: 3px;
+	border-radius: 10px;
+	text-align: center;
+	font-size: 0.8rem;
+	color: #666;
+}
+
+.card-info table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.info-label, .info-value {
+	padding: 4px;
+	text-align: center;
+}
+
+.info-label {
+	font-weight: bold;
+	border-radius: 5px;
+}
+
+.date-year, .date-day {
+	padding: 2px 6px;
+}
+
+.date-year {
+	font-weight: bold;
+}

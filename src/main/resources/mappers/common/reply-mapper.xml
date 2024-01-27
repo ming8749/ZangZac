@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.common.reply.model.dao.ReplyDAO">
+	<select id="selectReply" resultType="Reply">
+		select *
+		from reply join member using (member_id)
+		where reply_status = 'N' and board_type= #{boardType} and board_no = #{boardNo}
+		ORDER BY reply_no ASC
+	</select>
+	
+	<insert id="insertReply">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="replyNo">
+         	select reply_seq.nextval 
+         	from dual
+     	 </selectKey>
+		insert into reply values
+		(#{replyNo}, #{replyContent}, default, default,#{boardType},#{boardNo},default,#{memberId})
+	</insert>
+	
+	<select id="countReply" resultType="_int">
+		select count(*)
+		from reply_view
+		where reply_status = 'N' and board_type= #{boardType} and board_no = #{boardNo}
+	</select>
+	
+	<select id="selectReplyOne" resultType="Reply">
+		select *
+		from reply join member using (member_id)
+		where reply_status = 'N' and reply_no = #{replyNo}
+		ORDER BY reply_no ASC
+	</select>
+	
+	<update id="updateReply">
+		update reply
+		set reply_content = #{replyContent}, reply_modifydate = sysdate
+		where reply_no = #{replyNo}
+	</update>
+		
+	<select id="replyLimitList" resultType="Reply">
+      select *    
+      from reply_view
+      where reply_status = 'N' and board_type = #{boardType} and board_no = #{boardNo}
+      order by reply_no asc
+   	</select>
+	
+	<update id="deleteReply">
+		update reply
+		set reply_status = 'Y'
+		where reply_no = #{replyNo}
+	</update>
+</mapper>

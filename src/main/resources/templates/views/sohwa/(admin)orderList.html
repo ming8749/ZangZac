@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<title>관리자 결제관리 목록페이지</title>
+<link href="css/sohwa/(admin)orderList.css" rel="stylesheet">
+</head>
+<body>
+	<div th:replace="~{common/admin :: admin}"></div>
+	<br><br><br><br><br>
+	
+	<div id="orderListWrapped">
+		<h1>결제 관리</h1>
+		<input type="hidden" th:value="${status}" id="orderStatus">
+		<button class="cateBtn active" id="allBtn" onclick="toggleTable('allOrder', 'refundOrder')">전체 내역</button><button id="cateBtn" class="cateBtn" style="margin-left:40px;">환불요청내역</button>
+		<div style="float:right;">
+			<div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    주문번호 검색
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <li><a class="dropdown-item" href="#" onclick="showSearch('search1', '주문번호 검색')">주문번호 검색</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="showSearch('search2', '주문자 성함 검색')">주문자 성함 검색</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="showSearch('search3', '배송상태 검색')">배송상태 검색</a></li>
+                </ul>
+            </div>
+			
+			<div class="search" id="search1">
+				<input type="text" placeholder="주문번호 입력" id="searchInput1">
+	  			<a id="searchLink1" href="#"><img id="searchImg1" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"></a>
+			</div>
+			<div class="search" id="search2" style="display: none;">
+				<input type="text" placeholder="주문자 성함 입력" id="searchInput2">
+	  			<a id="searchLink2" href="#"><img id="searchImg2" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"></a>
+			</div>
+			<div class="search" id="search3" style="display: none;">
+				<input type="text" placeholder="배송상태 입력" id="searchInput3">
+	  			<a id="searchLink3" href="#"><img id="searchImg3" src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"></a>
+			</div>
+			
+		</div>
+		
+		
+		<table id="allOrder">
+			<tr style="border-bottom:2px solid black;">
+<!-- 				<th class="td1" style="text-align:center;"><input type="checkbox" id="allSelect" onclick="toggleAllCheckboxes('allOrder', 'allSelect')"></th> -->
+				<th class="td2" style="text-align:center;">주문번호</th>
+				<th class="td3" style="text-align:center;">주문자 성함</th>
+				<th class="td4" style="text-align:center;">주소</th>
+				<th class="td5" style="text-align:center;">주문일자</th>
+				<th class="td6" style="text-align:center;">배송상태</th>
+			</tr>
+			
+			<tr class="trs" th:each="pa:${paList}" style="border-bottom:1px solid lightgray;">
+<!-- 				<td class="td1"><input type="checkbox"></td> -->
+				<input type="hidden" class="td1" th:value="${pa.orderKeyNo}">
+				<td class="td2">[[${pa.orderNo}]]</td>
+				<td class="td3">[[${pa.orderName}]]</td>
+				<td class="td4">[[${pa.orderAddress.split('@')[1]}]] [[${pa.orderAddress.split('@')[2]}]]</td>
+				<td class="td5">[[${pa.orderDate}]]</td>
+				<td class="td6">[[${pa.deliveryStatus}]]</td>
+			</tr>
+			
+			
+		</table>
+		
+		
+		<!-- 페이지네이션 -->
+				<div id="pagenation" th:with="loc=${loc}" th:if="${!paList.isEmpty}">
+		            <ul>
+		               <!-- 이전 버튼 -->
+		               <li th:if="${pi.currentPage > 10}">
+		                  <a th:href="@{${loc}(status=${status},searchType=${searchType},keyword=${keyword},page=${pi.currentPage-10})}">&lt; 이전</a>
+		               </li>
+		                   <!-- 페이지 번호 -->
+                       <li th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+		                    <a th:href="@{${loc}(status=${status},searchType=${searchType},keyword=${keyword},page=${p})}" th:id="${p == pi.currentPage ? 'check_page' : ''}">
+		                       [[${p}]] 
+		                    </a>
+                       </li>
+
+		                   <!-- 다음 버튼 -->
+		               <li th:if="${pi.maxPage >= 10 && pi.maxPage - pi.currentPage > 10}">
+		                  <a th:href="@{${loc}(status=${status},searchType=${searchType},keyword=${keyword},page=${pi.currentPage+10})}">다음 &gt;</a>
+		               </li>
+		            </ul>
+		        </div>
+		
+		
+		
+		
+		
+	</div>
+
+
+
+
+	<script>
+		var searchInput1 = document.getElementById("searchInput1");
+		var searchInput2 = document.getElementById("searchInput2");
+		var searchInput3 = document.getElementById("searchInput3");
+		var searchImg1 = document.getElementById("searchImg1");
+		var searchImg2 = document.getElementById("searchImg2");
+		var searchImg3 = document.getElementById("searchImg3");
+		var searchLink1 = document.getElementById('searchLink1');
+		var searchLink2 = document.getElementById('searchLink2');
+		var searchLink3 = document.getElementById('searchLink3');
+		let status = document.getElementById('orderStatus').value;
+		console.log(status);
+	    searchImg1.addEventListener("click", function() {
+	        var keyword = searchInput1.value;
+	        location.href= 'adminOrderListView.so?status='+ status+ '&searchType=1&keyword=' + keyword;
+	    });
+	    
+	    searchImg2.addEventListener("click", function() {
+	        var keyword = searchInput2.value;
+	        location.href= 'adminOrderListView.so?status='+ status+ '&searchType=2&keyword=' + keyword;
+	    });
+	    
+	    searchImg3.addEventListener("click", function() {
+	        var keyword = searchInput3.value;
+	        location.href= 'adminOrderListView.so?status='+ status+ '&searchType=3&keyword=' + keyword;
+	    });
+	
+	
+	
+		//체크박스 전체 선택/해제
+        function toggleAllCheckboxes(tableId, selectId) {
+	      const checkboxes = document.querySelectorAll(`#${tableId} input[type="checkbox"]:not(#${selectId})`);
+	      const selectAll = document.getElementById(selectId);
+	      const allChecked = selectAll.checked;
+	
+	      checkboxes.forEach(checkbox => {
+	          checkbox.checked = allChecked;
+	      });
+	  }
+      
+      
+		
+		
+		
+		//드롭다운 변경
+		function showSearch(searchId, dropdownText) {
+            document.querySelectorAll('.search').forEach(function(searchElement) {
+                searchElement.style.display = 'none';
+            });
+            document.getElementById(searchId).style.display = 'block';
+            document.getElementById('dropdownMenuButton').innerText = dropdownText;
+        }
+		
+		const trs = document.querySelectorAll('.trs');
+		for(let i=0; i<trs.length; i++){
+			trs[i].addEventListener('click',()=>{
+				let orderKeyNo = trs[i].querySelector('.td1').value;
+				location.href='adminOrderDetail.so?orderKeyNo=' + orderKeyNo;
+			})
+		}
+		
+		document.getElementById('allBtn').addEventListener('click', ()=>{
+			
+			location.href='adminOrderListView.so?status=1&searchType=0&keyword=';
+			document.getElementById('allBtn').style.borderBottom = "4px solid #F9612B";
+			document.getElementById('cateBtn').style.border = "none";
+		})
+		
+		document.getElementById('cateBtn').addEventListener('click', ()=>{
+			
+			location.href='adminOrderListView.so?status=2&searchType=0&keyword=';
+			document.getElementById('cateBtn').style.borderBottom = "4px solid #F9612B";
+			document.getElementById('allBtn').style.border = "none";
+		})
+    </script>
+
+</body>
+</html>

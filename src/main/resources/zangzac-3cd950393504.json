@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "zangzac",
+  "private_key_id": "3cd950393504092b0372dc869b13cbda51728a95",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDaY0pkQMNqgUIX\n+cm10h/0YBKmOU6kZHH/CEXySeWrYkhxL8hb/NvgP+Kc9sQZ43bjJGCz3X03LNEz\nlFUQAQTI946dvLq7XrCihU808VDGWpI04+2OTqiT3fxaPs1NQwBYa8ifXIkv8IlB\n7XSSSQ4NE/9LlCr6I0KGstMBnaKvIY7fIxFCY9guiFBugDSS3+B0lM99y2YyFPp0\n1CPPWvtKe1Wtl9mBPrNgHXuRO49OKkN2Stic9UtMNWl/7br7UOGX6Gd90wNOHZz9\nN1ghEa+9GppLkQ0XJgEeC2pvX5yfgCA/yE752CQmhzTDNBbMbNrGx3PRwpWJbFeb\nNkxnLCq7AgMBAAECggEACT7zDY32YS/loNAWtxDebsFJqyCnkKIM5TTCZDVtb550\n+SHLZpNRYTmjMP9W/fMHMpjQLm+QYIG04pHxDNx6wE+0iazyNzlMI91VJTe9+4Rv\ntFv5K0OT/Iqp8IR3KIt0AMpX/SoZbIMYdJArJ+1+TXED8MZJoqkKgH/ZiP0MdtZS\nNaAcjxtjK1Ob29+E+d0frKaPZMFXIy4TWubI+nb7rhX8IBkOazXZiB4KZAYOjO68\nLHiGQTl9AydM6xdZ1k1hTnVV7TcuuEQCyfbv3tHLlSJwzuyixocX6+QsdhO6LTBB\n4Si7yESWt7/KjEeErDr//MPdjMyWyKz97ozzU7m5kQKBgQDyuhfbPw1Co0vyAH49\nG/xyaufRVvUMoBgX4qwQYUgjCyu0I5BEW06bZ9v699W3BW+L29Ejb26QxFZBy6Fu\nI4Pw5qnJpEraYtaX9wkNBf9m67dCqcbD2T1MO+eGnoA4AtMZx1NX3cnVYlUO+4hM\nzMuIFboDNItElupuWBg68xPaawKBgQDmVHo73WVwhrcwMaHNQ6wvu/RckXCqOhzq\nz5duFTGgt7vFfPotKWSMVL51zhKCpOoXdBT0SjYPtCz+NxcusrC5RQuSe7w+CFUf\n2VHS3lb6P5GtZ2lzG6otC604CVjlCBxBr3m1h4klP9KI1rlIp30iqCfvz7fF7U1S\n6fLNDm2k8QKBgQDj6Yr3CjhIRw7LmFzwwnODeBBeB3mnNjgJTYTlCIN0rEuIJRCU\nruubjqUG/WlGJit8NpYk4L//3OtlcnAM+/oq3Fu3A7ZpYv8+x+5OtUABAvob9VC2\nmygsid83D2MztKtFfF0slwuqel+F5vcvrei6yjPUSKUwbUiI/d0alR4iKwKBgQC6\nYnf7g5/3m/wXUsJ1ISLwCa+nTMYX6ijGVrBak2nyfVvEZurnqsxDxrvNBrHx6FPK\nINRoDrmKoambGad30X+ynM3NfrWImSORP0G4WtWVceWHpdwuGp/uDbnhU6cMxzBe\ncwoRPJldfDT5KJEM2wQnDF4s8DDtSKc+xjQFfXx6cQKBgQDK8TE1TOfITdVOWKnf\nEo2IkNKO45l8iJ70BNP3Is9F74YDnNSdV5ayovbv8buHSWt5C6hsSqGRYx+nWvMJ\nvsKtv5Nf98xDdSlZAiIkcdXtfl6ndrSwIQeQYLw5ZWFwT0MEdEBlKr9ViXvVbb6T\nLtrjADGXixcbJvvfYLiAXuPvug==\n-----END PRIVATE KEY-----\n",
+  "client_email": "springboot-storage-access@zangzac.iam.gserviceaccount.com",
+  "client_id": "108530049164610125717",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/springboot-storage-access%40zangzac.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

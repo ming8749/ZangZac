@@ -1,0 +1,533 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>로그인 회원가입</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<link href="../css/ming/member/sign.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+<meta http-equiv="X-UA-Compatible" content="ie=edge" /> 
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.6.0/kakao.min.js"
+  integrity="sha384-6MFdIr0zOira1CHQkedUqJVql0YtcZA1P0nbPrQYJXVJZUkTk/oX4U9GhUIs3/z8" crossorigin="anonymous"></script>
+<script>
+  Kakao.init('0745d9c71eeddf5d68036856b00e453a'); // 사용하려는 앱의 JavaScript 키 입력
+</script>
+<style>
+	.input-group .confirmBtn{
+		width: 200px; 
+		display: inline-block; 
+		height: 40px; 
+		background-color: rgb(251, 125, 83); 
+		color: white;
+		position: relative;
+		top: 5px;
+	}
+	.input-group .confirmBtn2{
+		width: 90px; 
+		display: inline-block; 
+		height: 40px; 
+		background-color: rgb(251, 125, 83); 
+		color: white;
+		position: relative;
+		top: 5px;
+	}
+	#sample6{
+		width: 200px; 
+		display: inline-block; 
+		height: 40px; 
+		background-color: rgb(251, 125, 83); 
+		color: white;
+		position: relative;
+		top: 5px;
+	}
+	.input-group{
+		margin: 8px
+	}
+	#kakaoBtn{
+		background-color:white;
+		color:rgb(251, 125, 83);
+		border: 1px solid rgb(251, 125, 83);
+		text-decoration: none;
+		margin-top:50px;
+		padding-left: 137px;
+		padding-right: 137px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+		border-radius: 10px;
+	}
+</style>
+</head>
+<body>
+	<div id="container" class="container">
+	    <!-- FORM SECTION -->
+	    <div class="row">
+	      <!-- 회원가입 시작 -->
+	      <div class="col align-items-center flex-col sign-up">
+	        <div class="form-wrapper align-items-center">
+	          <form class="form sign-up"  action="insertMember.me" method="post" onsubmit="return NoSign()">
+	            <input type="hidden" name="beforeURL">
+	            <div class="input-group">
+	              <i class='bx bxs-user'></i>
+	              <input type="text" placeholder="Id" style="height: 45px;" id="memberId" name="memberId" autofocus required="required">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	              <input type="password" placeholder="Password" id="memberPwd" style="height: 45px;" name="memberPwd" required="required">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	              <input type="password" placeholder="Confirm password" id="pwdConfirm" style="height: 45px;" name="pwdConfirm">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bx-mail-send'></i>
+	              <input type="email" placeholder="Email" style="height: 45px;" name="memberEmail" id="memberEmail" required="required" >
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	              <input type="text" placeholder="Name" style="height: 45px;" name="memberName" required="required">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	              <input type="text" id="memberNickName"placeholder="nickName" style="height: 45px;" name="existingNickname" required="required">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	              <input type="tel" placeholder="전화번호(-제외)" style="height: 45px; width: 320px; display: inline-block;" name="memberPhone" id="phone" required="required">
+	              <button type="button" id="send" class="confirmBtn2">전송</button>
+	              <input type="text" id="userNum" placeholder="인증번호" style="width: 210px; display: inline-block; height: 45px;" required="required">   <!-- 인증번호 입력창 -->
+				  <button type="button" id="enterBtn"  class="confirmBtn">확인</button> <!-- 인증번호와 내가 입력창에 입력한 인증번호 비교하는 창 -->
+	            </div>
+	            <div class="input-group">
+					<input type="text" id="sample6_postcode" placeholder="우편번호" name="sample6_postcode" style="width: 210px; display: inline-block; height: 45px;" required="required">
+					<input type="button" id="sample6" onclick="sample6_execDaumPostcode()" value="주소검색"  class="confirmBtn">
+				</div>
+				<div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	             <input type="text" id="sample6_address" placeholder="기본주소" name="sample6_address" style="height: 45px;" required="required">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	             <input type="text" id="sample6_detailAddress" placeholder="상세주소" name="sample6_detailAddress" style="height: 45px;">
+	           	 <input type="text" id="sample6_extraAddress" placeholder="참고항목" name="sample6_extraAddress" style="height: 45px;">
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	             <input type="date" id="memberBirth" placeholder="생년월일" name="memberBirth" style="height: 45px;" min="1920-01-01" required="required">
+	            </div>
+	            <span>이용약관 동의 필수 <a href="agreement.me">[보기]</a></span>
+	            <input type="checkbox" name="chk" class="essential" required="required"><br><br>
+	            <button type="submit" style="background-color: rgb(251, 125, 83); color: white;">
+	              Sign up
+	            </button>
+	            <p style="text-align: center;">
+	              <a href="/" style="display: inline-block;  margin: 0 10px; text-decoration: none; color: black; font-weight: bold; font-size: 1.1em;">
+					HOME으로 돌아가기
+				  </a>
+	            </p>
+	            <p style="font-size: 0.8em;">
+	              <span>
+	                Already have an account?
+	              </span>
+	              <b onclick="toggle()" class="pointer" >
+	                로그인
+	              </b>
+	            </p>
+	          </form>
+	        </div>
+	      
+	      </div>
+	      <!-- 회원가입 끝 -->
+	      <!-- 로그인 -->
+	      <div class="col align-items-center flex-col sign-in">
+	        <div class="form-wrapper align-items-center">
+	          <form class="form sign-in" action="login.me" method="post">
+	            <input type="hidden" name="beforeURL">
+	            <div class="input-group">
+	              <i class='bx bxs-user'></i>
+	              <input type="text" placeholder="ID" name="memberId" required autofocus>
+	            </div>
+	            <div class="input-group">
+	              <i class='bx bxs-lock-alt'></i>
+	              <input type="password" placeholder="Password" name="memberPwd" required autofocus>
+	            </div>
+	            <button style="background-color: rgb(251, 125, 83); color: white; margin-bottom: 10px;">
+	              Sign in
+	            </button><br><br>
+	           <a class="btnset btnset-round contents-start-kakao" 
+				   href="https://kauth.kakao.com/oauth/authorize?client_id=18ae7b1bab696aadfa39200fae9ad11b&redirect_uri=http://192.168.20.207:8080/kakaoLogin&response_type=code&prompt=login"
+				   id="kakaoBtn">카카오톡 연동하기
+				</a>
+	            <p style="text-align: center;">
+	              <a href="/" style="display: inline-block;  margin: 0 10px; text-decoration: none; color: black; font-weight: bold; font-size: 1.2em;" >
+	                HOME 
+	              </a>
+	              <a href="signIn.me" style="display: inline-block;  margin: 0 10px; text-decoration: none; color: black; font-weight: bold; font-size: 1.2em;">
+					아이디 / 비밀번호 찾기
+				  </a>
+	            </p>
+	            <p>
+	              <span>
+	                Don't have an account?
+	              </span>
+	              <b onclick="toggle()" class="pointer">
+	                회원가입
+	              </b>
+	            </p>
+	          </form>
+	        </div>
+	      </div>
+	      <!-- 회원가입끝 -->
+	    </div>
+	    <!-- END FORM SECTION -->
+	    <!-- CONTENT SECTION -->
+	    <div class="row content-row">
+	      <!-- SIGN IN CONTENT -->
+	      <div class="col align-items-center flex-col">
+	        <div class="text sign-in">
+	          <h2>
+	            <img src="../image/ming/member/logo.png" style="width: 300px;">
+	            <p style="font-size: 0.5em; margin-top: -50px;">로그인</p>
+	          </h2>
+	  
+	        </div>
+	        <div class="img sign-in">
+	    
+	        </div>
+	      </div>
+	      <!-- END SIGN IN CONTENT -->
+	      <!-- SIGN UP CONTENT -->
+	      <div class="col align-items-center flex-col">
+	        <div class="img sign-up">
+	        
+	        </div>
+	        <div class="text sign-up">
+	          <h2>
+	            <img src="../image/ming/member/logo.png" style="width: 300px;">
+	            <p style="font-size: 0.5em; margin-top: -50px;">회원가입</p>
+	          </h2>
+	  
+	        </div>
+	      </div>
+	      <!-- END SIGN UP CONTENT -->
+	    </div>
+	    <!-- END CONTENT SECTION -->
+	  </div>
+	
+	<!-- 카카오톡 로그인 -->
+
+	<script>
+		let checkId = false;
+		let checkNickName = false;
+	    let checkPwd = false;
+	    let checkEmail = false;
+	  function loginWithKakao() {
+	    Kakao.Auth.authorize({
+	      redirectUri: 'http://192.168.20.207:8080/kakaoLogin',
+	      state: 'userme',
+	    });
+	  }
+
+	  function requestUserInfo() {
+		    Kakao.API.request({
+		      url: '/v2/user/me',
+		    })
+		      .then(function(res) {
+		        alert(JSON.stringify(res));
+		      })
+		      .catch(function(err) {
+		        alert(
+		          'failed to request user information: ' + JSON.stringify(err)
+		        );
+		      });
+		  }
+	  // 아래는 데모를 위한 UI 코드입니다.
+	  displayToken()
+	  function displayToken() {
+	    var token = getCookie('authorize-access-token');
+
+	    if(token) {
+	      Kakao.Auth.setAccessToken(token);
+	      document.querySelector('#token-result').innerText = 'login success, ready to request API';
+	      document.querySelector('button.api-btn').style.visibility = 'visible';
+	    }
+	  }
+
+	  function getCookie(name) {
+	    var parts = document.cookie.split(name + '=');
+	    if (parts.length === 2) { return parts[1].split(';')[0]; }
+	  }
+	</script>
+	
+	<script src="../js/member/sign.js"></script>
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script>
+	    function sample6_execDaumPostcode() {
+	        new daum.Postcode({
+	            oncomplete: function(data) {
+	                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+	
+	                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+	                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+	                var addr = ''; // 주소 변수
+	                var extraAddr = ''; // 참고항목 변수
+	
+	                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+	                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+	                    addr = data.roadAddress;
+	                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+	                    addr = data.jibunAddress;
+	                }
+	
+	                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+	                if(data.userSelectedType === 'R'){
+	                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+	                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+	                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+	                        extraAddr += data.bname;
+	                    }
+	                    // 건물명이 있고, 공동주택일 경우 추가한다.
+	                    if(data.buildingName !== '' && data.apartment === 'Y'){
+	                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	                    }
+	                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+	                    if(extraAddr !== ''){
+	                        extraAddr = ' (' + extraAddr + ')';
+	                    }
+	                    // 조합된 참고항목을 해당 필드에 넣는다.
+	                    document.getElementById("sample6_extraAddress").value = extraAddr;
+	                
+	                } else {
+	                    document.getElementById("sample6_extraAddress").value = '';
+	                }
+	
+	                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+	                document.getElementById('sample6_postcode').value = data.zonecode;
+	                document.getElementById("sample6_address").value = addr;
+	                // 커서를 상세주소 필드로 이동한다.
+	                document.getElementById("sample6_detailAddress").focus();
+	            }
+	        }).open();
+	    } 
+	</script>
+	
+	 <script th:inline="javascript">
+		//그전 url로 돌아가기
+	
+		window.onload = () =>{
+			
+			 /*<![CDATA[*/
+	        var msg = /*[[${msg}]]*/'';
+	        /*]]>*/
+	        
+	           if(msg && msg.trim().length > 0) {
+	                alert(msg);
+	            }
+	        	
+	        }
+			
+			const beforeURL = document.referrer;
+			document.getElementsByName('beforeURL')[0].value = beforeURL;
+			document.getElementsByName('beforeURL')[1].value = beforeURL;
+			
+			
+			//아이디 중복 체크 / 정규식
+			document.getElementById('memberId').addEventListener('change', function(){
+				let idval = $('#memberId').val();
+		        let idvalcheck = /^[a-z0-9]+$/;
+				if(this.value.trim() == ''){
+					alert('아이디는 영소문자,숫자로 구성된 6글자 이상으로 조합하시오.');
+					memberId.style.borderColor = 'red';
+		            $('#memberId').focus();
+				}else if(!idvalcheck.test(idval) || idval.length<6){
+					alert('아이디는 영소문자,숫자로 구성된 6글자 이상으로 조합하시오.');
+					memberId.style.borderColor = 'red';
+   
+				} else {
+					// 아이디 중복체크
+			    	$.ajax({
+			    		url: 'checkId.me',
+			    		data: {memberId:this.value.trim()},
+			    		success: (data) =>{
+			    			console.log(data);
+			    			if(data == 'yes'){
+			    				memberId.style.borderColor = 'green';
+			    				checkId = true;
+			    			} else {
+			    				memberId.style.borderColor = 'red';
+			    				alert('중복된 아이디가 있습니다.');
+			    				checkId = false;
+			    			}
+			    		},
+			    		error: data => console.log(data)
+			    	})   
+				}
+			});
+		
+		//닉네임 정규식
+		document.getElementById('memberNickName').addEventListener('change', function() {
+		    let nickNameval = $('#memberNickName').val();
+		    let nickNamevalcheck = /^[ㄱ-ㅎㅏ-ㅣ가-힣가-힣A-Za-z0-9]+$/;
+		    let prohibitedWords = ['ㅅㅂ', '염병', '옘병','시발', '시바', 'ㅂㅅ','미친','ㅂ1ㅅ',,'수1발','tlqkf'];
+		
+		    if (this.value.trim() === '') {
+		        alert('닉네임은 영어, 한글, 숫자로 구성된 6글자 이상으로 조합하시오.');
+		        memberNickName.style.borderColor = 'red';
+		        checkNickName = false;
+		        $('#memberNickName').focus();
+		    } else if (!nickNamevalcheck.test(nickNameval)) {
+		        alert('아이디는 영소문자, 숫자로 구성된 6글자 이상으로 조합하시오.');
+		        memberNickName.style.borderColor = 'red';
+		        checkNickName = false;
+		    } else if (containsProhibitedWord(nickNameval, prohibitedWords)) {
+		        alert('금지어를 포함하고 있습니다. 다른 닉네임을 선택해주세요.');
+		        memberNickName.style.borderColor = 'red';
+		        checkNickName = false;
+		    } else {
+		        memberNickName.style.borderColor = 'green';
+		        checkNickName = true;
+		    }
+		});
+		
+		function containsProhibitedWord(input, prohibitedWords) {
+		    for (let i = 0; i < prohibitedWords.length; i++) {
+		        if (input.includes(prohibitedWords[i])) {
+		            return true;
+		        }
+		    }
+		    return false;
+		}
+		
+		//이메일 중복체크
+		document.getElementById('memberEmail').addEventListener('change', function(){
+		    let emailVal = $(this).val();
+		    let memberEmail = this;
+		    
+		    
+		    let result;  // 미리 선언 및 초기화
+		
+		    $.ajax({
+		        url: 'checkEmail.me',
+		        data: { memberEmail: emailVal },
+		        success: (data) => {
+		            result = data;  // 비동기적으로 result 업데이트
+		            
+		            if (result == 'yes') {
+		                memberEmail.style.borderColor = 'green';
+		                alert('사용가능한 이메일입니다.');
+		                checkEmail = true;
+		            } else {
+		                if (result == 'kakao') {
+		                    alert('카카오 로그인 회원입니다. 카카오 로그인으로 진행해주세요.');
+		                    memberEmail.style.borderColor = 'red';
+		                    checkEmail = false;
+		                } else if(result == 'no') {
+		                    console.log("이메일 중복");
+		                    alert('중복되는 이메일이 있습니다.');
+		                    memberEmail.style.borderColor = 'red';
+		                    checkEmail = false;
+		                }
+		            }
+		        },
+		        error: (data) => console.log(data)
+		    });
+		});
+	
+	</script>
+	<script>
+		<!-- 비밀번호 확인 + 정규식 -->
+		
+		document.getElementById("pwdConfirm").addEventListener("focusout", function() {
+		    focusOut();
+		  });
+
+		function focusOut(){
+			let memberPwd = document.getElementById("memberPwd");
+	        let pwdConfirm = document.getElementById("pwdConfirm");
+	        let pwdcheck = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#%^&*])[A-Za-z\d!@#%^&*]{8,}$/;
+	        
+			if(memberPwd.value.trim() == ''){		// 비밀번호 입력안하고
+			} else if(pwdConfirm.value != memberPwd.value || !pwdcheck.test(memberPwd.value)) {	
+				memberPwd.style.borderColor = 'red';
+				pwdConfirm.style.borderColor = 'red';
+				alert('비밀번호는 영대소문자,숫자,특수문자로 구성된 8글자 이상으로 조합하시오.')
+				checkPwd = false;
+			} else if(pwdConfirm.value == memberPwd.value && pwdcheck.test(memberPwd.value)){ // 비밀번호가 다르고 정규식도 다를떄
+				memberPwd.style.borderColor = 'green';
+				pwdConfirm.style.borderColor = 'green';
+				checkPwd = true;
+			} 
+		};
+	</script> 
+	
+	<script>
+		var now_date = Date.now();// 지금 날짜를 밀리초로
+		var timeOff = new Date().getTimezoneOffset()*60000; // getTimezoneOffset()은 현재 시간과의 차이를 분 단위로 반환
+		var today = new Date(now_date-timeOff).toISOString().split("T")[0]; //new Date(now_utc-timeOff).toISOString()은 '2024-01-01T18:09:38.134Z'를 반환
+		document.getElementById("memberBirth").setAttribute("max", today);
+    </script>
+    
+	<script type="text/javascript">
+		let check_code=false;
+		let check_num;
+		 
+		$('#send').click(function() {
+			
+			const to = $('#phone').val();
+			
+			$.ajax ({
+				url: '/send-one',
+				type: 'GET',
+				data: {
+					"phone" : to
+				},
+				success: function(data) {
+					check_num = data;
+					alert("인증번호를 입력해주세요!");
+					
+				}
+			});
+			
+		});
+		
+		$('#enterBtn').click(function() {	
+			const userNum = $('#userNum').val();
+			
+			if(check_num === userNum) {
+				alert('인증 성공하였습니다.');
+                this.innerText = '인증성공';
+                
+                check_code = true;
+			}
+			else {
+				alert('인증 실패하였습니다. 다시 입력해주세요.');
+				this.innerText = '인증실패';
+				check_code =false;
+			}
+		});
+		
+		// 모든 폼이 일치해야 넘어오게 
+		function NoSign(){
+			console.log("check_code: " + check_code);
+			console.log("checkId: " + checkId);
+			console.log("checkPwd: " + checkPwd);
+			console.log("checkEmail: " + checkEmail);
+			console.log("checkNickName: " + checkNickName);
+			
+			if(check_code && checkId && checkPwd && checkEmail && checkNickName){
+				alert("회원가입에 성공했습니다.");
+				return true;
+			}else{
+				alert("정보가 올바르게 작성되었는지 확인해주세요.");
+				return false;
+			}
+				
+			
+		}
+	</script>
+	
+
+	
+</body>
+</html>

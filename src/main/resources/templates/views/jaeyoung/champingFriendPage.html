@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+<title>캠핑 친구</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.profile-pic {
+	background-image: url('https://unsplash.com/photos/3PeSjpLVtLg');
+	background-size: cover;
+}
+
+	.modal {
+		display: none; /* 기본적으로 모달은 보이지 않습니다. */
+		position: fixed;
+		z-index: 1;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+	
+	.modal-content {
+		background-color: #fefefe;
+		margin: 15% auto;
+		padding: 20px;
+		border: 1px solid #888;
+		width: 80%;
+	}
+	
+	.modal-content ul {
+		list-style: none;
+		padding: 0;
+	}
+	
+	.modal-content ul li a {
+		text-decoration: none;
+		color: black;
+		display: block;
+		padding: 10px;
+		border-bottom: 1px solid #ccc;
+	}
+	
+	.modal-content ul li a:hover {
+		background-color: #f7f7f7;
+	}
+	
+	.comment-section {
+	    max-height: 0;
+	    overflow: hidden;
+	    transition: max-height 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+	    opacity: 0;
+	}
+	
+	.comment-section.show {
+	    max-height: 1000px;
+	    opacity: 1;
+	}
+
+    #toggleComments {
+        cursor: pointer;
+    }
+  
+  
+	.post-like-comment {
+	  display: flex;
+	  align-items: center;
+	  margin-top: 10px;
+	}
+	
+	.like-button {
+	  background: none;
+	  width: 24px; /* 아이콘 크기 */
+	  height: 24px; /* 아이콘 크기 */
+	  border: none;
+	  cursor: pointer;
+	}
+	
+	.like-count, .comment-count{
+	  font-size: 0.9em;
+	  color: #666;
+	  margin-left: 5px;
+	}
+	.like-text, .comment-text{
+	  margin-left: 8px;
+	  font-size: 0.9em;
+	  color: #666;
+	} 
+	
+	 @keyframes heartAnimation {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+
+    .like-button {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .like-button.clicked {
+        animation: heartAnimation 0.6s; /* 클릭 시 애니메이션 효과 추가 */
+    }
+  
+ 
+  	comment-item {
+	  display: flex;
+	  align-items: center;
+	  margin-bottom: 10px;
+	  padding-bottom: 10px;
+	  border-bottom: 1px solid #ececec;
+	  flex-wrap: wrap;
+	  display: inline-block;
+	}
+	
+	.comment-thumb {
+	  width: 40px;
+	  height: 50%;
+	  border-radius: 50%;
+	  margin-right: 10px;
+	  display: inline-block;
+	  margin-bottom: 25px;
+	  position: relative;
+	}
+	.comment-content {
+	  margin-bottom: 10px;
+	  padding-bottom: 10px;
+	  flex-grow: 1;
+	  width:500px;
+	  max-width: 500px;
+	  display: inline-block;
+	}
+	
+	.comment-author {
+	  font-weight: bold;
+	  color: #333;
+	  display: inline-block;
+	}
+	
+	.comment-message {
+	  color: #666;
+	  display: inline-block;
+	}
+	
+	.comment-info {
+	  font-size: 0.9em;
+	  color: #999;
+	  display: inline-block;
+	}
+	
+	.comment-list {
+	  margin-top: 20px;
+	  max-width: 100%;
+	  box-sizing: border-box;
+	  display: inline-block;
+	}
+	.edit, .delete{
+		display: inline-block;
+		border-bottom: 2px solid black;
+		cursor: pointer;
+		
+	}
+	.edit:hover, .delete:hover{
+		display: inline-block;
+		border-bottom: 2px solid red;
+		cursor: pointer;
+		
+	}
+	
+	#pagenation ul li a:hover {
+			   background-color: #5cb85c;
+			   color: #e6e6e6;
+			}
+			
+			#pagenation ul li a#check_page {
+			   background-color: #5cb85c;
+			   color: #e6e6e6;
+			}
+			.search_area {
+			   display: flex;
+			   justify-content: center;
+			   align-items: center;
+			   padding: 20px 0;
+			}
+			
+			.search_select {
+			   padding: 5px 10px;
+			   margin-right: 10px;
+			   border: 1px solid #ccc;
+			   border-radius: 5px;
+			}
+			
+			.search_input {
+			   padding: 5px 10px;
+			   border: 1px solid #ccc;
+			   border-radius: 5px;
+			   width: 300px;
+			   margin-right: 10px;
+			}
+			
+			/* 상단 이동 버튼 */
+#upBtnArea {
+   top: 88%;
+   left: 92%;
+   position: fixed;
+}
+/* 상단 이동 버튼 */
+#back-to-top {
+   display: inline-block;
+   background-color: transparent !important;
+   width: 38px;
+   height: 38px;
+   text-align: center;
+   border-radius: 4px;
+   position: fixed;
+   bottom: 25px !important;
+   right: 35px !important;
+   transition: background-color .3s, opacity .5s, visibility .5s;
+   z-index: 99999999;
+}
+			
+</style>
+</head>
+<body class="bg-gray-50">
+	<div th:insert="~{common/navbar :: navbar}"></div>
+	<a id="back-to-top"><img src='image/seongun/topBtn.png' style='width:38px; height:38px;'></a>
+	
+	
+	<div class="max-w-2xl mx-auto my-8" id="BoardList">
+		 <div id="header1" class="bg-white rounded-lg shadow-md text-black p-4 flex items-center justify-between">
+		    <span class="text-2xl mx-auto">캠핑 친구를 구해보세요.</span>
+		    <div id="writeButton" class="flex items-center">
+		        <img src="../image/chat/icons8-메모-64 (2).png" alt="메모 아이콘" class="mr-2">
+		        <div class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded cursor-pointer" onclick="goToCampingFriendWrite()">글쓰기</div>
+		    </div>
+		</div>
+	    <br>
+
+		<!-- Posts -->
+		<th:block th:each="cf:${list}">
+			<div class="bg-white rounded-lg shadow-md p-4">
+				<div class="flex items-center" style="width: 100%;">
+				    <div class="rounded-lg h-16 w-16 bg-blue-500 mr-3" style="border-radius: 500px">
+					    <img th:src="${cf.memberProfile}" class="h-full w-full object-cover rounded-lg" alt="Member Profile Image" style="border-radius: 500px">
+					</div>
+				    <div class="flex flex-col flex-grow">
+				        <div class="font-semibold text-lg">[[${cf.cfTitle}]]</div>
+				        <div class="text-gray-500 text-md" style="display:inline-block">[[|@${cf.categoryName} @${cf.memberId}|]]</div>
+				    </div>
+				    <button type="button" class="review-options-btn l-4" onclick="boardEditModalOpen(event)">...</button>
+				</div>
+				
+				
+				
+				<div class="mb-4">
+					<br>
+					<p>[[${cf.cfContent}]]</p>
+					<img th:if="${cf.photoPath != null}" th:src="${cf.photoPath}" alt="Rocket Launch" class="rounded-lg mt-3">
+					<div class="post-like-comment">
+		               <th:block th:utext="${cf.likeStatus}"></th:block><span class="like-text">좋아요</span>
+		               <span class="like-count" th:id="|likeCount${cf.cfNo}|">[[${cf.likeCount}]]</span> 
+		               <span class="comment-text">댓글</span>
+		               <span class="comment-count" th:id="|commentCount${cf.cfNo}|">[[${cf.replyCount}]]</span>
+		            </div>
+				</div>
+				<div class="flex justify-between items-center text-gray-500 text-sm">
+					<div class="flex items-center">
+						<input type="hidden" th:value="${cf.memberId}">
+						<input type="hidden" th:value="${cf.cfNo}">
+						<div name="reply" onclick="openModal(event)">댓글 달기</div>
+					</div>
+					
+					<div class="flex items-center">
+	        			<span id="toggleComments" class="toggle-comments" style="cursor: pointer;" onclick="toggleCo(event)">전체 댓글</span>
+	    			</div>
+	    			
+				</div>
+				<div class="comment-section comment-list" th:id="${cf.cfNo}">
+					<th:block th:each="re:${cf.replys}">
+						<div class="comment-item">
+			 	            <img class="comment-thumb" th:src="${re.memberProfilePath}" alt="프로필 사진" style="width: 50px; height: 50px;">
+			 	            <div class="comment-content">
+			 	                <div class="comment-author">[[${re.memberName}]]</div>
+			 	                <div class="comment-message">[[${re.replyContent}]]</div><br>
+			 	                <div class="comment-info">[[${re.formatDate}]]</div>
+			 	            </div>
+			 	            <input type="hidden" th:value ="${re.replyNo}" th:id="|${'reply'+re.replyNo}|">
+			 	            <th:block th:if="${session.loginUser != null}">
+				 	            <div class="edit" onclick="openEditModal(event)" th:if="${session.loginUser.memberId == re.memberId}">수정</div>
+	    						<div class="delete" onclick="openDeleteModal(event)" th:if="${session.loginUser.memberId == re.memberId}">삭제</div>
+    						</th:block>
+			 	        </div>
+					</th:block>
+			    </div>
+			</div>
+			<br>
+		</th:block>
+
+	</div>
+	
+		<!-- Board EDit and delete-->
+		<div class="modal" id="modal">
+		      <div class="modal-content bg-opacity-25 justify-center items-center w-48 flex justify-center">
+		        <ul>
+		          <li class=""><button class="edit-review w-24 text-center hover:bg-gray-100" id="boardEditBtn">수정</button></li>
+		          <li><button class="delete-review w-24 text-center hover:bg-gray-100"  id="boardDeleteBtn">삭제</button></li>
+		        </ul>
+		      </div>
+		 </div>
+	
+	
+	<!-- Reply Modal -->
+		<div id="replyModal" class="fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center hidden">
+			<div class="bg-white p-4 rounded-lg shadow-lg w-full max-w-md">
+				<div class="flex justify-between items-center">
+					<div class="font-semibold" id="forwho"></div>
+					<button id="closeModal" class="text-gray-500">&times;</button>
+				</div>
+				<div class="mt-4">
+					<textarea
+						class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						rows="4" placeholder="Post your reply" id="replyContent"></textarea>
+				</div>
+				<div class="flex justify-end mt-4">
+					<input type="hidden" id="replyCfNo">
+					<button class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="reply">등록</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Reply EDIT Modal -->
+		<div id="replyEditModal" class="fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center hidden">
+			<div class="bg-white p-4 rounded-lg shadow-lg w-full max-w-md">
+				<div class="flex justify-between items-center">
+					<div class="font-semibold" id="editTitle">[아이디]의 댓글 수정</div>
+					<button id="closeEditModal_" class="text-gray-500">&times;</button>
+				</div>
+				<div class="mt-4">
+					<textarea
+						class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+						rows="4" placeholder="Post your reply" id="replyEditContent"></textarea>
+				</div>
+				<div class="flex justify-end mt-4">
+					<input type="hidden" id="replyEditCfNo">
+					<button class="bg-blue-500 text-white px-4 py-2 rounded-lg" id="edit">수정</button>
+				</div>
+			</div>
+		</div>
+		
+		<!-- delete model -->
+		<div id="replyDeleteModal" class="fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center hidden">
+		    <div class="bg-white p-4 rounded-lg shadow-lg w-full max-w-md text-center">
+		        <div class="font-semibold text-xl mb-4">정말 삭제 하시겠습니까?</div>
+		        <div class="flex justify-center">
+		            <input type="hidden" id="replyDeleteCfNo">
+		            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg mr-2 hover:bg-blue-600 focus:outline-none" id="deleteConfrim">확인</button>
+		            <button class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 focus:outline-none" id="deleteCancle">취소</button>
+		        </div>
+		    </div>
+		</div>
+		
+	
+	<script>
+	const deleteConfrim = document.getElementById('deleteConfrim');
+    const deleteCancle = document.getElementById('deleteCancle');
+    const replyDeleteModal = document.getElementById('replyDeleteModal');
+    const replyDeleteCfNo = document.getElementById('replyDeleteCfNo');
+    
+    function openDeleteModal(event) {
+		 
+    	replyDeleteCfNo.value = event.target.previousElementSibling.previousElementSibling.value;
+    	replyDeleteModal.classList.remove('hidden');
+	 	
+    }
+    
+ // Close the modal
+    function closeDeleteModal() {
+    	replyDeleteModal.classList.add('hidden');
+    }
+    
+	 // Attach click event to open the modal
+    deleteCancle.addEventListener('click', closeDeleteModal);
+	 
+	 
+	 
+    deleteConfrim.addEventListener('click', function(){
+    	
+    	
+    	let boardNo = document.getElementById('reply'+replyDeleteCfNo.value).parentNode.parentNode.id;
+    	let replyCount =document.getElementById('commentCount'+boardNo)
+    	
+    	 $.ajax({
+              url: 'deleteReply.jy', // 서버의 댓글 목록 불러오기 URL
+              method: 'GET',
+              data: { 
+            	  replyNo : replyDeleteCfNo.value
+              },
+              success: function(data) {
+            	  closeDeleteModal();
+            	  document.getElementById('reply'+replyDeleteCfNo.value).parentNode.remove();
+            	  //댓글 카운트 다운
+            	  replyCount.innerText = parseInt(replyCount.innerText, 10)-1; 
+            		  
+                  
+              },
+              error: function(data) {
+                  console.log(data);
+              }
+          });
+    	
+    	
+    	
+    	 
+    });
+	 
+    
+	</script>
+		
+		
+	<!-- reply edit 모달 관련-->
+	<script th:inline="javascript">
+		const replyEditModal = document.getElementById('replyEditModal');
+	    const closeEditModal = document.getElementById('closeEditModal_');
+	    const edit = document.getElementById('edit');
+	    const replyEditCfNo = document.getElementById('replyEditCfNo');
+	    const replyEditContent = document.getElementById('replyEditContent');
+	    const editTitle = document.getElementById("editTitle");
+	    
+	 // Open the modal
+        function openEditModal(event) {
+		 
+		 
+        	/*<![CDATA[*/
+	        let User = /*[[${session.loginUser}]]*/null;
+	        /*]]>*/
+		 	if(User != null){
+			 	let name=event.target.previousElementSibling.previousElementSibling.children[0].innerText+"";
+			 	let editcontent=event.target.previousElementSibling.previousElementSibling.children[1].innerText+"";
+			 	
+			 	//모달 내부 수정
+			 	replyEditCfNo.value = event.target.previousElementSibling.value;
+			 	editTitle.innerText = "["+name+"]님의 댓글 수정";
+			 	replyEditContent.innerText = editcontent;
+	
+	        	replyEditModal.classList.remove('hidden');
+		 	}
+        }
+
+        // Close the modal
+        function closeEditModal1() {
+        	replyEditModal.classList.add('hidden');
+        }
+
+        // Attach click event to open the modal
+        closeEditModal.addEventListener('click', closeEditModal1);
+        
+        edit.addEventListener('click', function(){
+        	// 누른 댓글 아이디 가져와야함
+        	const replyId = 'reply'+replyEditCfNo.value;
+        	const editTitle = document.getElementById(replyId);
+        	
+        	//댓글 아이디를 가져왔으니 이걸 통해 수정해야함 아작스로 DB수정하고 그다음에 innerText 수정
+        	 $.ajax({
+	              url: 'updateReply.jy', // 서버의 댓글 목록 불러오기 URL
+	              method: 'GET',
+	              data: { 
+	            	  replyNo : replyEditCfNo.value, replyContent : replyEditContent.value
+	              },
+	              success: function(data) {
+	            	  closeEditModal1();
+	                  // 성공했으면 innerText 바꾸기
+	                  
+	                  //내용 변경
+	                  document.getElementById(replyId).previousElementSibling.children[1].innerText=data.data.replyContent;
+	                  //날짜 변경
+	                  document.getElementById(replyId).previousElementSibling.children[3].innerText = data.data.formatDate;
+	                  
+	                  //날짜랑 내용 바꾸기
+	              },
+	              error: function(data) {
+	                  console.log(data);
+	              }
+	          });
+        	
+        	
+        });
+	
+	</script>
+	<!-- reply, 글 수정 삭제 모달-->
+	<script th:inline="javascript">
+        // Get the modal and close button
+        const replyModal = document.getElementById('replyModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const reply = document.getElementById('reply');
+        const replycfNo = document.getElementById('replyCfNo');
+        const replyContent = document.getElementById('replyContent');
+        
+        reply.addEventListener('click', function(){
+        	
+        	/*<![CDATA[*/
+	        let User = /*[[${session.loginUser}]]*/null;
+	        /*]]>*/
+	        
+	        let replyCount = document.getElementById("commentCount"+replycfNo.value);
+	        
+	        
+	        if(User != null){
+		       	 $.ajax({
+		             url: 'insertReply.jy', // 서버의 댓글 목록 불러오기 URL
+		             method: 'GET',
+		             dataType: 'json', // 서버에서 JSON 형식으로 응답하는 경우
+		             data: { 
+		              boardNo : replycfNo.value,
+		           	  replyContent : replyContent.value,
+		           	  memberId : User.memberId
+		             },
+		             success: function(data) {
+		                 updateCommentList(data);
+		                 replyModal.classList.add('hidden');
+		                 //댓글 카운트 올리기
+		                replyCount.innerText = parseInt(replyCount.innerText, 10)+1; 
+		             },
+		             error: function(data) {
+		                 console.log(data);
+		             }
+		         });
+	        }else{
+	        	alert("로그인 후 이용해주세요.");
+	        }
+        	
+        });
+
+        // Open the modal
+        function openModal(event) {
+        	let forwho = document.getElementById('forwho');
+        	// 클릭된 요소에서 가장 가까운 .flex 클래스를 찾음
+            
+            // .flex 클래스 내의 input[type=hidden] 요소들을 찾아서 값 가져오기
+            let loginUser = event.target.previousElementSibling.previousElementSibling.value;
+            let cfNo = event.target.previousElementSibling.value;
+            
+            replycfNo.value = cfNo;
+        	forwho.innerText = loginUser+"에게 답글";
+        	replyContent.value="";
+            replyModal.classList.remove('hidden');
+        }
+
+        // Close the modal
+        function closeModal() {
+            replyModal.classList.add('hidden');
+        }
+
+        // Attach click event to open the modal
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        
+        
+        // 모달을 가져옵니다.///////////////////////////////////////////////
+        let modal = document.getElementById("modal");
+		let boardEditBtn = document.getElementById("boardEditBtn");
+		let boardDeleteBtn = document.getElementById("boardDeleteBtn");
+		let boardMemberId;
+		//수정 버튼
+		boardEditBtn.addEventListener('click', function(){
+			window.location.href="campingFriendEditView.jy?boardNo="+boardId;
+		});
+		
+		//삭제 버튼
+		boardDeleteBtn.addEventListener('click', function(){
+			//바로 삭제 때려버리기
+			window.location.href="campingFriendDelete.jy?cfNo="+boardId;
+		});
+		
+		
+		
+        // 모달을 여는 버튼을 가져옵니다.
+        let btn = document.querySelector(".review-options-btn");
+
+        // 모달을 닫는 <span> 요소를 가져옵니다. (여기서는 사용하지 않았습니다. 필요하다면 추가하세요.)
+        let boardId;
+        let boardDiv;
+        function boardEditModalOpen(event){
+        	/*<![CDATA[*/
+	        let User = /*[[${session.loginUser}]]*/null;
+	        /*]]>*/
+        	boardId = event.target.parentNode.parentNode.children[3].id;
+        	boardDiv = event.target.parentNode.parentNode;
+        	let formatString=event.target.parentNode.parentNode.children[0].children[1].children[1].innerText;
+        	boardMemberId = formatString.split(' ')[1].split('@')[1];
+			
+        	if(User != null){
+				if(User.memberId == boardMemberId){
+        			modal.style.display = "block";
+				}        		
+        	}
+        	
+        	
+        }
+
+        
+        //수정 버튼 
+        
+        // 사용자가 모달 외부를 클릭하면 모달을 닫습니다.
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+        
+        
+        //
+        function toggleCo(event){
+        	toggleComments(event.target);
+        }
+        
+     
+
+        // 전체 댓글 토글 함수
+        function toggleComments(toggleBtn) {
+            
+        	const commentSection = toggleBtn.parentNode.parentNode.nextElementSibling;
+
+            if (commentSection) {
+                commentSection.classList.toggle('show');
+            }
+        }
+        
+        
+    	 // 이미지 경로 정의
+        const emptyHeartPath = "image/seongun/offheart.png";
+	    const filledHeartPath = "image/seongun/onheart.png";
+	
+	    function toggleLike(event) {
+	        const likeButton = event.target;
+	        const currentImagePath = likeButton.getAttribute("src");
+	        let changeLike = 3;
+	        // 누른 게시글의 아이디
+	        let id = event.target.parentNode.parentNode.parentNode.children[3].id;
+	        /*<![CDATA[*/
+	        let User = /*[[${session.loginUser}]]*/null;
+	        /*]]>*/
+	        const like = document.getElementById('likeCount'+id);
+	        
+			if(User != null){ // 로그인 유저만 가능하도록
+		        if (currentImagePath === emptyHeartPath) {
+		            likeButton.setAttribute("src", filledHeartPath);
+		            likeButton.classList.add("clicked");
+		            changeLike = 1; // 좋아요 하기 
+		            //좋아요 숫자 증가 시켜야함
+		            like.innerText = parseInt(like.innerText, 10)+1;
+		            
+		            
+		            
+		        } else {
+		            likeButton.setAttribute("src", emptyHeartPath);
+		            likeButton.classList.remove("clicked");
+		            changeLike = 2; //좋아요 취소
+		            //좋아요 숫자 감소 시켜야함 
+		            like.innerText = parseInt(like.innerText, 10)-1;
+		           
+		        }
+		        
+		        //좋아요 아직스 부분
+		        
+		        $.ajax({
+		             url: 'updateLike.jy', // 서버의 댓글 목록 불러오기 URL
+		             method: 'GET',
+		             dataType: 'json', // 서버에서 JSON 형식으로 응답하는 경우
+		             data: { 
+		            	 boardNo  : id,
+		           	  memberId : User.memberId,
+		           	changeLike : changeLike
+		             },
+		             success: function(data) {
+		            	 console.log(data);
+		                 
+		             },
+		             error: function(data) {
+		                 console.log(data);
+		             }
+		         });
+
+	        
+			}else{
+				alert('로그인 후 좋아요를 눌러주세요!');
+			}
+	    }
+        
+	    function goToCampingFriendWrite() {
+	    	
+	    	/*<![CDATA[*/
+	        let loginUser = /*[[${session.loginUser}]]*/null;
+	        /*]]>*/
+			
+	        if(loginUser != null){
+	        	window.location.href = 'campingFriendWriteView.jy';
+	        }else{
+	        	alert('로그인 후 이용해주세요!');
+	        }
+	    }
+        
+        
+	    
+    </script>
+    
+    <!--무한 스크롤-->
+    <script th:inline="javascript">
+    
+     // 무한 스크롤 부분
+	 // 현재 페이지와 한 번에 로드되는 아이템 수
+	    let currentPage = 2;
+	    const itemsPerPage = 3; 
+	    let scrollflag=true;
+	    /*<![CDATA[*/
+        let maxPages = /*[[${maxPage}]]*/1;
+        /*]]>*/
+	
+	    // 스크롤 이벤트 리스너 등록
+	    window.addEventListener('scroll', () => {
+	        // 스크롤이 페이지의 80%에 도달하면 추가 데이터 로드
+	        if(scrollflag){
+		        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight * 0.9) {
+		            loadMoreItems();
+		        	scrollflag=false;
+		        }
+	        }
+	    });
+	
+	    // 추가 데이터 로드 함수
+	    function loadMoreItems() {
+	        
+	    	if(currentPage <= maxPages){
+		    	//ajax 부분 추가 예정
+		    	 $.ajax({
+		              url: 'cfList.jy', // 서버의 댓글 목록 불러오기 URL
+		              method: 'GET',
+		              data: { 
+		            	  currentPage : currentPage
+		              },
+		              success: function(data) {
+		                  
+		                  // 리스트 가져와서 만들기
+		                  const newItems = createItems(data);
+		                  
+		                  // 뿌리기
+		                  appendItemsToDOM(newItems);
+		                  
+		                  currentPage=1+currentPage;  
+		                  scrollflag = true;
+		              },
+		              error: function(data) {
+		                  console.log(data);
+		              }
+		          });
+	
+		    	}
+	   	 }
+	
+	    // 가상의 데이터 생성 함수
+	    function createItems(data) {
+   			 const newItems = [];
+   			 /*<![CDATA[*/
+		        let User = /*[[${session.loginUser}]]*/null;
+		        /*]]>*/
+   			 
+		    for (let itemData of data.list) {
+		        // 이 부분에서 각 캠핑 프렌드 아이템에 대한 HTML을 생성하고 데이터를 적용
+		        const photoHTML = itemData.photoPath ? `<img src="${itemData.photoPath}" alt="Rocket Launch" class="rounded-lg mt-3">` : '';
+		       
+		        let ButtonHTML="";
+		        let replyHTML="";
+		        
+		        for(let reply of itemData.replys){
+		        	ButtonHTML="";
+		        	
+		        	if(User){
+		        		if(User.memberId == reply.memberId){
+				        	ButtonHTML+=`
+				        		<input type="hidden" value ="${reply.replyNo}" id="reply${reply.replyNo}">
+					 	        <div class="edit" onclick="openEditModal(event)" >수정</div>
+							    <div class="delete" onclick="openDeleteModal(event)" >삭제</div>
+				        	`
+		        		}
+		        	}
+		        	
+		        	
+		        	
+		        	replyHTML+=`
+		        		<div class="comment-item">
+			 	            <img class="comment-thumb" src="${reply.memberProfilePath}" alt="프로필 사진" style="width: 50px; height: 50px;">
+			 	            <div class="comment-content">
+			 	                <div class="comment-author">${reply.memberName}</div>
+			 	                <div class="comment-message">${reply.replyContent}</div><br>
+			 	                <div class="comment-info">${reply.formatDate}</div>
+			 	            </div>
+			 	           ${ButtonHTML}
+		 	        	</div>
+		        	`
+		        }
+		        
+		        const newItemHTML = `
+		            <div class="bg-white rounded-lg shadow-md p-4">
+		                <div class="flex items-center" style="width: 100%;">
+		               		<div class="rounded-lg h-16 w-16 bg-blue-500 mr-3" style="border-radius: 500px">
+							    <img src="${itemData.memberProfile}" class="h-full w-full object-cover rounded-lg" alt="Member Profile Image" style="border-radius: 500px">
+							</div>
+		                    <div class="flex flex-col flex-grow">
+		                        <div class="font-semibold text-lg">${itemData.cfTitle}</div>
+		                        <div class="text-gray-500 text-md" style="display:inline-block">@${itemData.categoryName} @${itemData.memberId}</div>
+		                    </div>
+		                    <button type="button" class="review-options-btn l-4" onclick="boardEditModalOpen(event)">...</button>
+		                </div>
+		                
+		                <div class="mb-4">
+		                    <br>
+		                    <p>${itemData.cfContent}</p>
+		                    ${photoHTML}
+		                    <div class="post-like-comment">
+		                        ${itemData.likeStatus} 
+		                        <span class="like-text">좋아요</span>
+		                        <span class="like-count" id="likeCount${itemData.cfNo}">${itemData.likeCount}</span> 
+		                        <span class="comment-text">댓글</span>
+		                        <span class="comment-count" id="commentCount${itemData.cfNo}">${itemData.replyCount}</span>
+		                    </div>
+		                </div>
+		                <div class="flex justify-between items-center text-gray-500 text-sm">
+		                    <div class="flex items-center">
+		                    	<input type="hidden" value="${itemData.memberId}">
+								<input type="hidden" value="${itemData.cfNo}">
+		                    	<div name="reply" onclick="openModal(event)">댓글 달기</div>
+		                    </div>
+		                    
+		                    <div class="flex items-center">
+		                        <span class="toggle-comments" style="cursor: pointer;" onclick="toggleCo(event)">전체 댓글</span>
+		                    </div>
+		                    
+		                </div>
+		                <div class="comment-section comment-list" id="${itemData.cfNo}">
+		                	${replyHTML}
+		                </div>
+		                
+		            </div>
+		            <br>
+		        `;
+		        newItems.push(newItemHTML);
+		    }
+		    return newItems;
+		}
+	
+	    // DOM에 아이템 추가 함수
+	    function appendItemsToDOM(newItems) {
+	        const container = document.getElementById('BoardList'); // 실제로 사용하는 컨테이너의 ID로 변경
+	        container.innerHTML += newItems.join('');
+	    }
+    </script>
+    
+ 	<script th:inline="javascript">
+	 	function updateCommentList(data) {
+	 	    // 가정: 서버에서 반환된 데이터에 profilePicture, name, timestamp, content 등의 속성이 있다고 가정
+	 	    let commentList = document.getElementById(replyCfNo.value);
+			
+	 	
+	 	   /*<![CDATA[*/
+	        let User = /*[[${session.loginUser}]]*/null;
+	        /*]]>*/
+	       let ButtonHTML;
+	 	   let item = data.data;
+	 	   
+	 	  ButtonHTML="";
+      		console.log(User);
+	      	if(User){
+	      		if(User.memberId == item.memberId){
+	      			console.log(item.memberId);		
+		        	ButtonHTML+=`
+		        		<input type="hidden" value ="${item.replyNo}" id="reply${item.replyNo}">
+			 	        <div class="edit" onclick="openEditModal(event)" >수정</div>
+					    <div class="delete" onclick="openDeleteModal(event)" >삭제</div>
+		        	`
+	      		}
+	      	}
+	 	
+	 	// 템플릿 문자열을 사용하여 새로운 댓글을 만들고 commentList에 추가
+	 	    const newComment = `
+	 	        <div class="comment-item">
+	 	            <img class="comment-thumb" src="${item.memberProfilePath}" alt="프로필 사진" style="width: 50px; height: 50px;">
+	 	            <div class="comment-content">
+	 	                <div class="comment-author">${item.memberName}</div>
+	 	                <div class="comment-message">${item.replyContent}</div><br>
+	 	                <div class="comment-info">${item.formatDate}</div>
+	 	            </div>
+	 	           ${ButtonHTML}
+	 	        </div>
+	 	    `;
+		
+	 	// commentList에 HTML을 추가
+	 	    commentList.insertAdjacentHTML('beforeend', newComment);
+	 	}
+	 	
+        document.getElementById('back-to-top').addEventListener('click', function() {
+            // 페이지 맨 위로 스크롤하는 애니메이션
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    
+	 	
+ 	</script>
+</body>
+
+</html>

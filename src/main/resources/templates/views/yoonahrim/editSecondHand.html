@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>수정 페이지</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link href="css/yoonahrim/editSecondHand.css?after" rel="stylesheet" type="text/css"/>
+    <script src="http://code.jquery.com/jquery-3.1.0.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+</head>
+<body>
+   <div th:replace="~{common/navbar :: navbar}"></div>
+   
+   <h1 style="text-align:center; font-size: 30px; margin: 50px">중고 매물 수정하기</h1>
+   
+   <!-- 업로드할 파일 사진 업로드 및 버튼(업로드버튼 및 추가버튼 구현)-->
+   <form action="update.ah" method="post" enctype="multipart/form-data">
+    <th:block th:each="s : ${list}">
+        <input type="hidden" name="spNo" th:value="${s.spNo}"/>
+         <div class="row">
+          <!-- 이미지 출력 -->
+              <th:block th:each="a : ${aList}">
+                <div class="photoNum" style="position: relative; margin: 10px">
+                    <div class="photoUploads" style="background-image: url('image/yoonahrim/photo-icon.png'); width: 200px; height: 200px; background-size:50%; background-repeat: no-repeat; background-position:50% 50%;">
+                        <img th:src="${a.photoPath}" th:id="'photoUpload/' + ${a.photoNo}" class="clickUpload" style="width:200px; height:200px; border-radius:20%; border: 1px solid black;"/>
+                    <br>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" th:for="'file/' + ${a.photoNo}" Multiple style="display:none;">
+                            <input type="file" class="form-control" th:id="'file/' + ${a.photoNo}" name="file" style="display:none;" th:attr="onchange='previewImage(event, \'' + 'photoUpload/' + ${a.photoNo} + '\')'"/>
+                        </label>
+                    </div>
+                    <div class="deleteBtn">
+                        <button type="button" class="btn btn-outline-dark btn-sm deleteAttm" th:id="|delete~${ a.photoRename }/${ a.photoLevel }|">삭제 OFF</button>
+                    	<input type="hidden" name="deleteAttm" th:value="none">
+                    </div>
+                    </div>
+                </div>
+              </th:block> 
+			
+			<button type="button" class="w-25 btn btn-outline-success" id="addFile" style="width:300px; position: absolute; left:750px; top: 600px;">+ 파일 추가</button>
+			
+		    <div id="fileArea" style="position: absolute; left: 730px; top: 650px">
+		    	<div class="mb-1">
+		        	<input type="file" class="form-control form-control-lg" name="file" style="width:500px;" />
+		    	</div>
+		    </div>
+						
+   			<br><br><br><br><br>
+      <!-- 업로드할 내용 -->
+         <div class="edit">
+               <label >제목
+                     <input class="form-control" type="text" name="spTitle" placeholder="Default input" aria-label="default input example" style="width: 800px;" th:value="${s.spTitle}">
+                  </label><br><br>
+                  <label>캠핑 카테고리
+                        <select class="form-select" name="categoryNo">
+                       <option value="11" name="categoryNo" th:selected="${ s.categoryNo == 11 }">텐트</option>
+                       <option value="12" name="categoryNo" th:selected="${ s.categoryNo == 12 }">취침용품</option>
+                       <option value="13" name="categoryNo" th:selected="${ s.categoryNo == 13 }">조리도구</option>
+                       <option value="14" name="categoryNo" th:selected="${ s.categoryNo == 14 }">발화용품</option>
+                       <option value="15" name="categoryNo" th:selected="${ s.categoryNo == 15 }">배낭</option>
+                       <option value="16" name="categoryNo" th:selected="${ s.categoryNo == 16 }">기타</option>
+                       </select>
+               </label><br><br>
+               <label>가격
+                     <input class="form-control" type="number" name="spPrice" placeholder="Default input" aria-label="default input example" style="width: 800px;" th:value="${s.spPrice}">
+                  </label><br><br>
+                  <!--  
+                  <label>자세한 설명
+                     <textarea class="form-control" name="spContent" placeholder="내용을 입력해주세요" style="width: 800px; height: 500px;" required th:value="${s.spContent}"></textarea>
+                  </label><br><br>
+                  -->
+                 <label for="exampleFormControlTextarea1" class="form-label">
+  					 <textarea class="form-control" id="exampleFormControlTextarea1" rows="10" cols="75" name="spContent" style="resize: none;" th:utext="${#strings.replace(s.spContent, '\n', '<br>')}"></textarea>
+  				</label><br><br>
+                  <label>주소
+                     <p>
+                     <input type="text" id="zip-code" placeholder="우편번호">
+                     <input type="button" onclick="execDaumPostcode()" value="우편번호 찾기">
+                   </p>
+                   <p>
+                     <input type="text" id="address-1" name="spAddressStreet" placeholder="도로명주소" style="width: 500px" th:value="${ #strings.arraySplit(s.spAddress, ',')[0] }">
+                   </p>
+                   <p>
+                     <input type="text" id="address-2" name="spAddressDetail" placeholder="상세주소" style="width: 500px" th:value="${ #strings.arraySplit(s.spAddress, ',')[1] }">
+                   </p>
+                </label>
+         </div>
+         </th:block>
+         <div class="pointerBtn">
+              <button type="submit" id="submitAttm" class="btn-hover color-1">작성 완료</button>
+         </div>
+   </form>
+   
+   <script th:inline="javascript">
+       function previewImage(event, photoId){
+           const fReader1 = new FileReader();
+           const output = document.getElementById(photoId);
+           console.log(photoId)
+           fReader1.readAsDataURL(event.target.files[0]);
+           fReader1.onloadend = function(event){
+               output.src = event.target.result;
+           }
+       }
+       
+       
+       function execDaumPostcode() {
+           new daum.Postcode({
+             oncomplete: function( data ) {
+               document.getElementById( 'zip-code' ).value = data.zonecode;
+               document.getElementById( 'address-1' ).value = data.address;
+             }
+           }).open();
+         }
+       
+		const fileArea = document.querySelector('#fileArea');
+		/*
+		document.getElementById('addFile').addEventListener('click', () =>{
+			const newDiv = document.createElement('div');
+			newDiv.classList.add('mb-3');
+			newDiv.innerHTML = '<input type="file" class="form-control form -control-lg" name="file" style="width:500px;">'
+			
+			fileArea.append(newDiv);
+		})
+      	*/
+		// 추가 된 부분
+		document.getElementById('addFile').addEventListener('click', () => {
+		    const newDiv = document.createElement('div');
+		    newDiv.classList.add('mb-3');
+		    newDiv.innerHTML = '<input type="file" class="form-control form-control-lg" name="file" style="width:500px;">'
+		
+		    // 삭제 OFF인 파일의 개수 계산
+		    const deleteOffCount = Array.from(document.querySelectorAll('.deleteAttm')).reduce((count, btn) => {
+		        return count + (btn.innerText === '삭제 OFF' ? 1 : 0);
+		    }, 0);
+		
+		    // 삭제 OFF인 파일과 추가된 파일의 합이 최대 허용 개수보다 작으면 새 파일 추가
+		    if (deleteOffCount + fileArea.children.length < 4) {
+		        fileArea.append(newDiv);
+		    } else {
+		        alert("사진은 총 " + 4 + "장까지 첨부하실 수 있습니다.");
+		    }
+		});
+		
+		
+       	document.getElementById('submitAttm').addEventListener('click',() =>{
+    	   const files = document.getElementsByClassName('file');
+    	   const delBtns = document.getElementsByClassName('deleteAttm');
+    	   
+    	   console.log(files);
+    	   
+    	   let isEmpty = true;
+			for(const f of files) {
+				if(f.value != '') {
+					isEmpty = false;	
+				}
+			}
+			
+			let isAllRemove = true;
+			for(const btn of delBtns){
+				if(btn.innerText == '삭제 OFF'){
+					isAllRemove = false;
+				}
+			}
+			
+			console.log(isAllRemove);
+			
+       })
+       
+      const delBtns = document.getElementsByClassName('deleteAttm');
+				for(const btn of delBtns){
+					btn.addEventListener('click',function(){
+						const nextHidden = this.nextElementSibling;
+						if(this.innerText == "삭제 OFF"){
+							this.innerHTML = "삭제 ON";
+							this.style.background = 'black';
+							this.style.color = 'white';
+							nextHidden.value = this.id.split('~')[1];
+							
+						}else{
+							this.innerHTML = "삭제 OFF";
+							this.style.background = 'white';
+							this.style.color = 'black';
+							nextHidden.value = 'none';
+						}
+					});
+				}
+   </script>
+</body>
+</html>

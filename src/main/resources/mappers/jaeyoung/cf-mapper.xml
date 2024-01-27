@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.zangzac.jaeyoung.campingFriend.model.dao.CampingFriendDAO">
+	
+	
+	<insert id="insertCf">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="cfNo">
+         	select CF_SEQ.nextval 
+         	from dual
+     	 </selectKey>
+		<!-- 이미 시퀀스로 하나 올려진 글번호를 prodcutNo필드에 대입을 했으므로 시퀀스 돌려주는게(product_seq.nextval) 아니라 productNo 넣어주면 된다. -->
+		insert into camping_friends
+		values (#{cfNo}, #{cfContent}, default, #{memberId}, #{categoryNo}, #{cfTitle}) 
+	</insert>
+	
+	<select id="listCount" resultType="_int">
+		select count(*)
+		from camping_friends
+		where cf_status='N'
+	</select>
+	
+	<select id="cfLimitList">
+		SELECT *
+		FROM camping_friends CF
+		LEFT JOIN camping_category CC ON CF.CATEGORY_NO = CC.CATEGORY_NO
+		LEFT JOIN photo P ON CF.CF_NO = P.BOARD_NO AND P.BOARD_TYPE = 7
+		where cf_status='N'
+		ORDER BY CF.CF_NO DESC
+		
+	</select>
+	
+	<select id="selectCampingFriend">
+		SELECT *
+		FROM camping_friends CF
+		LEFT JOIN camping_category CC ON CF.CATEGORY_NO = CC.CATEGORY_NO
+		LEFT JOIN photo P ON CF.CF_NO = P.BOARD_NO AND P.BOARD_TYPE = 7
+		WHERE CF_NO = #{boardNo} and cf_status='N'
+	</select>
+	
+	<update id="updateCampingFriend">
+		update camping_friends
+		set cf_content = #{cfContent},category_no=#{categoryNo},cf_title=#{cfTitle}
+		where cf_no = #{cfNo}
+	</update>
+	
+	<update id="deleteCampingFriend">
+		update camping_friends
+		set cf_status = 'Y'
+		where cf_no = #{cfNo}
+	</update>
+
+</mapper>

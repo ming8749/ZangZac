@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+<meta http-equiv="X-UA-Compatible" content="ie=edge" /> 
+<title>마이페이지</title>
+<link rel="shortcut icon" href="https://storage.googleapis.com/zangzac/image/common/icons8-camping-16.png">
+<link href="../css/ming/member/MyPage.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<style>
+	.profilePoto{
+		border-radius: 50%;
+		width: 120px;
+		height:120px;
+		top: 170px;
+		position: relative;
+		left: 45%;
+	}
+	#profileImage.profile-poto{
+		border-radius: 50%;
+	}
+	.modal {
+	    display: none;
+	    position: fixed;
+	    z-index: 1;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	    height: 100%;
+	    overflow: auto;
+	    background-color: rgba(0, 0, 0, 0.4);
+	}
+	.modal-content {
+	    background-color: white;
+	    margin: 15% auto;
+	    margin-left:35%;
+	    padding: 20px;
+	    border: 1px solid #888;
+	    width: 80%;
+	    max-width: 600px;
+	    text-align: center;
+	    height: auto;
+	    max-height: 70%;
+	    overflow-y: auto;
+	    display: flex;
+	    flex-direction: column; /* 수정된 부분 */
+    	justify-content: center; /* 추가된 부분 */
+    	align-items: center;
+    	border-radius: 10px;
+	}
+	.modal-content Button{
+		background-color: rgb(251, 125, 83);
+		color: white;
+		border-radius: 5px;
+		border-color: rgb(251, 125, 83);
+		height: 50px;
+		width: 100px;
+		margin: 5px;
+	}
+	.modal-content Button:hover{
+		background-color: #FB8D53;
+		color: white;
+		border-radius: 5px;
+		border-color: rgb(251, 125, 83);
+		height: 50px;
+		width: 100px;
+		cursor: pointer;
+	}
+	
+	#deleteBtn{
+		width: 115px;
+		height: 33px;
+		top: 230px;
+		position: relative;
+		left: 52%;
+		padding: 6px 25px;
+		background-color:white;
+	  	border-radius: 4px;
+	  	color: black;
+	  	border: solid 1px black;
+	  	cursor: pointer;
+	  	font-size: 15px;
+	  	text-align: center;
+	}
+	#updateBtn{
+		width: 115px;
+		height: 33px;
+		top: 230px;
+		position: relative;
+		left: 26%;
+		padding: 6px 25px;
+		background-color:white;
+	  	border-radius: 4px;
+	  	color: black;
+	  	border: solid 1px black;
+	  	cursor: pointer;
+	  	font-size: 15px;
+	  	text-align: center;
+	}
+	.comment-section {
+	    max-height: 0;
+	    transition: max-height 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+	    opacity: 0;
+	    z-index: inherit;
+	}
+   
+   .comment-section.show {
+       max-height: 1000px;
+       opacity: 1;
+   }
+	
+	input:focus {outline:none;}
+</style>
+</head>
+<body>
+	<div class="logo">
+		<a href="/"><img src="../image/ming/member/logo.png" alt="logo"></a>
+	</div>
+	<aside class="sidebar">
+		<div class="user">
+			<img th:src="${loginUser.memberProfilePath}" style="width: 80px; height:80px; border-radius: 50%"></img><br><br>
+			<p style="font-weight: bold; font-size: 1.5em;" th:text="${loginUser.memberName}"></p><br><br>
+		</div>
+		<ul class="links">
+			<li>
+				<img src="../image/ming/member/프로필수정.png" style="width: 60px;"></img>
+				<a href="myPage.me">정보 수정</a>
+			</li>
+			<li th:if="${session.loginUser.memberLoginType == 1}">
+				<img src="../image/ming/member/icons8-비밀번호-50.png" style="width: 60px;"></img>
+				<a href="updatePwd.me">비밀번호 수정</a>
+			</li>
+		<hr>
+			<li>
+				<img src="../image/ming/member/icons8-edit-64.png" style="width: 60px;"></img>
+				<a href="myBoardList.me">내가 쓴 게시글</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/리뷰.png" style="width: 60px;"></img>
+				<a href="review.me">리뷰</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/icons8-계산서-100.png" style="width: 60px;"></img>
+				<a href="myOrderPageView.so">결제내역</a>
+			</li>
+		<hr>
+			<li>
+				<img src="../image/ming/member/icons8-쇼핑몰-50.png" style="width: 60px;"></img>
+				<a href="productListView.so">쇼핑몰 이동</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/icons8-게시판-50.png" style="width: 60px;"></img>
+				<a href="campBoard.su">커뮤니티 이동</a>
+			</li>
+			<li>
+				<img src="../image/ming/member/logout.png" style="width: 60px;"></img>
+				<a href="logout.me">로그아웃</a>
+			</li>
+			<li id="deleteMemberBtn">
+				<img src="../image/ming/member/icons8-취소-100 (1).png" style="width: 60px;"></img>
+				<a id="deleteMember" style="color: red;">회원탈퇴</a>
+			</li>
+		</ul>
+	</aside>
+		<div id="myModal" class="modal">
+	       <!-- 모달 내용 -->
+	       <div class="modal-content">
+	           	<h4 id="modalContent"></h4>
+	           	<span id="modalResult"></span>
+	       </div>
+    	</div>
+	<!--------------------------------------------------------마이페이지 시작--------------------------------------------------------------------->
+	
+		<div id="border" class="changeList" style="width: 1000px; height: 1800px;">
+			<span class="editTitle">내 정보 수정</span><br>
+			<form method="post" enctype="multipart/form-data" onsubmit="return NoReset()" id="form">
+	            <div class="profile" id="profileContainer">
+	                <div class="profilePoto">
+	                    <img th:src="${loginUser.memberProfilePath}" class="profile-poto" id="profileImage" onclick="changeToInputFile()">
+	                </div>
+				   <input type="file" class="btnFile" name="memberProfile" id="input-file" accept=".jpg,.png,.jpeg" style="text-align: center; width: 0px; display:none;" onchange="changeProfileImage()">
+				   <button type="button" id="deleteBtn" >삭제</button>
+				   <button type="button" id="updateBtn" onclick="updateProfileImage()">수정</button>
+	            </div>
+	         </form>
+			<form action="updateMemberName.me" method="post" >
+			    <input type="text" th:value="${loginUser.memberName}" class="updateInput" name="memberName" placeholder="이름">
+			    <input type="submit" value="수정" class="updateBtn">
+			</form>
+			<form action="updateMemberNickName.me" method="post">
+			    <input type="text" th:value="${#strings.arraySplit(loginUser.memberNickName, '#')[0]}" class="updateInput" id="memberNickName" name="existingNickname" placeholder="닉네임">
+			    <input type="submit" value="수정" id="memberNickNameBtn" class="updateBtn">
+			</form>
+		    <input type="text" th:value="${loginUser.memberId}" class="updateInput" name="memberId" placeholder="Id" readonly>
+			<form action="updateMemberPhone.me" method="post" id="updateForm">
+		    	<input type="tel" th:value="${loginUser.memberPhone}" class="updateInput" id="phone" name="memberPhone" placeholder="전화번호(-제외)">
+				<input type="button" id="send" value="코드전송" class="updateBtn" >
+				<div class="comment-section">
+					<input type="text" class="updateInput" id="userNum" name="phoneCode" placeholder="인증코드">
+					<input type="submit" value="수정" class="updateBtn" id="enterBtn">
+				</div>
+			</form>
+			<form action="updateMemberEmail.me" method="post" id="updateEmailForm" onsubmit="return noEmail()">
+			    <input type="email" id="memberEmail" name="memberEmail" class="updateInput" placeholder="이메일" th:value="${loginUser.memberEmail}" required>
+			    <input type="button" id="mail-Check-Btn" value="코드전송" class="updateBtn" >
+			    <div th:if="${loginUser.memberLoginType == 1}" class="comment-section">
+				    <input type="text" id="EmailCheckNo" class="updateInput" name="emailCode" placeholder="인증코드">
+				    <input type="submit" value="인증확인" class="updateBtn" id="enterEBtn" >
+				</div>
+			</form>
+			<form action="updateMemberAddress.me" method="post">
+			    <input type="text" name="sample6_postcode" id="sample6_postcode" class="updateInput" placeholder="우편번호" readonly>
+			    <input type="button" id="sample6" onclick="sample6_execDaumPostcode()" value="주소검색" class="updateBtn">
+			    <input type="text" name="sample6_address" id="sample6_address" class="updateInput" placeholder="주소" readonly>
+			    <input type="text" name="sample6_detailAddress" id="sample6_detailAddress" class="updateInput" placeholder="상세주소" >
+			    <input type="text" name="sample6_extraAddress" id="sample6_extraAddress" class="updateInput" placeholder="참고항목" >
+			    <input type="submit" value="주소변경"  class="updateBtn" >
+			</form>
+			 
+		    <input type="date" th:value="${loginUser.memberBirth}" class="updateInput" name="memberBirth" placeholder="생년월일" readonly>
+		</div>	
+
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script>
+	    function sample6_execDaumPostcode() {
+	        new daum.Postcode({
+	            oncomplete: function(data) {
+	                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+	
+	                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+	                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+	                var addr = ''; // 주소 변수
+	                var extraAddr = ''; // 참고항목 변수
+	
+	                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+	                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+	                    addr = data.roadAddress;
+	                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+	                    addr = data.jibunAddress;
+	                }
+	
+	                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+	                if(data.userSelectedType === 'R'){
+	                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+	                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+	                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+	                        extraAddr += data.bname;
+	                    }
+	                    // 건물명이 있고, 공동주택일 경우 추가한다.
+	                    if(data.buildingName !== '' && data.apartment === 'Y'){
+	                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	                    }
+	                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+	                    if(extraAddr !== ''){
+	                        extraAddr = ' (' + extraAddr + ')';
+	                    }
+	                    // 조합된 참고항목을 해당 필드에 넣는다.
+	                    document.getElementById("sample6_extraAddress").value = extraAddr;
+	                
+	                } else {
+	                    document.getElementById("sample6_extraAddress").value = '';
+	                }
+	
+	                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+	                document.getElementById('sample6_postcode').value = data.zonecode;
+	                document.getElementById("sample6_address").value = addr;
+	                // 커서를 상세주소 필드로 이동한다.
+	                document.getElementById("sample6_detailAddress").focus();
+	            }
+	        }).open();
+	    } 
+	</script>
+	<script>
+	
+		let check_code = false;
+		let check_num;
+		let code="";
+    	let checkE = false;
+	 	document.getElementById('deleteMember').addEventListener('click', function(event) {
+	 		event.preventDefault();
+	 		const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.textContent = '정말 탈퇴하시겠습니까? \n 탈퇴 후 계정 복구는 불가능합니다.';
+            modalContent.appendChild(document.createElement('br'));
+            modalContent.appendChild(document.createElement('br'));
+
+            modal.style.display = 'block';
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '네';
+            deleteButton.className = 'homepage-btn';
+            deleteButton.addEventListener('click', function() {
+                window.location.href = 'deleteMember.me';
+            });
+            modalContent.appendChild(deleteButton);
+            
+            const homepageButton = document.createElement('button');
+            homepageButton.textContent = '아니오';
+            homepageButton.className = 'homepage-btn';
+            homepageButton.addEventListener('click', function() {
+                closeModal();
+            });
+            modalContent.appendChild(homepageButton);
+            
+	 	});
+	 	
+	 	function closeModal() {
+	 	    const modal = document.getElementById('myModal');
+	 	    modal.style.display = 'none';
+	 	};
+	 	
+	 	/* 프로필 삭제 모달 */
+	 	document.getElementById('deleteBtn').addEventListener('click', function(event) {
+	 		event.preventDefault();
+	 		const modal = document.getElementById('myModal');
+            const modalContent = document.getElementById('modalContent');
+            modalContent.textContent = '정말 삭제하시겠습니까? \n 삭제 후 사진 복구는 불가능합니다.';
+            modalContent.appendChild(document.createElement('br'));
+            modalContent.appendChild(document.createElement('br'));
+
+            modal.style.display = 'block';
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '네';
+            deleteButton.className = 'homepage-btn';
+            deleteButton.addEventListener('click', function() {
+                window.location.href = 'deleteProfile.me';
+            });
+            modalContent.appendChild(deleteButton);
+            
+            const homepageButton = document.createElement('button');
+            homepageButton.textContent = '아니오';
+            homepageButton.className = 'homepage-btn';
+            homepageButton.addEventListener('click', function() {
+                closeModal();
+            });
+            modalContent.appendChild(homepageButton);
+            
+	 	});
+	 	
+	 	function closeModal() {
+	 	    const modal = document.getElementById('myModal');
+	 	    modal.style.display = 'none';
+	 	};
+	 	
+	 	//닉네임 정규식
+		let checkNickName = false; // 전역 변수로 선언
+
+		document.getElementById('memberNickName').addEventListener('keyup', function () {
+		    let nickNameval = $('#memberNickName').val();
+		    let nickNamevalcheck = /^[ㄱ-ㅎㅏ-ㅣ가-힣가-힣A-Za-z0-9]+$/;
+		    let prohibitedWords = ['ㅅㅂ', '염병', '옘병', '시발', '시바', 'ㅂㅅ', '미친', 'ㅂ1ㅅ', '수1발','tlqkf'];
+		
+		    if (this.value.trim() === '') {
+		        memberNickName.style.borderColor = 'red';
+		        checkNickName = false;
+		        $('#memberNickNameBtn').prop('disabled', true);
+		    } else if (!nickNamevalcheck.test(nickNameval)) {
+		        memberNickName.style.borderColor = 'red';
+		        checkNickName = false;
+		        $('#memberNickNameBtn').prop('disabled', true);
+		    } else if (containsProhibitedWord(nickNameval, prohibitedWords)) {
+		        memberNickName.style.borderColor = 'red';
+		        checkNickName = false;
+		        $('#memberNickNameBtn').prop('disabled', true);
+		    } else {
+		        memberNickName.style.borderColor = 'green';
+		        checkNickName = true;
+		        $('#memberNickNameBtn').prop('disabled', false);
+		    }
+		});
+		
+		$('#updateNickNameForm').submit(function (event) {
+		    if (!checkNickName) {
+		        event.preventDefault(); // 폼 제출을 막음
+		        alert('올바른 닉네임을 입력하세요.'); // 또는 다른 메시지 출력
+		    }
+		});
+		
+		function containsProhibitedWord(input, prohibitedWords) {
+		    for (let i = 0; i < prohibitedWords.length; i++) {
+		        if (input.includes(prohibitedWords[i])) {
+		            return true;
+		        }
+		    }
+		    return false;
+		}
+	</script>
+	
+	<script th:inline="javascript">
+		 
+		$('#send').click(function() {
+			
+			const to = $('#phone').val();
+			let btn= this;
+			$.ajax ({
+				url: '/send-one',
+				type: 'GET',
+				data: {
+					"phone" : to
+				},
+				success: function(data) {
+					check_num = data;
+					toggleCo(btn);
+		
+					alert("인증번호를 입력해주세요!");
+					
+				}
+			});
+			
+		});
+		
+		$('#enterBtn').click(function() {	
+			const userNum = $('#userNum').val();
+			
+			if(check_num === userNum) {
+				alert('인증 성공하였습니다.');
+                this.innerText = '인증성공';
+                check_code = true;
+                $('#updateForm').submit();
+			}
+			else {
+				alert('인증 실패하였습니다. 다시 입력해주세요.');
+				this.innerText = '인증실패';
+				check_code =false;
+				$('#userNum').focus();
+			}
+		});
+		
+		$('#updateForm').submit(function (event) {
+		    // 폼 제출(submit) 이벤트 발생 시 NoSign 함수 호출
+		    return NoSign(event);
+		});
+		
+		
+		
+			let email_check_code = false;
+			let email_code="test";
+			let checkEmail = false;
+			let check_button = false;
+			
+			
+			document.getElementById('memberEmail').addEventListener('change', function () {
+			    let emailVal = $('#memberEmail').val();
+			    $.ajax({
+			        url: 'checkEmail.me',
+			        data: { memberEmail: this.value },
+			        success: (data) => {
+			        	console.log("test1: "+data);
+			            if (data == 'yes') {
+			            	console.log("test2: "+data);
+			                memberEmail.style.borderColor = 'green';
+			                checkEmail = true;
+			                $('#mail-Check-Btn').prop('disabled', false); // 이메일이 중복되지 않으면 코드 전송 버튼 활성화
+			            } else {
+			            	console.log("test3: "+data);
+			                memberEmail.style.borderColor = 'red';
+			                alert('중복되는 이메일이 있습니다. 다른 이메일을 입력해주세요');
+			                checkEmail = false;
+			                $('#mail-Check-Btn').prop('disabled', true); // 이메일이 중복되면 코드 전송 버튼 비활성화
+			            }
+			        },
+			        error: data => console.log(data)
+			    });
+			});
+
+			$('#mail-Check-Btn').click(function () {
+			    const checkInput = $('#EmailCheckNo'); // 인증번호 입력하는 곳 
+			    let btn=this;
+			    console.log("11");
+			    check_button = true;
+			    const memberLoginType = /*[[${session.loginUser.memberLoginType}]]*/3;
+			    //memberLoginType 이거 먼저 3으로 뜨는지 찍어보고
+			    console.log(memberLoginType);
+			    // 만약 memberLoginType이 2라면, 카카오 연동 회원은 이메일 변경이 불가능하다고 창을 띄웁니다.
+			    if (memberLoginType === 2) {
+			        alert('카카오 연동 회원은 이메일 변경이 불가능합니다.');
+			        return;
+			    }// 조건문 추가해서 1일때는 에이작스 작동되게
+			    else if(memberLoginType === 1){
+			    	if(checkEmail == true){
+					    $.ajax({
+					        type: 'get',
+					        url: 'mailCheck.me',
+					        data: { memberEmail: document.getElementById('memberEmail').value },
+					        success: function (data) {
+					            console.log("data : " + data);
+					            checkInput.attr('disabled', false);
+					            email_code = data;
+					            toggleCo(btn);
+					            alert('인증번호를 발송했습니다. 인증번호가 오지 않으면 입력하신 정보가 회원정보와 일치하는지 확인해 주세요.');
+					        }
+					    });
+			    		
+			    	}else{
+			    		alert('중복되는 이메일이 있습니다. 다른 이메일을 입력해주세요');
+			    	}
+			    }
+			    
+			});
+
+		
+			function noEmail(event){
+				let inputCode = document.getElementById('EmailCheckNo').value;
+			    console.log(inputCode);
+			    if(check_button){
+				    if (inputCode == email_code) {
+				        alert('인증 성공하였습니다.');
+				        email_check_code = true;
+				    } else {
+				        email_check_code = false;
+				        $('#EmailCheckNo').focus();
+				    }
+		   		 }
+				
+				
+				if(email_check_code && check_button && checkEmail){
+					form.submit();
+					return true;
+				}else{
+					alert('인증 실패하였습니다. 다시 입력해주세요.');
+					return false;
+				}
+			}
+		
+	</script>
+	<script th:inline="javascript">
+	
+	    document.addEventListener("DOMContentLoaded", function () {
+        	// 서버에서 받은 주소 문자열
+	        /*<![CDATA[*/
+	           let addressString = /*[[${session.loginUser.memberAddress}]]*/ null;
+	           /*]]>*/
+	        console.log("Address String:", addressString); // 디버깅용으로 콘솔에 출력
+	
+	        // @를 기준으로 문자열을 분리
+	        let addressArray = addressString.split('@');
+	
+	        // 각각의 필드에 값 할당
+	        document.getElementById('sample6_postcode').value = addressArray[0];
+	        document.getElementById('sample6_address').value = addressArray[1];
+	        document.getElementById('sample6_detailAddress').value = addressArray[2];
+	        document.getElementById('sample6_extraAddress').value = addressArray[3];
+    	});
+	</script>
+	
+	<!-- 프로필 사진 변경  -->
+	<script>
+	    var fileChanged = false;
+	    function changeToInputFile() {
+	        // 이미지 클릭 시 input type="file" 클릭
+	        document.getElementById('input-file').click();
+	    }
+	
+	    function changeProfileImage() {
+	    	fileChanged = true;
+	        var input = document.getElementById('input-file');
+	        var image = document.getElementById('profileImage');
+	
+	        var file = input.files[0];
+	        var reader = new FileReader();
+	
+	        reader.onload = function (e) {
+	            image.src = e.target.result;
+	        };
+	
+	        if (file) {
+	            reader.readAsDataURL(file);
+	        }
+	    }
+	
+	    function deleteProfileImage() {
+	    	
+	    	const form = document.getElementById('form');
+	        form.action = "deleteProfile.me";
+	        form.submit();
+	    
+	    }
+	    
+	    function updateProfileImage() {
+	        const form = document.getElementById('form');
+	        form.action = "updateProfile.me";
+	        form.onsubmit();
+	    }
+	 	// 파일 변경 여부를 추적하는 전역 변수
+		
+		function NoReset() {
+		    if (fileChanged) {
+		    	const form = document.getElementById('form');
+		    	form.submit();
+		        return true;
+		    } else {
+		        // 파일이 변경되지 않았다면 경고 메시지를 표시하고 폼 제출을 방지
+		        console.log(fileChanged);
+		        alert("사진을 변경해주세요.");
+		        return false;
+		    }
+		}
+	
+		// 이벤트 리스너를 파일 입력 필드에 추가
+		document.getElementById('input-file').addEventListener('change', changeProfileImage);
+		
+		 function toggleCo(toggleId){
+	           toggleComments(toggleId);
+	        }
+	        
+	     
+
+        // 전체 댓글 토글 함수
+        function toggleComments(toggleId) {
+           const commentSection = toggleId.nextElementSibling;
+
+            if (commentSection) {
+                commentSection.classList.toggle('show');
+                
+            }
+        }
+		function NoSign(event) {
+		    // 이 함수가 호출되면서 폼이 제출될 때만 check_code를 확인하도록 변경
+		    if (check_code && checkE && checkNickName) {
+		        return true;
+		    } else {
+		        alert("정보가 올바르게 작성되었는지 확인해주세요.");
+		        // 실패 시 이벤트 중지
+		        event.preventDefault();
+		        return false;
+		    }
+		}
+	</script>
+</body>
+</html>
